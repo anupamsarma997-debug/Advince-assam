@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "kern", "liga";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: #FDFCFB;
+    color: #1A1A1A;
+    font-family: 'EB Garamond', 'Newsreader', Georgia, Cambria, serif;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: #1A1A1A;
+    color: #FDFCFB;
+  }
+}
+
+.font-editorial-serif {
+  font-family: 'Newsreader', 'EB Garamond', Georgia, serif;
+}
+
+.font-editorial-sans {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Editorial Dropcap */
+.editorial-dropcap::first-letter {
+  font-size: 3.5rem;
+  float: left;
+  line-height: 0.8;
+  margin-right: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 700;
+  font-family: 'Newsreader', 'EB Garamond', serif;
+}
+
+/* Custom Print and Book Media Styles */
+@media print {
+  /* Hide all UI elements except the printable book container */
+  .no-print,
+  nav,
+  header,
+  aside,
+  footer,
+  button,
+  .modal-backdrop,
+  .editor-pane {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #1A1A1A !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Newsreader', 'EB Garamond', Georgia, serif !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+  }
+
+  #printable-book-document {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .avoid-break-inside {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+
+  pre, code {
+    background-color: #F5F2ED !important;
+    color: #1A1A1A !important;
+    border: 1px solid #E5E1DA !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 9.5pt !important;
+    page-break-inside: avoid !important;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+  }
+
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+}
+
+/* Editorial Paper Effects */
+.editorial-paper-shadow {
+  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04), 0 8px 24px -4px rgba(26, 26, 26, 0.06);
+}
+
+.book-spine-effect {
+  background: linear-gradient(to right, rgba(26,26,26,0.15) 0%, rgba(26,26,26,0.03) 4%, rgba(255,255,255,0.06) 6%, transparent 10%);
+}
+
+/* Minimalist scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E1DA;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C8C2B7;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Book Studio & PDF Generator",
+  "description": "Comprehensive AI book writer, reader, and professional PDF generator with ready-to-export books and custom chapter editor",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

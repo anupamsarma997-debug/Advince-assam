@@ -1,0 +1,1817 @@
+import { Book } from '../types';
+
+export const CODE_YATRA_BOOK: Book = {
+  id: 'code-yatra-2026',
+  title: 'কোড-যাত্ৰা মহাপুথি: শূণ্যৰ পৰা এক্সপাৰ্ট ছফ্টৱেৰ ডেভেলপাৰ',
+  subtitle: 'The Complete Assamese Developer Masterclass — ২০২৬ সংস্কৰণ',
+  author: 'অসম ক’ডিং একাডেমী & এক্সপাৰ্ট ডেভেলপাৰ টীম',
+  edition: '২০২৬ প্ৰিমিয়াম সংস্কৰণ',
+  publishedYear: '২০২৬',
+  language: 'অসমীয়া (Assamese)',
+  isbn: 'ISBN 978-93-5492-2026-X',
+  copyright: '© ২০২৬ কোড-যাত্ৰা মহাপুথি। সকলো অধিকাৰ সংৰক্ষিত | মুক্ত উৎসৰ প্ৰেমত্পৰ্ণ।',
+  description: '৫ বছৰীয়া শিশুৰ অন্তৰ্দৃষ্টি আৰু এনিমে-কমিক ধাৰণাৰ পৰা আৰম্ভ কৰি আধুনিক এন্টাৰপ্ৰাইজ ছফ্টৱেৰ ইঞ্জিনিয়াৰিঙৰ গভীৰতালৈকে অসমীয়া ভাষাত প্ৰথমখন প্ৰফেচনেল প্ৰগ্ৰামিং গ্ৰন্থ।',
+  coverColor: '#0f172a',
+  coverBadge: 'The Complete Assamese Developer Masterclass',
+  coverStyle: 'royal',
+  tags: ['Python', 'DSA', 'FastAPI', 'React 19', 'Docker', 'DevOps', 'Edge AI', 'System Design'],
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-08-26T00:00:00.000Z',
+  volumes: [
+    {
+      id: 'vol-1',
+      title: 'খণ্ড ১: কম্পিউটাৰ বিজ্ঞানৰ মৌলিক ভেটি আৰু লজিক',
+      description: 'কম্পিউটাৰ আৰ্কিটেকচাৰ, বাইনাৰী চিষ্টেম, এলগৰিদম আৰু আই/অ’ চক্ৰ',
+      chapterIds: ['ch-1', 'ch-2', 'ch-3'],
+    },
+    {
+      id: 'vol-2',
+      title: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
+      description: 'মেম’ৰি মডেল, মিউটেবিলিটি, পেটাৰ্ণ মেচিং, জেনেৰেটৰ আৰু ডেকৰেটৰ',
+      chapterIds: ['ch-4', 'ch-5', 'ch-6', 'ch-7'],
+    },
+    {
+      id: 'vol-3',
+      title: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
+      description: 'লিনিয়াৰ আৰু নন-লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ, গ্ৰাফ আৰু ছৰ্টিং এলগৰিদম',
+      chapterIds: ['ch-8', 'ch-9', 'ch-10'],
+    },
+    {
+      id: 'vol-4',
+      title: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
+      description: 'OOP স্তম্ভ, SOLID নীতি, ডিজাইন পেটাৰ্ণ (Strategy & Factory)',
+      chapterIds: ['ch-11', 'ch-12'],
+    },
+    {
+      id: 'vol-5',
+      title: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
+      description: 'AsyncIO, Non-blocking I/O, Logging আৰু কাষ্টম এক্সেপচন হেণ্ডলিং',
+      chapterIds: ['ch-14', 'ch-16'],
+    },
+    {
+      id: 'vol-6',
+      title: 'খণ্ড ৬: ডাটাবেছ আৰ্কিটেকচাৰ আৰু আধুনিক বেকএণ্ড ইঞ্জিনিয়াৰিং',
+      description: 'SQL, SQLite, ACID ধৰ্ম, FastAPI ২০২৬ আৰু JWT Auth',
+      chapterIds: ['ch-17', 'ch-19'],
+    },
+    {
+      id: 'vol-7',
+      title: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
+      description: 'Modern JavaScript (ES6+), React 19 Components, CORS & API Client',
+      chapterIds: ['ch-20', 'ch-21'],
+    },
+    {
+      id: 'vol-8',
+      title: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
+      description: 'Git, GitHub Actions CI/CD, Pytest (TDD), Docker, Edge AI আৰু ৬ মহীয়া ৰোডমেপ',
+      chapterIds: ['ch-22', 'ch-23', 'ch-24', 'ch-25', 'ch-appendix'],
+    },
+  ],
+  chapters: [
+    {
+      id: 'ch-1',
+      volume: 'খণ্ড ১: কম্পিউটাৰ বিজ্ঞানৰ মৌলিক ভেটি আৰু লজিক',
+      title: 'অধ্যায় ১: কম্পিউটাৰ আৰ্কিটেকচাৰ, মেম’ৰি আৰু বাইনাৰী চিষ্টেম',
+      subtitle: 'Von Neumann Architecture, Registers, RAM, Storage আৰু Binary Arithmetic',
+      estimatedReadTime: '8 min',
+      topics: ['Von Neumann Architecture', 'CPU, ALU & CU', 'RAM & Storage', 'Binary & Hexadecimal'],
+      content: `## ১.১ ভন নিউমেন আৰ্কিটেকচাৰ (Von Neumann Architecture)
+
+আধুনিক কম্পিউটাৰৰ ভেটি ১৯৪৫ চনত জন ভন নিউমেনে প্ৰস্তাৱ কৰা এক ঐতিহাসিক আৰ্কিটেকচাৰ। এই মডেল অনুসৰি কম্পিউটাৰৰ চাৰিটা মুখ্য উপাদান থাকে:
+
+### ১. চেণ্ট্ৰেল প্ৰচেছিং ইউনিট (CPU):
+CPU হৈছে কম্পিউটাৰৰ মগজু। ইয়াৰ ভিতৰত তিনিটা মূল অংশ থাকে:
+- **এ.এল.ইউ (ALU - Arithmetic Logic Unit):** গাণিতিক আৰু যুক্তিগত গণনা কৰে (যেনে— যোগ, বিয়োগ, গুণ, ভাগ, AND, OR, NOT অপাৰেচন)।
+- **কণ্ট্ৰ'ল ইউনিট (CU):** প্ৰগ্ৰামৰ ইনষ্ট্ৰাকচনৰ ক্ৰম নিয়ন্ত্ৰণ কৰে। ই মেম'ৰিৰ পৰা নিৰ্দেশনা আনে (Fetch), বিশ্লেষণ কৰে (Decode) আৰু কাৰ্যকৰী কৰে (Execute)।
+- **ৰেজিষ্টাৰসমূহ (Registers):** CPUৰ ভিতৰত থকা অতি দ্ৰুততম স্মৃতি কোষ। ৰেজিষ্টাৰৰ আকাৰ সাধাৰণতে ৩২ বিট বা ৬৪ বিট হয়।
+
+### ২. প্ৰাথমিক মেম'ৰি (RAM):
+RAM (Random Access Memory) এটা ভোলাটাইল মেম'ৰি—অৰ্থাৎ বিদ্যুৎ বন্ধ হ'লে ডেটা মচি যায়। RAM-ৰ প্ৰতিটো মেম'ৰি চেলৰ এটা নিৰ্দিষ্ট ঠিকনা (Address) থাকে। ২০২৬ চনত DDR5 ৬৪০০MHz+ আৰু CAMM2 মডিউল প্ৰচলিত।
+
+### ৩. গৌণ মেম'ৰি (Storage):
+- **HDD (Hard Disk Drive):** মেগনেটিক প্লেটাৰৰ ওপৰত ডেটা সংৰক্ষণ কৰে। মূল্য কম কিন্তু গতি তুলনামূলকভাৱে ধীৰ।
+- **SSD (Solid State Drive):** ফ্লেছ মেম'ৰি চিপ ব্যৱহাৰ কৰে। HDD তকৈ ১০-১০০ গুণ বেগী। NVMe Gen5 SSD সৰ্বাধিক দ্ৰুত (১৪GB/s+)।
+- **Cloud Storage:** AWS S3, Google Cloud Storage — আধুনিক এণ্টাৰপ্ৰাইজ ক্লাউড সঞ্চয়স্থল।
+
+### ৪. ইনপুট/আউটপুট ডিভাইচ (I/O):
+কীবৰ্ড, মাউচ, মনিটৰ, নেটৱৰ্ক কাৰ্ড আদি। ডেটা বাছ (Data Bus) আৰু এড্ৰেছ বাছ (Address Bus)ৰ জৰিয়তে এইসমূহ CPU আৰু মেম'ৰিৰ সৈতে সংযুক্ত।
+
+---
+
+## ১.২ বিট, বাইট আৰু বাইনাৰী গণিত
+
+কম্পিউটাৰে কেৱল \`0\` আৰু \`1\` বুজি পায়। এই দুটা অৱস্থাই এটা **বিট (Bit)** গঠন কৰে। ৮টা বিটে এটা **বাইট (Byte)** গঠন কৰে।
+
+| একক | মান |
+| :--- | :--- |
+| **১ বিট (Bit)** | ০ বা ১ |
+| **১ নিবল (Nibble)** | ৪ বিট |
+| **১ বাইট (Byte)** | ৮ বিট (২⁸ = ২৫৬টা ভিন্ন মান) |
+| **১ কিলোবাইট (KB)** | ১০২৪ বাইট |
+| **১ মেগাবাইট (MB)** | ১০২৪ KB |
+| **১ গিগাবাইট (GB)** | ১০২৪ MB |
+| **১ টেৰাবাইট (TB)** | ১০২৪ GB |
+
+### বাইনাৰী অপাৰেচন (Python উদাহৰণ):
+
+\`\`\`python
+# পাইথনত বিটৱাইজ অপাৰেচন
+a = 5  # বাইনাৰী: 0101
+b = 3  # বাইনাৰী: 0011
+
+print("AND (a & b):", a & b)        # 0001 -> 1
+print("OR  (a | b):", a | b)        # 0111 -> 7
+print("XOR (a ^ b):", a ^ b)        # 0110 -> 6
+print("NOT (~a):", ~a)              # 1's complement -> -6
+print("Left Shift  (a << 1):", a << 1)  # 1010 -> 10
+print("Right Shift (a >> 1):", a >> 1)  # 0010 -> 2
+\`\`\`
+
+### বাইনাৰীৰ পৰা দশমিক আৰু দশমিকৰ পৰা বাইনাৰী:
+দশমিক ১৩ ক বাইনাৰীত ১১০১ লিখা হয়:
+$$1 \\times 2^3 + 1 \\times 2^2 + 0 \\times 2^1 + 1 \\times 2^0 = 8 + 4 + 0 + 1 = 13$$
+
+বাইনৰী ১০১১০ ক দশমিকে ৰূপান্তৰ:
+$$1 \\times 2^4 + 0 \\times 2^3 + 1 \\times 2^2 + 1 \\times 2^1 + 0 \\times 2^0 = 16 + 0 + 4 + 2 + 0 = 22$$
+
+### হেক্সাডেসিমেল (Hexadecimal):
+বাইনাৰী সংখ্যা দীঘল হ'লে হেক্সাডেসিমেল (০-৯ আৰু A-F) ব্যৱহাৰ কৰা হয়। প্ৰতি ৪টা বিটে এটা হেক্স ডিজিট গঠন কৰে:
+\`\`\`python
+# 0xFF = 11111111 = 255
+val = 0xFF
+print(f"Hex 0xFF = {val} in decimal")
+\`\`\``,
+    },
+    {
+      id: 'ch-2',
+      volume: 'খণ্ড ১: কম্পিউটাৰ বিজ্ঞানৰ মৌলিক ভেটি আৰু লজিক',
+      title: 'অধ্যায় ২: এলগৰিদমিক চিন্তা আৰু সমস্যা সমাধানৰ বিজ্ঞান',
+      subtitle: 'Problem Solving Framework, Flowcharts আৰু Pseudocode',
+      estimatedReadTime: '7 min',
+      topics: ['Algorithm Fundamentals', 'Problem Solving Steps', 'Flowchart Symbols', 'Python Implementation'],
+      content: `## ২.১ এলগৰিদম কি?
+
+**এলগৰিদম (Algorithm)** হ'ল এটা স্পষ্ট, পৰিসীম (finite) আৰু কাৰ্যকৰী পদ্ধতি যাৰ দ্বাৰা কোনো সমস্যাৰ সমাধান কৰা হয়।
+
+### ভাল এলগৰিদমৰ বৈশিষ্ট্য:
+- **ইনপুট (Input):** শূন্য বা ততোধিক নিৰ্দিষ্ট ইনপুট ল'ব লাগিব।
+- **আউটপুট (Output):** কমেও এটা সঠিক আউটপুট দিব লাগিব।
+- **নিৰ্দিষ্টতা (Definiteness):** প্ৰতিটো খোজ স্পষ্ট আৰু দ্ব্যৰ্থতাহীন হ'ব লাগিব।
+- **পৰিসীমতা (Finiteness):** এটা নিৰ্দিষ্ট সময়ত সমাপ্ত হ'ব লাগিব।
+- **কাৰ্যকৰীতা (Effectiveness):** প্ৰতিটো ধাপ মৌলিক আৰু প্ৰয়োগযোগ্য হ'ব লাগিব।
+
+---
+
+## ২.২ সমস্যা সমাধানৰ পদ্ধতি (Problem Solving Approach)
+
+- **ধাপ ১ (সমস্যাটো বুজি লোৱা):** সমস্যাৰ বিৱৰণ, ইনপুট আৰু আশা কৰা আউটপুট স্পষ্টভাৱে লিখি ৰখা।
+- **ধাপ ২ (উদাহৰণ আৰু টেষ্ট কেচ তৈয়াৰ কৰা):**
+  - সমস্যা: এটা তালিকাৰ মাজত সৰ্বাধিক সংখ্যা বিচাৰি উলিওৱা
+  - ইনপুট: \`[3, 7, 2, 9, 1]\`
+  - আউটপুট: \`9\`
+- **ধাপ ৩ (এলগৰিদম ডিজাইন কৰা):**
+  1. প্ৰথম সংখ্যাটোক \`max\` বুলি ধৰি লোৱা।
+  2. তালিকাৰ প্ৰতিটো সংখ্যাৰ লগত তুলনা কৰা।
+  3. যদি ডাঙৰ সংখ্যা পোৱা যায়, তেন্তে \`max\` আপডেট কৰা।
+  4. শেষত \`max\` ৰিটাৰ্ণ কৰা।
+- **ধাপ ৪ (কোডিং):**
+
+\`\`\`python
+def সৰ্বাধিক_সন্ধান(তালিকা: list[int]):
+    if not তালিকা:
+        return None
+    max_মান = তালিকা[0]
+    for সংখ্যা in তালিকা[1:]:
+        if সংখ্যা > max_মান:
+            max_মান = সংখ্যা
+    return max_মান
+
+# টেষ্ট কেচ
+print(সৰ্বাধিক_সন্ধান([3, 7, 2, 9, 1]))  # ৯
+print(সৰ্বাধিক_সন্ধান([-5, -2, -10]))     # -২
+print(সৰ্বাধিক_সন্ধান([]))                 # None
+\`\`\`
+
+---
+
+## ২.৩ ফ্ল'চাৰ্ট আৰু চ্যিউডোকোড
+
+ফ্ল'চাৰ্ট এটা গ্ৰাফিকেল প্ৰতিনিধিত্ব:
+- **অণ্ড (Oval):** আৰম্ভ / শেষ
+- **আয়ত (Rectangle):** প্ৰচেছ বা কাৰ্য
+- **সামান্তৰিক (Parallelogram):** ইনপুট / আউটপুট
+- **ৰম্বাচ (Diamond):** সিদ্ধান্ত বা চৰ্ত (Conditional Decision)`,
+    },
+    {
+      id: 'ch-3',
+      volume: 'খণ্ড ১: কম্পিউটাৰ বিজ্ঞানৰ মৌলিক ভেটি আৰু লজিক',
+      title: 'অধ্যায় ৩: ইনপুট-আউটপুট চাইকেল, বাফাৰ আৰু ষ্ট্ৰীম',
+      subtitle: 'I/O Streams, Fast I/O in Python আৰু File Buffering',
+      estimatedReadTime: '6 min',
+      topics: ['I/O Cycle', 'Standard Streams', 'Competitive Programming Fast I/O', 'Memory Buffers'],
+      content: `## ৩.১ আই/অ' চাইকেল (I/O Cycle)
+
+কম্পিউটাৰৰ মৌলিক কাৰ্য—ইনপুট গ্ৰহণ, প্ৰচেছিং আৰু আউটপুট প্ৰদান।
+
+\`\`\`python
+import sys
+
+def দ্ৰুত_ইনপুট_আউটপুট():
+    # মানক ইনপুট পদ্ধতি
+    নাম = input("আপোনাৰ নাম লিখক: ")
+    বয়স = int(input("আপোনাৰ বয়স লিখক: "))
+    
+    # ফৰমেটেড আউটপুট
+    print(f"নমস্কাৰ {নাম}! আপুনি {বয়স} বছৰীয়া।")
+    
+    # দ্ৰুত আই/অ' (Competitive Programming ৰ বাবে)
+    ডেটা = sys.stdin.readline().strip()
+    sys.stdout.write(f"পঠিত ডেটা: {ডেটা}\\n")
+    sys.stdout.flush()  # বাফাৰ খালী কৰা
+\`\`\`
+
+---
+
+## ৩.২ বাফাৰ (Buffer) আৰু ষ্ট্ৰীম
+
+**বাফাৰ** হ'ল এটা অস্থায়ী সঞ্চয়স্থল য'ত ডেটা আগবঢ়াৰ আগতে জমা ৰখা হয়। **ষ্ট্ৰীম** হ'ল ডেটাৰ একতাৰিক ক্ৰম।
+
+\`\`\`python
+# ফাইল ষ্ট্ৰীমিং (স্মাৰ্ট বাফাৰ ব্যৱহাৰ)
+with open("বিশাল_ফাইল.txt", "r", buffering=8192) as ফ:
+    # ৮KB বাফাৰ ব্যৱহাৰ কৰি এক এক লাইন পঢ়া
+    for লাইন_নং, লাইন in enumerate(ফ, 1):
+        if "মুখ্য_শব্দ" in লাইন:
+            print(f"লাইন {লাইন_নং}: {লাইন.strip()}")
+\`\`\``,
+    },
+    {
+      id: 'ch-4',
+      volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
+      title: 'অধ্যায় ৪: মেম’ৰি মডেল, টাইপ চিষ্টেম আৰু চলকৰ সত্যতা',
+      subtitle: 'Objects, Mutable vs Immutable, Deep Copy আৰু Truthiness',
+      estimatedReadTime: '9 min',
+      topics: ['Python Object Model', 'Mutable vs Immutable', 'Shallow vs Deep Copy', 'Truthy and Falsy'],
+      content: `## ৪.১ পাইথনত সকলো বস্তুৱেই এটা অবজেক্ট
+
+পাইথনত \`int\`, \`str\`, \`list\`, \`function\` —সকলোবোৰেই অবজেক্ট। প্ৰতিটো অবজেক্টৰ তিনিটা মৌলিক বৈশিষ্ট্য থাকে:
+- **আইডি (Identity):** মেম'ৰি ঠিকনা (\`id()\` ফাংচনত পোৱা যায়)
+- **টাইপ (Type):** অবজেক্টৰ শ্ৰেণী (\`type()\`)
+- **মান (Value):** সংৰক্ষিত ডেটা
+
+\`\`\`python
+a = 256
+print(id(a))          # মেম'ৰি ঠিকনা
+print(type(a))        # <class 'int'>
+
+# পাইথনে -৫ ৰ পৰা ২৫৬ লৈ সংখ্যাবোৰ কেচ (cache) কৰে:
+b = 256
+print(a is b)         # True (একে মেম'ৰি ঠিকনা)
+
+c = 257
+d = 257
+print(c is d)         # False (আলাদা অবজেক্ট)
+\`\`\`
+
+---
+
+## ৪.২ Mutable বনাম Immutable
+
+| প্ৰকাৰ | ডেটা টাইপ | বৈশিষ্ট্য |
+| :--- | :--- | :--- |
+| **Immutable** | \`int\`, \`float\`, \`str\`, \`tuple\`, \`frozenset\`, \`bool\` | মেম'ৰিত সলনি কৰিব নোৱাৰি; নতুন অবজেক্ট সৃষ্টি হয় |
+| **Mutable** | \`list\`, \`dict\`, \`set\`, Custom Classes | In-place উপাদান সলনি কৰিব পাৰি |
+
+\`\`\`python
+# Immutable উদাহৰণ
+x = "অসম"
+print(id(x))    # ঠিকনা ১
+x += "ীয়া"
+print(id(x))    # ঠিকনা ২ (নতুন অবজেক্ট)
+
+# Mutable উদাহৰণ
+y = [1, 2, 3]
+print(id(y))    # ঠিকনা A
+y.append(4)
+print(id(y))    # ঠিকনা A (একে ঠিকনা)
+\`\`\`
+
+---
+
+## ৪.৩ Shallow Copy বনাম Deep Copy
+
+\`\`\`python
+import copy
+
+মূল = [[1, 2], [3, 4], [5, 6]]
+
+# Shallow Copy: ভিতৰৰ তালিকাসমূহ একেই থাকে
+আংশিক = copy.copy(মূল)
+মূল[0][0] = 99
+print(আংশিক[0][0])  # ৯৯ (প্ৰভাৱিত হ'ল!)
+
+# Deep Copy: সম্পূৰ্ণ নতুন স্বতন্ত্ৰ ক্লোন
+গভীৰ = copy.deepcopy(মূল)
+মূল[1][1] = 88
+print(গভীৰ[1][1])   # ৪ (অপ্ৰভাৱিত)
+\`\`\`
+
+---
+
+## ৪.৪ চলকৰ সত্যতা (Truthiness)
+
+\`\`\`python
+# falsy মানসমূহ:
+# 0, 0.0, "", [], {}, set(), None, False
+
+def পৰীক্ষা(মান):
+    if মান:
+        return f"{মান!r} হ'ল Truthy"
+    return f"{মান!r} হ'ল Falsy"
+
+print(পৰীক্ষা([]))      # Falsy
+print(পৰীক্ষা([0]))     # Truthy
+print(পৰীক্ষা("অসম"))   # Truthy
+\`\`\``,
+    },
+    {
+      id: 'ch-5',
+      volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
+      title: 'অধ্যায় ৫: আধুনিক নিয়ন্ত্ৰণ প্ৰৱাহ আৰু পেটাৰ্ণ মেচিং',
+      subtitle: 'Structural Pattern Matching (Python 3.10+), Enumerate & Itertools',
+      estimatedReadTime: '8 min',
+      topics: ['Pattern Matching', 'Destructuring in Match', 'Enumerate & Zip', 'Itertools'],
+      content: `## ৫.১ Structural Pattern Matching (Python 3.10+)
+
+আধুনিক পাইথনত \`match-case\` ব্যৱহাৰ কৰি জটিল ডেটা সহজে মেচ কৰা সম্ভৱ:
+
+\`\`\`python
+def আদেশ_প্ৰচেছ_কৰা(কমাণ্ড: dict):
+    match কমাণ্ড:
+        # কেচ ১: গতি সংক্ৰান্ত আদেশ
+        case {"action": "move", "direction": ("north" | "south" | "east" | "west") as d, "steps": int(s)}:
+            return f"ৰব'ট {s} খোজ {d} দিশত আগবাঢ়িল।"
+        
+        # কেচ ২: বিশ্ৰামৰ আদেশ
+        case {"action": "sleep", "duration": int(secs)}:
+            return f"ৰব'ট {secs} ছেকেণ্ডৰ বাবে জিৰণি লৈছে।"
+            
+        # কেচ ৩: আক্ৰমণৰ আদেশ
+        case {"action": "attack", "target": str(t), "weapon": str(w)}:
+            return f"{t}ক {w}ৰে আক্ৰমণ কৰা হ'ল!"
+            
+        # কেচ ৪: তালিকাৰ পেটাৰ্ণ
+        case [x, y, *বাকী]:
+            return f"প্ৰথম দুটা: {x}, {y}; বাকী: {বাকী}"
+            
+        # ডিফল্ট কেচ
+        case _:
+            return "অজ্ঞাত আদেশ!"
+
+# টেষ্ট
+print(আদেশ_প্ৰচেছ_কৰা({"action": "move", "direction": "north", "steps": 5}))
+print(আদেশ_প্ৰচেছ_কৰা([10, 20, 30, 40]))
+print(আদেশ_প্ৰচেছ_কৰা({"action": "dance"}))
+\`\`\`
+
+---
+
+## ৫.২ এডভান্সড লুপিং (Advanced Looping)
+
+\`\`\`python
+# enumerate ব্যৱহাৰ
+ফলসমূহ = ["আপেল", "কলা", "আঙুৰ"]
+for সূচী, ফল in enumerate(ফলসমূহ, 1):
+    print(f"{সূচী}. {ফল}")
+
+# zip ব্যৱহাৰ
+নাম = ["ৰিকু", "জয়ন্ত", "প্ৰিয়া"]
+বয়স = [25, 30, 22]
+for ন, ব in zip(নাম, বয়স):
+    print(f"{ন}: {ব} বছৰ")
+
+# itertools সংমিশ্ৰণ
+from itertools import combinations
+print(list(combinations([1, 2, 3], 2)))  # [(1, 2), (1, 3), (2, 3)]
+\`\`\``,
+    },
+    {
+      id: 'ch-6',
+      volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
+      title: 'অধ্যায় ৬: লুপ, ইটাৰেটৰ প্ৰট’কল আৰু জেনেৰেটৰ',
+      subtitle: 'Iterator Protocol, Generators, Yield আৰু Context Managers',
+      estimatedReadTime: '8 min',
+      topics: ['__iter__ and __next__', 'Generators & Yield', 'Generator Expressions', 'Context Managers'],
+      content: `## ৬.১ ইটাৰেটৰ প্ৰট’কল (Iterator Protocol)
+
+পাইথনত কোনো অবজেক্টত \`__iter__()\` আৰু \`__next__()\` মেথড থাকিলে সি ইটাৰেবল হয়।
+
+\`\`\`python
+class গণনা_ইটাৰেটৰ:
+    def __init__(self, আৰম্ভণি, শেষ):
+        self.বৰ্তমান = আৰম্ভণি
+        self.শেষ = শেষ
+        
+    def __iter__(self):
+        return self
+        
+    def __next__(self):
+        if self.বৰ্তমান >= self.শেষ:
+            raise StopIteration
+        মান = self.বৰ্তমান
+        self.বৰ্তমান += 1
+        return মান
+
+for সংখ্যা in গণনা_ইটাৰেটৰ(5, 10):
+    print(সংখ্যা, end=" ")  # 5 6 7 8 9
+\`\`\`
+
+---
+
+## ৬.২ জেনেৰেটৰ (Generators)
+
+জেনেৰেটৰ ফাংচনে \`yield\` ব্যৱহাৰ কৰে। ই মেম'ৰি সঞ্চয় কৰে কাৰণ ই একেবাৰে সকলো মান সৃষ্টি নকৰে।
+
+\`\`\`python
+def অসীম_ফিবোনাচি():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+ফিবো = অসীম_ফিবোনাচি()
+for _ in range(10):
+    print(next(ফিবো), end=" ")  # 0 1 1 2 3 5 8 13 21 34
+
+# জেনেৰেটৰ এক্সপ্ৰেচন (মেম'ৰি ফ্ৰেণ্ডলী)
+বৰ্গ = (x**2 for x in range(1000000))
+print(next(বৰ্গ))  # 0
+print(next(বৰ্গ))  # 1
+\`\`\`
+
+---
+
+## ৬.৩ কন্টেক্সট মেনেজাৰ (Context Manager)
+
+\`\`\`python
+class নিৰাপদ_ফাইল:
+    def __init__(self, নাম, মোড):
+        self.নাম = নাম
+        self.মোড = মোড
+        
+    def __enter__(self):
+        self.ফাইল = open(self.নাম, self.মোড)
+        print(f"'{self.নাম}' খোলা হ'ল।")
+        return self.ফাইল
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.ফাইল.close()
+        print(f"'{self.নাম}' বন্ধ কৰা হ'ল।")
+        return True
+
+with নিৰাপদ_ফাইল("টেষ্ট.txt", "w") as ফ:
+    ফ.write("অসমীয়া পাইথন মাষ্টাৰক্লাছ!")
+\`\`\``,
+    },
+    {
+      id: 'ch-7',
+      volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
+      title: 'অধ্যায় ৭: ফাংচন, স্কোপ (LEGB), ক্ল’জাৰ আৰু ডেকৰেটৰ',
+      subtitle: 'LEGB Scope Rule, Closures আৰু Practical Decorators',
+      estimatedReadTime: '8 min',
+      topics: ['LEGB Rule', 'Closures', 'Decorators', 'Performance Profiler Decorator'],
+      content: `## ৭.১ LEGB নিয়ম (Scope Resolution)
+
+পাইথনে চলক বিচাৰি পাবলৈ এই ক্ৰম অনুসৰণ কৰে:
+**Local -> Enclosing -> Global -> Built-in**
+
+\`\`\`python
+x = "গ্ল'বেল"  # Global
+
+def বাহ্যিক():
+    x = "এনক্ল'জিং"  # Enclosing
+    def ভিতৰৰ():
+        x = "লোকেল"  # Local
+        print(x)
+    ভিতৰৰ()
+
+বাহ্যিক()  # আউটপুট: লোকেল
+\`\`\`
+
+---
+
+## ৭.২ ক্ল'জাৰ (Closure)
+
+\`\`\`python
+def গুণক_তৈয়াৰ_কৰা(গুণনীয়ক):
+    def গুণক(সংখ্যা):
+        return সংখ্যা * গুণনীয়ক
+    return গুণক
+
+দ্বিগুণ = গুণক_তৈয়াৰ_কৰা(2)
+ত্ৰিগুণ = গুণক_তৈয়াৰ_কৰা(3)
+
+print(দ্বিগুণ(5))  # ১০
+print(ত্ৰিগুণ(5))  # ১৫
+\`\`\`
+
+---
+
+## ৭.৩ ডেকৰেটৰ (Decorators)
+
+\`\`\`python
+import time
+from functools import wraps
+
+def সময়_গণনা_ডেকৰেটৰ(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        আৰম্ভণি = time.perf_counter()
+        ফলাফল = func(*args, **kwargs)
+        শেষ = time.perf_counter()
+        print(f"'{func.__name__}' সমাপ্ত হ'বলৈ সময় লাগিল: {শেষ - আৰম্ভণি:.6f}s")
+        return ফলাফল
+    return wrapper
+
+@সময়_গণনা_ডেকৰেটৰ
+def গাণিতিক_হিচাপ(n: int):
+    return sum(i * i for i in range(n))
+
+গাণিতিক_হিচাপ(1_000_000)
+\`\`\``,
+    },
+    {
+      id: 'ch-8',
+      volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
+      title: 'অধ্যায় ৮: লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ',
+      subtitle: 'Dynamic Array, Stack (LIFO), Queue (FIFO) আৰু Linked List',
+      estimatedReadTime: '11 min',
+      topics: ['Dynamic Array', 'Stack & Valid Parentheses', 'Queue (deque)', 'Singly Linked List'],
+      content: `## ৮.১ তালিকা (Dynamic Array Implementation)
+
+\`\`\`python
+class ডাইনামিক_এৰে:
+    def __init__(self):
+        self.ধাৰক = [None] * 2
+        self.গণনা = 0
+        self.ক্ষমতা = 2
+        
+    def যোগ(self, মান):
+        if self.গণনা == self.ক্ষমতা:
+            self._বৃদ্ধি()
+        self.ধাৰক[self.গণনা] = মান
+        self.গণনা += 1
+        
+    def _বৃদ্ধি(self):
+        নতুন_ধাৰক = [None] * (self.ক্ষমতা * 2)
+        for i in range(self.গণনা):
+            নতুন_ধাৰক[i] = self.ধাৰক[i]
+        self.ধাৰক = নতুন_ধাৰক
+        self.ক্ষমতা *= 2
+        
+    def __getitem__(self, সূচী):
+        if not 0 <= সূচী < self.গণনা:
+            raise IndexError("সূচী বাহিৰত!")
+        return self.ধাৰক[সূচী]
+        
+    def __len__(self):
+        return self.গণনা
+
+# ব্যৱহাৰ
+arr = ডাইনামিক_এৰে()
+for i in range(5):
+    arr.যোগ(i * 10)
+print([arr[i] for i in range(len(arr))])  # [0, 10, 20, 30, 40]
+\`\`\`
+
+---
+
+## ৮.২ ষ্টেক (Stack) - LIFO
+
+\`\`\`python
+class ষ্টেক:
+    def __init__(self):
+        self.তালিকা = []
+    def ঠিলা(self, মান):
+        self.তালিকা.append(মান)
+    def উলিওৱা(self):
+        if self.খালী():
+            raise IndexError("ষ্টেক খালী!")
+        return self.তালিকা.pop()
+    def শীৰ্ষ(self):
+        return self.তালিকা[-1] if not self.খালী() else None
+    def খালী(self):
+        return len(self.তালিকা) == 0
+
+# সমস্যা সমাধান: বন্ধনী মিলোৱা (Valid Parentheses)
+def বন্ধনী_মিল_কিনা(বাক্য: str) -> bool:
+    জোড়া = {')': '(', '}': '{', ']': '['}
+    স্তূপ = ষ্টেক()
+    for অক্ষৰ in বাক্য:
+        if অক্ষৰ in "({[":
+            স্তূপ.ঠিলা(অক্ষৰ)
+        elif অক্ষৰ in ")}]":
+            if স্তূপ.খালী() or স্তূপ.উলিওৱা() != জোড়া[অক্ষৰ]:
+                return False
+    return স্তূপ.খালী()
+
+print(বন্ধনী_মিল_কিনা("({[]})"))  # True
+print(বন্ধনী_মিল_কিনা("({[})"))   # False
+\`\`\`
+
+---
+
+## ৮.৩ কিউ (Queue) - FIFO
+
+\`\`\`python
+from collections import deque
+
+class কিউ:
+    def __init__(self):
+        self.ধাৰক = deque()
+    def যোগ(self, মান):
+        self.ধাৰক.append(মান)
+    def আঁতৰাও(self):
+        if self.খালী():
+            raise IndexError("কিউ খালী!")
+        return self.ধাৰক.popleft()
+    def খালী(self):
+        return len(self.ধাৰক) == 0
+\`\`\`
+
+---
+
+## ৮.৪ লিংকড লিষ্ট (Linked List)
+
+\`\`\`python
+class নোড:
+    def __init__(self, মান):
+        self.মান = মান
+        self.পৰৱৰ্তী = None
+
+class লিংকড_লিষ্ট:
+    def __init__(self):
+        self.মুৰব্বী = None
+        self.আকাৰ = 0
+        
+    def যোগ_কৰা(self, মান):
+        নতুন = নোড(মান)
+        নতুন.পৰৱৰ্তী = self.মুৰব্বী
+        self.মুৰব্বী = নতুন
+        self.আকাৰ += 1
+        
+    def দেখুওৱা(self):
+        বৰ্তমান = self.মুৰব্বী
+        মানসমূহ = []
+        while বৰ্তমান:
+            মানসমূহ.append(str(বৰ্তমান.মান))
+            বৰ্তমান = বৰ্তমান.পৰৱৰ্তী
+        print(" -> ".join(মানসমূহ) + " -> None")
+
+ll = লিংকড_লিষ্ট()
+ll.যোগ_কৰা(30)
+ll.যোগ_কৰা(20)
+ll.যোগ_কৰা(10)
+ll.দেখুওৱা()  # 10 -> 20 -> 30 -> None
+\`\`\``,
+    },
+    {
+      id: 'ch-9',
+      volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
+      title: 'অধ্যায় ৯: নন-লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ (BST & Graphs)',
+      subtitle: 'Binary Search Tree, In-order Traversal, BFS & DFS Graph Algorithms',
+      estimatedReadTime: '10 min',
+      topics: ['Binary Search Tree', 'Tree Traversal', 'Graph BFS', 'Graph DFS'],
+      content: `## ৯.১ বাইনাৰী চাৰ্চ ট্ৰি (BST)
+
+\`\`\`python
+class ট্ৰি_নোড:
+    def __init__(self, মান):
+        self.মান = মান
+        self.বাওঁ = None
+        self.সোঁ = None
+
+class BST:
+    def __init__(self):
+        self.মূল = None
+        
+    def যোগ(self, মান):
+        if not self.মূল:
+            self.মূল = ট্ৰি_নোড(মান)
+        else:
+            self._যোগ_সহায়(self.মূল, মান)
+            
+    def _যোগ_সহায়(self, নোড, মান):
+        if মান < নোড.মান:
+            if নোড.বাওঁ is None:
+                নোড.বাওঁ = ট্ৰি_নোড(মান)
+            else:
+                self._যোগ_সহায়(নোড.বাওঁ, মান)
+        else:
+            if নোড.সোঁ is None:
+                নোড.সোঁ = ট্ৰি_নোড(মান)
+            else:
+                self._যোগ_সহায়(নোড.সোঁ, মান)
+                
+    def ইনঅৰ্ডাৰ(self, নোড=None, ফল=None):
+        if ফল is None:
+            ফল = []
+            নোড = self.মূল
+        if নোড:
+            self.ইনঅৰ্ডাৰ(নোড.বাওঁ, ফল)
+            ফল.append(নোড.মান)
+            self.ইনঅৰ্ডাৰ(নোড.সোঁ, ফল)
+        return ফল
+
+bst = BST()
+for x in [50, 30, 70, 20, 40, 60, 80]:
+    bst.যোগ(x)
+print("ইনঅৰ্ডাৰ (ক্ৰমান্বয়):", bst.ইনঅৰ্ডাৰ())  # [20, 30, 40, 50, 60, 70, 80]
+\`\`\`
+
+---
+
+## ৯.২ গ্ৰাফ আৰু BFS / DFS
+
+\`\`\`python
+from collections import deque
+
+def গ্ৰাফ_BFS(গ্ৰাফ, আৰম্ভণি):
+    ভ্ৰমণ = set([আৰম্ভণি])
+    কিউ = deque([আৰম্ভণি])
+    ক্ৰম = []
+    while কিউ:
+        নোড = কিউ.popleft()
+        ক্ৰম.append(নোড)
+        for চুবুৰীয়া in গ্ৰাফ.get(নোড, []):
+            if চুবুৰীয়া not in ভ্ৰমণ:
+                ভ্ৰমণ.add(চুবুৰীয়া)
+                কিউ.append(চুবুৰীয়া)
+    return ক্ৰম
+
+def গ্ৰাফ_DFS(গ্ৰাফ, আৰম্ভণি, ভ্ৰমণ=None):
+    if ভ্ৰমণ is None:
+        ভ্ৰমণ = set()
+    ভ্ৰমণ.add(আৰম্ভণি)
+    ক্ৰম = [আৰম্ভণি]
+    for চুবুৰীয়া in গ্ৰাফ.get(আৰম্ভণি, []):
+        if চুবুৰীয়া not in ভ্ৰমণ:
+            ক্ৰম.extend(গ্ৰাফ_DFS(গ্ৰাফ, চুবুৰীয়া, ভ্ৰমণ))
+    return ক্ৰম
+
+গ্ৰাফ = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+print("BFS ক্ৰম:", গ্ৰাফ_BFS(গ্ৰাফ, 'A'))  # ['A', 'B', 'C', 'D', 'E', 'F']
+print("DFS ক্ৰম:", গ্ৰাফ_DFS(গ্ৰাফ, 'A'))  # ['A', 'B', 'D', 'E', 'F', 'C']
+\`\`\``,
+    },
+    {
+      id: 'ch-10',
+      volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
+      title: 'অধ্যায় ১০: টাইম-স্পেচ কমপেক্সিটি আৰু ছৰ্টিং এলগৰিদম',
+      subtitle: 'Big-O Notation, Merge Sort (O(n log n)) আৰু Quick Sort',
+      estimatedReadTime: '9 min',
+      topics: ['Big-O Cheat Sheet', 'Merge Sort', 'Quick Sort', 'Binary Search'],
+      content: `## ১০.১ Big-O নোটেশন
+
+| নোটেশন | নাম | বাস্তৱ উদাহৰণ |
+| :--- | :--- | :--- |
+| **O(1)** | কনষ্টেণ্ট | এৰেত ইনডেক্সিং, Hash Map Lookup |
+| **O(log n)** | লগাৰিদমিক | বাইনাৰী চাৰ্চ |
+| **O(n)** | লিনিয়াৰ | লিনিয়াৰ চাৰ্চ, সাধাৰণ ফৰ-লুপ |
+| **O(n log n)** | লিন-লগ | মাৰ্জ ছৰ্ট, হিপ ছৰ্ট |
+| **O(n²)** | কোৱাড্ৰেটিক | বাবল ছৰ্ট, নেষ্টেড লুপ |
+| **O(2ⁿ)** | এক্সপোনেন্সিয়েল | ৰিকাৰচিভ ফিবোনাচি |
+| **O(n!)** | ফেক্টৰিয়েল | ট্ৰাভেলিং চেলছমেন সমস্যা |
+
+---
+
+## ১০.২ মাৰ্জ ছৰ্ট (Merge Sort - O(n log n))
+
+\`\`\`python
+def মাৰ্জ_ছৰ্ট(তালিকা):
+    if len(তালিকা) <= 1:
+        return তালিকা
+    মধ্য = len(তালিকা) // 2
+    বাওঁ = মাৰ্জ_ছৰ্ট(তালিকা[:মধ্য])
+    সোঁ = মাৰ্জ_ছৰ্ট(তালিকা[মধ্য:])
+    return মাৰ্জ(বাওঁ, সোঁ)
+
+def মাৰ্জ(বা, সো):
+    ফল = []
+    i = j = 0
+    while i < len(বা) and j < len(সো):
+        if বা[i] <= সো[j]:
+            ফল.append(বা[i])
+            i += 1
+        else:
+            ফল.append(সো[j])
+            j += 1
+    ফল.extend(বা[i:])
+    ফল.extend(সো[j:])
+    return ফল
+
+print("মাৰ্জ ছৰ্ট:", মাৰ্জ_ছৰ্ট([38, 27, 43, 3, 9, 82, 10, 55, 19]))
+\`\`\`
+
+---
+
+## ১০.৩ কুইক ছৰ্ট (Quick Sort)
+
+\`\`\`python
+import random
+
+def কুইক_ছৰ্ট(তালিকা):
+    if len(তালিকা) <= 1:
+        return তালিকা
+    পিভট = random.choice(তালিকা)
+    কম = [x for x in তালিকা if x < পিভট]
+    সমান = [x for x in তালিকা if x == পিভট]
+    বেছি = [x for x in তালিকা if x > পিভট]
+    return কুইক_ছৰ্ট(কম) + সমান + কুইক_ছৰ্ট(বেছি)
+
+print("কুইক ছৰ্ট:", কুইক_ছৰ্ট([64, 34, 25, 12, 22, 11, 90]))
+\`\`\``,
+    },
+    {
+      id: 'ch-11',
+      volume: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
+      title: 'অধ্যায় ১১: OOP-ৰ স্তম্ভ আৰু ডেটা মডেলিং',
+      subtitle: 'Abstract Base Classes, Encapsulation, Properties & Banking Architecture',
+      estimatedReadTime: '9 min',
+      topics: ['Encapsulation & Private Members', 'ABC & Abstract Methods', 'Inheritance', 'Polymorphism'],
+      content: `## ১১.১ এবষ্ট্ৰাক্ট ক্লাছ আৰু ইনহেৰিটেঞ্চ
+
+\`\`\`python
+from abc import ABC, abstractmethod
+from datetime import datetime
+
+class একাউণ্ট(ABC):
+    """বেংক একাউণ্টৰ এবষ্ট্ৰাক্ট বেচ ক্লাছ"""
+    def __init__(self, নাম: str, ধন: float, একাউণ্ট_নম্বৰ: str):
+        self.নাম = নাম
+        self._বেলেঞ্চ = ধন                # প্ৰটেক্টেড
+        self.__একাউণ্ট_নম্বৰ = একাউণ্ট_নম্বৰ  # প্ৰাইভেট
+        self._ট্ৰাঞ্জেকচন = []
+        
+    @property
+    def বেলেঞ্চ(self) -> float:
+        return self._বেলেঞ্চ
+        
+    @বেলেঞ্চ.setter
+    def বেলেঞ্চ(self, মান: float):
+        if মান < 0:
+            raise ValueError("বেলেঞ্চ ঋণাত্মক হ'ব নোৱাৰে!")
+        self._বেলেঞ্চ = মান
+        
+    def জমা(self, পৰিমাণ: float):
+        if পৰিমাণ <= 0:
+            raise ValueError("জমাৰ পৰিমাণ ধনাত্মক হ'ব লাগে!")
+        self._বেলেঞ্চ += পৰিমাণ
+        self._ট্ৰাঞ্জেকচন.append((datetime.now(), "জমা", পৰিমাণ))
+        
+    def উলিওৱা(self, পৰিমাণ: float):
+        if পৰিমাণ > self._বেলেঞ্চ:
+            raise ValueError("অপৰ্যাপ্ত বেলেঞ্চ!")
+        self._বেলেঞ্চ -= পৰিমাণ
+        self._ট্ৰাঞ্জেকচন.append((datetime.now(), "উলিওৱা", -পৰিমাণ))
+        
+    @abstractmethod
+    def সুত_গণনা(self) -> float:
+        """প্ৰতিটো একাউণ্টৰ নিজা সুতৰ হাৰ"""
+        pass
+
+class সঞ্চয়(একাউণ্ট):
+    def __init__(self, নাম, ধন, একাউণ্ট_নম্বৰ):
+        super().__init__(নাম, ধন, একাউণ্ট_নম্বৰ)
+        self.সুত_হাৰ = 0.05
+        
+    def সুত_গণনা(self) -> float:
+        return self._বেলেঞ্চ * self.সুত_হাৰ
+
+# ব্যৱহাৰ
+acc = সঞ্চয়("ৰিকু", 50000.0, "SB-001")
+acc.জমা(15000)
+print(f"গ্ৰাহক: {acc.নাম}, বৰ্তমান বেলেঞ্চ: ₹{acc.বেলেঞ্চ:,.2f}")
+print(f"বাৰ্ষিক সুত: ₹{acc.সুত_গণনা():,.2f}")
+\`\`\``,
+    },
+    {
+      id: 'ch-12',
+      volume: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
+      title: 'অধ্যায় ১২: SOLID নীতি আৰু ডিজাইন পেটাৰ্ণ',
+      subtitle: 'Single Responsibility, Open-Closed, Liskov, Strategy & Factory Pattern',
+      estimatedReadTime: '10 min',
+      topics: ['SOLID Principles', 'Strategy Pattern (Payments)', 'Factory Pattern (Databases)'],
+      content: `## ১২.১ SOLID নীতিসমূহ
+
+- **S (Single Responsibility Principle):** প্ৰতিটো ক্লাছৰ এটাই মাত্ৰ দায়িত্ব থাকিব লাগে।
+- **O (Open/Closed Principle):** এক্সটেন্ডৰ বাবে খোলা, কিন্তু মূল কোড সলনিৰ বাবে বন্ধ।
+- **L (Liskov Substitution Principle):** চাইল্ড ক্লাছে পেৰেণ্ট ক্লাছৰ ঠাই সম্পূৰ্ণভাৱে ল'ব পাৰিব লাগে।
+- **I (Interface Segregation Principle):** ডাঙৰ ইণ্টাৰফেচক সৰু সৰু নিৰ্দিষ্ট ভাগত ভগাব লাগে।
+- **D (Dependency Inversion Principle):** এবষ্ট্ৰাকচনৰ ওপৰত নিৰ্ভৰ কৰিব লাগে, কংক্ৰিট ক্লাছৰ ওপৰত নহয়।
+
+---
+
+## ১২.২ ষ্ট্ৰেটেজি পেটাৰ্ণ (Strategy Pattern - Payment Processing)
+
+\`\`\`python
+from abc import ABC, abstractmethod
+from typing import List
+
+class পেমেণ্ট_পদ্ধতি(ABC):
+    @abstractmethod
+    def পে(self, পৰিমাণ: float):
+        pass
+    @abstractmethod
+    def পৰিশোধ_যোগ্য(self) -> bool:
+        pass
+
+class UPI(পেমেণ্ট_পদ্ধতি):
+    def __init__(self, upi_id: str):
+        self.upi_id = upi_id
+    def পে(self, পৰিমাণ: float):
+        print(f"UPI ({self.upi_id}) যোগে ₹{পৰিমাণ:.2f} পৰিশোধ হ'ল।")
+    def পৰিশোধ_যোগ্য(self) -> bool:
+        return "@" in self.upi_id
+
+class কাৰ্ট:
+    def __init__(self):
+        self.সামগ্ৰী: List[dict] = []
+        self.পদ্ধতি: পেমেণ্ট_পদ্ধতি = None
+    def যোগ(self, নাম: str, দাম: float):
+        self.সামগ্ৰী.append({"নাম": নাম, "দাম": দাম})
+    def মুঠ_দাম(self) -> float:
+        return sum(x["দাম"] for x in self.সামগ্ৰী)
+    def পেমেণ্ট_ছেট(self, পদ্ধতি: পেমেণ্ট_পদ্ধতি):
+        if not পদ্ধতি.পৰিশোধ_যোগ্য():
+            raise ValueError("অবৈধ পেমেণ্ট পদ্ধতি!")
+        self.পদ্ধতি = পদ্ধতি
+    def চেকআউট(self):
+        if not self.পদ্ধতি:
+            raise ValueError("পেমেণ্ট পদ্ধতি ছেট কৰা নাই!")
+        self.পদ্ধতি.পে(self.মুঠ_দাম())
+        print("অৰ্ডাৰ সফল!")
+
+# ব্যৱহাৰ
+ক = কাৰ্ট()
+ক.যোগ("লেপটপ", 75000)
+ক.যোগ("মাউচ", 899)
+ক.পেমেণ্ট_ছেট(UPI("riku@upi"))
+ক.চেকআউট()
+\`\`\`
+
+---
+
+## ১২.৩ ফেক্টৰি পেটাৰ্ণ (Factory Pattern)
+
+\`\`\`python
+class ডাটাবেছ_ফেক্টৰি:
+    @staticmethod
+    def তৈয়াৰ(টাইপ: str):
+        if টাইপ == "sql":
+            return "PostgreSQL Engine Initialized"
+        elif টাইপ == "nosql":
+            return "MongoDB Cluster Connected"
+        raise ValueError(f"অজ্ঞাত ডাটাবেছ টাইপ: {টাইপ}")
+\`\`\``,
+    },
+    {
+      id: 'ch-14',
+      volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
+      title: 'অধ্যায় ১৪: কনকাৰেঞ্চি (AsyncIO & Non-blocking I/O)',
+      subtitle: 'Async/Await, asyncio.gather, aiohttp & Concurrent HTTP Requests',
+      estimatedReadTime: '9 min',
+      topics: ['Event Loop & Coroutines', 'asyncio.gather', 'Async HTTP Client with aiohttp', 'Throughput Benchmarking'],
+      content: `## ১৪.১ AsyncIO-ৰ মৌলিক ধাৰণা
+
+\`\`\`python
+import asyncio
+import time
+
+async def ফেচ_ডেটা(আইডি: int, পলম: float):
+    """নকল API কল"""
+    print(f"অনুৰোধ {আইডি} আৰম্ভ...")
+    await asyncio.sleep(পলম)  # নন-ব্লকিং I/O
+    print(f"অনুৰোধ {আইডি} সম্পূৰ্ণ!")
+    return {"id": আইডি, "status": 200, "data": f"ফলাফল-{আইডি}"}
+
+async def মুখ্য():
+    আৰম্ভ = time.time()
+    # সমান্তৰালভাৱে একাধিক অনুৰোধ এক্সিকিউট কৰা
+    ফলাফল = await asyncio.gather(
+        ফেচ_ডেটা(1, 1.0),
+        ফেচ_ডেটা(2, 0.5),
+        ফেচ_ডেটা(3, 1.5),
+        ফেচ_ডেটা(4, 0.2)
+    )
+    print(f"\\nমুঠ সময়: {time.time() - আৰম্ভ:.2f}s")
+    print("ফলাফলসমূহ:", ফলাফল)
+
+# asyncio.run(মুখ্য())
+\`\`\`
+
+---
+
+## ১৪.২ Async HTTP Client (aiohttp)
+
+\`\`\`python
+import aiohttp
+import asyncio
+
+async def বাস্তৱ_API_কল():
+    async with aiohttp.ClientSession() as session:
+        urls = [
+            "https://api.github.com/users/python",
+            "https://api.github.com/users/google",
+            "https://api.github.com/users/microsoft"
+        ]
+        tasks = [session.get(url) for url in urls]
+        responses = await asyncio.gather(*tasks)
+        for resp in responses:
+            data = await resp.json()
+            print(f"{data.get('login')}: {data.get('public_repos')} public repos")
+
+# asyncio.run(বাস্তৱ_API_কল())
+\`\`\``,
+    },
+    {
+      id: 'ch-16',
+      volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
+      title: 'অধ্যায় ১৬: লগিResource, এক্সেপচন আৰ্কিটেকচাৰ আৰু মনিটৰিং',
+      subtitle: 'Production Logging, Rotating File Handler, Custom Exception Hierarchy',
+      estimatedReadTime: '8 min',
+      topics: ['RotatingFileHandler', 'Structured Logging', 'Custom Exception Hierarchy', 'Try-Except-Else-Finally'],
+      content: `## ১৬.১ প্ৰফেচনেল লগিঙৰ ব্যৱস্থা
+
+\`\`\`python
+import logging
+import sys
+from logging.handlers import RotatingFileHandler
+
+# লগাৰ কনফিগাৰেচন
+logger = logging.getLogger("CodeYatra")
+logger.setLevel(logging.DEBUG)
+
+# কন্স'ল হেণ্ডলাৰ
+console = logging.StreamHandler(sys.stdout)
+console.setLevel(logging.INFO)
+console_fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s - %(message)s")
+console.setFormatter(console_fmt)
+
+# ফাইল হেণ্ডলাৰ (ৰোটেটিং ১MB ফাইল, ৫টা বেকআপ)
+file_handler = RotatingFileHandler("app.log", maxBytes=1024*1024, backupCount=5)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(console_fmt)
+
+logger.addHandler(console)
+logger.addHandler(file_handler)
+
+logger.info("চিষ্টেম সুচাৰুৰূপে আৰম্ভ হ'ল।")
+logger.warning("মেম'ৰি ৮০% ব্যৱহৃত!")
+\`\`\`
+
+---
+
+## ১৬.২ কাষ্টম এক্সেপচন হায়াৰাৰ্কি
+
+\`\`\`python
+class CodeYatraError(Exception):
+    """বেচ এক্সেপচন"""
+    pass
+
+class ভেলিডেশনError(CodeYatraError):
+    def __init__(self, ক্ষেত্ৰ: str, বাৰ্তা: str):
+        self.ক্ষেত্ৰ = ক্ষেত্ৰ
+        self.বাৰ্তা = বাৰ্তা
+        super().__init__(f"[{ক্ষেত্ৰ}] {বাৰ্তা}")
+
+def ব্যৱহাৰকাৰী_সৃষ্টি(তথ্য: dict):
+    if "ইমেইল" not in তথ্য:
+        raise ভেলিডেশনError("ইমেইল", "ইমেইল বাধ্যতামূলক!")
+    if তথ্য.get("বয়স", 0) < 18:
+        raise ভেলিডেশনError("বয়স", "বয়স ১৮ বছৰৰ কম হ'ব নোৱাৰে!")
+    return {"status": "created"}
+
+try:
+    ব্যৱহাৰকাৰী_সৃষ্টি({"নাম": "ৰিকু", "বয়স": 16})
+except ভেলিডেশনError as e:
+    print(f"ভেলিডেশন ত্ৰুটি: {e}")
+\`\`\``,
+    },
+    {
+      id: 'ch-17',
+      volume: 'খণ্ড ৬: ডাটাবেছ আৰ্কিটেকচাৰ আৰু আধুনিক বেকএণ্ড ইঞ্জিনিয়াৰিং',
+      title: 'অধ্যায় ১৭: ৰিলেশ্যনেল ডাটাবেছ, SQL আৰু ACID ধৰ্ম',
+      subtitle: 'SQLite In-depth, Parameterized Queries, Indexing & ACID Transactions',
+      estimatedReadTime: '9 min',
+      topics: ['SQLite3 Context Management', 'SQL Joins', 'Database Normalization', 'ACID Properties'],
+      content: `## ১৭.১ SQLite ত মৌলিক পৰিচালনা
+
+\`\`\`python
+import sqlite3
+from contextlib import closing
+
+def ডাটাবেছ_পৰিচালনা():
+    with closing(sqlite3.connect("ব্যৱহাৰকাৰী.db")) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # টেবুল সৃষ্টি
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            age INTEGER CHECK(age >= 0),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        
+        # ইনডেক্স সৃষ্টি
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_email ON users(email)")
+        
+        # পেৰামিটাৰাইজড ইনচাৰ্ট
+        users = [
+            ("ৰিকু", "riku@mail.com", 25),
+            ("জয়ন্ত", "jay@mail.com", 30),
+            ("প্ৰিয়া", "priya@mail.com", 22)
+        ]
+        cursor.executemany(
+            "INSERT OR IGNORE INTO users (name, email, age) VALUES (?, ?, ?)",
+            users
+        )
+        conn.commit()
+        
+        # কুৱেৰি
+        cursor.execute("SELECT * FROM users WHERE age > ?", (20,))
+        for row in cursor.fetchall():
+            print(f"{row['name']} | {row['email']} | {row['age']} বছৰ")
+\`\`\`
+
+---
+
+## ১৭.২ ACID ধৰ্ম
+
+| ধৰ্ম | ব্যাখ্যা |
+| :--- | :--- |
+| **Atomicity** | সম্পূৰ্ণ ট্ৰাঞ্জেকচন সফল হ'ব লাগিব বা একোৱেই নহ'ব (All or Nothing) |
+| **Consistency** | ট্ৰাঞ্জেকচনৰ পূৰ্বে আৰু পিছত ডাটাবেছ সকলো নিয়ম আৰু কনষ্ট্ৰেইণ্ট মানি থাকিব |
+| **Isolation** | সমান্তৰালভাৱে চলা ট্ৰাঞ্জেকচনসমূহে ইটোৱে সিটোক বিপথগামী নকৰে |
+| **Durability** | এবাৰ কমিট হোৱা ডেটা বিদ্যুৎ বিচ্ছিন্ন হ'লেও চিৰস্থায়ী হৈ থাকিব |`,
+    },
+    {
+      id: 'ch-19',
+      volume: 'খণ্ড ৬: ডাটাবেছ আৰ্কিটেকচাৰ আৰু আধুনিক বেকএণ্ড ইঞ্জিনিয়াৰিং',
+      title: 'অধ্যায় ১৯: প্ৰডাকচন-ৰেডি RESTful API (FastAPI & Pydantic V2)',
+      subtitle: 'Lifespan Events, Pydantic V2 Models, Dependency Injection & JWT Security',
+      estimatedReadTime: '11 min',
+      topics: ['FastAPI 2026 Lifespan', 'Pydantic V2 Validation', 'Dependency Injection (Depends)', 'JWT Authentication'],
+      content: `## ১৯.১ FastAPI এপ্লিকেচন (২০২৬ সংস্কৰণ)
+
+\`\`\`python
+from fastapi import FastAPI, HTTPException, status, Depends, BackgroundTasks
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from typing import List, Optional, Annotated
+from datetime import datetime
+import uuid
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("চাৰ্ভাৰ আৰম্ভ হ'ল!")
+    yield
+    print("চাৰ্ভাৰ বন্ধ হ'ল!")
+
+app = FastAPI(
+    title="অসমীয়া API ২০২৬",
+    description="প্ৰডাকচন-ৰেডি এণ্টাৰপ্ৰাইজ ব্যৱহাৰকাৰী ব্যৱস্থাপনা API",
+    version="2.0.0",
+    lifespan=lifespan
+)
+
+db = {}
+
+# Pydantic V2 মডেল
+class UserBase(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+    username: str = Field(..., min_length=3, max_length=50)
+    email: EmailStr
+    full_name: Optional[str] = None
+    age: Optional[int] = Field(None, ge=0, le=150)
+
+class UserIn(UserBase):
+    password: str = Field(..., min_length=8)
+
+class UserOut(UserBase):
+    id: str
+    created_at: datetime
+    is_active: bool = True
+
+@app.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+async def create_user(user: UserIn):
+    if any(u["email"] == user.email for u in db.values()):
+        raise HTTPException(status_code=400, detail="এই ইমেইলৰে ইতিমধ্যে পঞ্জীয়ন আছে!")
+    
+    user_id = str(uuid.uuid4())
+    user_data = user.model_dump()
+    user_data["id"] = user_id
+    user_data["created_at"] = datetime.now()
+    user_data["is_active"] = True
+    db[user_id] = user_data
+    return user_data
+
+@app.get("/users", response_model=List[UserOut])
+async def list_users():
+    return list(db.values())
+\`\`\`
+
+---
+
+## ১৯.২ API চিকিউৰিটি (JWT & OAuth2)
+
+\`\`\`python
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import jwt
+from passlib.context import CryptContext
+
+SECRET_KEY = "আপোনাৰ-অতি-গোপন-ছিক্ৰেট-কি"
+ALGORITHM = "HS256"
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def টোকেন_সৃষ্টি(ডাটা: dict):
+    return jwt.encode(ডাটা, SECRET_KEY, algorithm=ALGORITHM)
+\`\`\``,
+    },
+    {
+      id: 'ch-20',
+      volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
+      title: 'অধ্যায় ২০: আধুনিক JavaScript (ES6+) আৰু React ১৯',
+      subtitle: 'Modern ES2025 Features, React 19 Hooks, Server Components & Custom Hooks',
+      estimatedReadTime: '10 min',
+      topics: ['Modern JavaScript Features', 'React 19 Custom Hooks', 'React Server Components', 'State Optimization'],
+      content: `## ২০.১ আধুনিক জাভাস্ক্রিপ্ট (ES6+ / ES2025)
+
+\`\`\`javascript
+// ১. Destructuring
+const ব্যৱহাৰকাৰী = { নাম: "ৰিকু", বয়স: 25, ঠিকনা: { চহৰ: "গুৱাহাটী" } };
+const { নাম, বয়স, ঠিকনা: { চহৰ } } = ব্যৱহাৰকাৰী;
+
+// ২. Spread & Rest
+const সংখ্যা = [1, 2, 3];
+const নতুন = [...সংখ্যা, 4, 5];
+
+// ৩. Async/Await with Error Handling
+async function ডেটা_আনা(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("নেটৱৰ্ক ত্ৰুটি!");
+    return await res.json();
+  } catch (err) {
+    console.error("ত্ৰুটি:", err.message);
+    return null;
+  }
+}
+
+// ৪. Optional Chaining & Nullish Coalescing
+const চহৰ_নাম = ব্যৱহাৰকাৰী?.ঠিকনা?.চহৰ;
+const মান = null ?? "ডিফল্ট মান";
+\`\`\`
+
+---
+
+## ২০.২ React ১৯ কম্পোনেন্ট & Custom Hook
+
+\`\`\`jsx
+import React, { useState, useEffect } from 'react';
+
+// Custom API Hook
+export function useAPI(url) {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+        const json = await res.json();
+        if (!cancelled) setData(json);
+      } catch (err) {
+        if (!cancelled) setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    fetchData();
+    return () => { cancelled = true; };
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+export function UserDashboard() {
+  const [filter, setFilter] = useState('');
+  const { data, loading, error } = useAPI('/api/v1/users');
+
+  if (loading) return <div>লোড হৈ আছে...</div>;
+  if (error) return <div>ত্ৰুটি: {error}</div>;
+
+  return (
+    <div className="dashboard">
+      <h1>ব্যৱহাৰকাৰী ডেশ্ববৰ্ড</h1>
+      <input 
+        placeholder="সন্ধান কৰক..." 
+        value={filter} 
+        onChange={e => setFilter(e.target.value)} 
+      />
+      <ul>
+        {data.filter(u => u.name?.toLowerCase().includes(filter.toLowerCase())).map(u => (
+          <li key={u.id}><strong>{u.name}</strong> — {u.email}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+\`\`\``,
+    },
+    {
+      id: 'ch-21',
+      volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
+      title: 'অধ্যায় ২১: ফুলষ্টেক ইন্টিগ্ৰেচন — React + FastAPI',
+      subtitle: 'CORS Config, Centralized API Client, Token Auth & Form Handling',
+      estimatedReadTime: '9 min',
+      topics: ['CORS Middleware', 'Singleton API Client', 'Interactive User Form', 'Error Boundary'],
+      content: `## ২১.১ CORS আৰু API ক্লায়েণ্ট
+
+\`\`\`python
+# FastAPI main.py ত CORS ছেটআপ
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://yourdomain.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+\`\`\`
+
+\`\`\`javascript
+// Centralized API Client (api.js)
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+class APIClient {
+  async request(endpoint, options = {}) {
+    const url = \`\${API_BASE}\${endpoint}\`;
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: \`Bearer \${token}\` } : {}),
+      ...options.headers,
+    };
+    const response = await fetch(url, { ...options, headers });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || \`HTTP \${response.status}\`);
+    }
+    return response.json();
+  }
+
+  get(endpoint) { return this.request(endpoint); }
+  post(endpoint, body) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(body) }); }
+}
+
+export const api = new APIClient();
+\`\`\``,
+    },
+    {
+      id: 'ch-22',
+      volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
+      title: 'অধ্যায় ২২: গিট আৰু CI/CD পাইপলাইন',
+      subtitle: 'Git Workflow, Conventional Commits, GitHub Actions & VPS Automated Deployment',
+      estimatedReadTime: '9 min',
+      topics: ['Git Flow & Rebase', 'Conventional Commits', 'GitHub Actions Pipeline', 'Automated VPS Deployment'],
+      content: `## ২২.১ গিট এছেন্সিয়েল ফ্ল’ (Git Essential Flow ২০২৬)
+
+\`\`\`bash
+# নতুন ব্ৰাঞ্চ সৃষ্টি
+git checkout -b feature/jwt-auth
+
+# Conventional Commits:
+git add .
+git commit -m "feat(auth): implement token verification"
+git commit -m "fix(api): resolve CORS issue for production"
+git commit -m "test(auth): add JWT expiry unit tests"
+
+# GitHub ত পুশ আৰু PR সৃষ্টি
+git push origin feature/jwt-auth
+gh pr create --title "feat: JWT Authentication" --body "Complete auth integration"
+
+# Rebase (পৰিষ্কাৰ ইতিহাস ৰাখিবলৈ)
+git checkout feature/jwt-auth
+git rebase main
+\`\`\`
+
+---
+
+## ২২.২ GitHub Actions CI/CD (২০২৬)
+
+\`\`\`yaml
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Tests
+        run: pytest --cov=app --cov-report=xml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and Push Docker
+        run: docker build -t codeyatra-api:latest .
+\`\`\``,
+    },
+    {
+      id: 'ch-23',
+      volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
+      title: 'অধ্যায় ২৩: Pytest আৰু টেষ্ট-ড্ৰিভন ডেভেলপমেণ্ট (TDD)',
+      subtitle: 'TDD Red-Green-Refactor, Fixtures, Mocking & Property-Based Testing',
+      estimatedReadTime: '8 min',
+      topics: ['TDD Red-Green-Refactor', 'Pytest Fixtures', 'Mocking External APIs', 'Hypothesis Property Testing'],
+      content: `## ২৩.১ TDD সোণালী চক্ৰ
+
+1. **Red:** প্ৰথমে টেষ্ট লিখক যিটো ফেইল হয় (কাৰণ কোড নাই)।
+2. **Green:** নূন্যতম কোড লিখক যাতে টেষ্টটো পাছ হয়।
+3. **Refactor:** কোড পৰিষ্কাৰ আৰু অপটিমাইজ কৰক।
+
+\`\`\`python
+import pytest
+from unittest.mock import patch
+
+def যোগ(a: int, b: int) -> int:
+    return a + b
+
+def test_যোগ_মৌলিক():
+    assert যোগ(2, 3) == 5
+    assert যোগ(-1, 1) == 0
+
+@pytest.fixture
+def নমুনা_ব্যৱহাৰকাৰী():
+    return {"নাম": "ৰিকু", "ইমেইল": "riku@test.com", "বয়স": 25}
+
+def test_ব্যৱহাৰকাৰী_বৈধ(নমুনা_ব্যৱহাৰকাৰী):
+    assert নমুনা_ব্যৱহাৰকাৰী["বয়স"] >= 18
+    assert "@" in নমুনা_ব্যৱহাৰকাৰী["ইমেইল"]
+
+# Mocking
+def test_বাহ্যিক_API():
+    with patch('requests.get') as mock_get:
+        mock_get.return_value.json.return_value = {"status": "ok"}
+        mock_get.return_value.status_code = 200
+        # টেষ্ট সম্পন্ন কৰক
+\`\`\``,
+    },
+    {
+      id: 'ch-24',
+      volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
+      title: 'অধ্যায় ২৪: ডকাৰ আৰু কন্টেইনাৰাইজেশন',
+      subtitle: 'Multi-stage Dockerfile, Non-root User Security & Docker Compose Full-Stack',
+      estimatedReadTime: '9 min',
+      topics: ['Multi-stage Dockerfile', 'Non-root Security', 'Docker Compose Multi-service', 'Docker BuildKit'],
+      content: `## ২৪.১ Multi-stage Dockerfile (২০২৬ বেষ্ট প্ৰেক্টিছ)
+
+\`\`\`dockerfile
+# Builder Stage
+FROM python:3.13-slim as builder
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# Final Production Stage
+FROM python:3.13-slim
+WORKDIR /app
+
+# Non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+COPY --from=builder /root/.local /home/appuser/.local
+COPY . .
+
+ENV PATH=/home/appuser/.local/bin:$PATH
+USER appuser
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:8000/health || exit 1
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+\`\`\`
+
+---
+
+## ২৪.২ Docker Compose (পূৰ্ণাংগ ফুলষ্টেক ষ্টেক)
+
+\`\`\`yaml
+# docker-compose.yml
+version: '3.9'
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/codeyatra
+    depends_on:
+      - db
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: codeyatra
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+\`\`\``,
+    },
+    {
+      id: 'ch-25',
+      volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
+      title: 'অধ্যায় ২৫: এজ এআই, এনোমালি ডিটেকচন আৰু আধুনিক ট্ৰেণ্ড',
+      subtitle: 'Z-Score Anomaly Detection, Scikit-Learn, SLMs, MCP & RAG Systems',
+      estimatedReadTime: '10 min',
+      topics: ['Z-Score Real-time Detection', 'Isolation Forest ML', 'Small Language Models (SLMs)', 'RAG & Vector Embeddings'],
+      content: `## ২৫.১ Z-Score এনোমালি ডিটেকচন (IoT & Real-time)
+
+\`\`\`python
+import numpy as np
+from collections import deque
+
+class EdgeDetector:
+    """IoT ডিভাইচৰ বাবে ৰিয়েল-টাইম এনোমালি ডিটেক্টৰ"""
+    def __init__(self, limit=3.0, window_size=100):
+        self.history = deque(maxlen=window_size)
+        self.limit = limit
+        
+    def check(self, val: float) -> str:
+        self.history.append(val)
+        if len(self.history) < 10:
+            return "CALIBRATING"
+        mean = np.mean(self.history)
+        std = np.std(self.history) + 1e-5
+        z_score = abs(val - mean) / std
+        return "ANOMALY" if z_score > self.limit else "NORMAL"
+
+ed = EdgeDetector(limit=2.5)
+readings = [220, 221, 219, 220, 245, 222, 218, 221, 300, 220]
+for v in readings:
+    print(f"ভোল্টেজ {v}V -> {ed.check(v)}")
+\`\`\`
+
+---
+
+## ২৫.২ সৰল মেচিন লাৰ্নিং (Scikit-Learn Isolation Forest)
+
+\`\`\`python
+from sklearn.ensemble import IsolationForest
+import numpy as np
+
+# চেন্সৰ ৰিডিং ডেটা
+X = np.array([
+    [220], [221], [219], [220], [222],  # Normal
+    [350], [10], [400]                  # Anomalies
+])
+
+clf = IsolationForest(contamination=0.2, random_state=42)
+clf.fit(X)
+predictions = clf.predict([[221], [380]])
+# 1 = Normal, -1 = Anomaly
+print("প্ৰেডিকচন (1=Normal, -1=Anomaly):", predictions)
+\`\`\`
+
+---
+
+## ২৫.৩ ২০২৬ ৰ এআই ট্ৰেণ্ডসমূহ
+
+- **Small Language Models (SLMs):** ডিভাইচতে অফলাইন চলিব পৰা ১B-৩B পেৰামিটাৰ মডেল।
+- **Edge AI:** Raspberry Pi 5, Coral TPU ত অন-ডিভাইচ ইন্ফাৰেন্স।
+- **MCP (Model Context Protocol):** এআই এজেন্ট আৰু ডাটাবেছৰ সংযোগী মানক।
+- **RAG (Retrieval Augmented Generation):** ভেক্টৰ এম্বেডিঙৰ জৰিয়তে নিজা নলেজ বেচত এআই সন্ধান।`,
+    },
+    {
+      id: 'ch-appendix',
+      volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
+      title: 'পৰিশিষ্ট: ৬ মহীয়া এক্সপাৰ্ট ছফ্টৱেৰ ইঞ্জিনিয়াৰ হোৱাৰ ৰোডমেপ (২০২৬)',
+      subtitle: 'Month-by-Month Mastery Plan & Recommended Resources',
+      estimatedReadTime: '8 min',
+      topics: ['6-Month Roadmap', 'Core Foundations to System Design', 'Recommended Books & Platforms'],
+      content: `## ৬ মহীয়া এক্সপাৰ্ট ছফ্টৱেৰ ইঞ্জিনিয়াৰ হোৱাৰ ৰোডমেপ
+
+### মাহ ১: Core Foundations & DSA
+- **সপ্তাহ ১-২:** কম্পিউটাৰ আৰ্কিটেকচাৰ, বাইনাৰী, মেম'ৰি মডেল
+- **সপ্তাহ ৩-৪:** পাইথন গভীৰতা (Mutable/Immutable, LEGB, Closures)
+- **প্ৰকল্প:** CLI টুল (টু-ডু লিষ্ট মেনেজাৰ)
+- **DSA ফোকাস:** এৰে, ষ্টেক, কিউ, লিংকড লিষ্ট, BST, গ্ৰাফ BFS/DFS, Big-O বিশ্লেষণ, মাৰ্জ ছৰ্ট, কুইক ছৰ্ট
+
+---
+
+### মাহ ২: OOP & Clean Code
+- **সপ্তাহ ১-২:** OOP স্তম্ভ (Abstract, Inheritance, Polymorphism)
+- **সপ্তাহ ৩:** SOLID নীতি, Design Patterns (Strategy, Factory, Singleton)
+- **সপ্তাহ ৪:** ক্লিন কোড, Refactoring, Code Review কৌশল
+- **প্ৰকল্প:** বেংক মেনেজমেন্ট চিষ্টেম (OOP + SOLID)
+
+---
+
+### মাহ ৩: Databases & Backend
+- **সপ্তাহ ১-২:** SQL, PostgreSQL, ACID, Normalization, Indexing
+- **সপ্তাহ ৩:** FastAPI, Pydantic V2, RESTful API Design
+- **সপ্তাহ ৪:** JWT Auth, Middleware, API Documentation
+- **প্ৰকল্প:** E-commerce Backend API (Users, Products, Orders)
+
+---
+
+### মাহ ৪: Full-Stack & Concurrency
+- **সপ্তাহ ১-২:** JavaScript ES6+, React 19, Hooks, Server Components
+- **সপ্তাহ ৩:** AsyncIO, WebSockets, Redis Caching
+- **সপ্তাহ ৪:** React + FastAPI Integration, CORS, State Management
+- **প্ৰকল্প:** ফুলষ্টেক টাস্ক মেনেজাৰ (Realtime updates)
+
+---
+
+### মাহ ৫: DevOps & Systems
+- **সপ্তাহ ১:** Git Advanced, GitHub Actions CI/CD
+- **সপ্তাহ ২:** Docker, Docker Compose, Multi-stage builds
+- **সপ্তাহ ৩:** Linux চাৰ্ভাৰ, Nginx, SSL, Deployment
+- **সপ্তাহ ৪:** Monitoring (Prometheus/Grafana), Logging
+- **প্ৰকল্প:** Deploy your Full-Stack app to VPS/Cloud
+
+---
+
+### মাহ ৬: System Design & AI
+- **সপ্তাহ ১-২:** System Design Basics (Load Balancing, Caching, DB Sharding)
+- **সপ্তাহ ৩:** Microservices, Message Queues (RabbitMQ/Celery)
+- **সপ্তাহ ৪:** Edge AI, Anomaly Detection, RAG Basics
+- **কেপষ্টন প্ৰকল্প:** AI-এনেবল্ড ডেশ্ববৰ্ড (anomaly detection + real-time alerts)
+
+---
+
+## অতিৰিক্ত সম্পদ (২০২৬)
+
+### পঢ়িবলগীয়া কিতাপ:
+- *"Clean Code"* — Robert C. Martin
+- *"Designing Data-Intensive Applications"* — Martin Kleppmann
+- *"Python Cookbook"* — David Beazley
+- *"The Pragmatic Programmer"* — Andrew Hunt
+
+### অনলাইন প্লেটফৰ্ম:
+- **LeetCode:** DSA প্ৰেক্টিচ
+- **HackerRank:** পাইথন, SQL প্ৰেক্টিচ
+- **Frontend Masters:** React, System Design
+- **AWS Free Tier:** ক্লাউড প্ৰেক্টিচ
+
+> *"প্ৰগ্ৰামিং এটা কলা নহয়, এটা দক্ষতা—দিনে দিনে শিকিব লাগে, দিনে দিনে শুধৰাব লাগে।"*
+> — কোড-যাত্ৰা মহাপুথি, ২০২৬`,
+    },
+  ],
+};
+
+export const SAMPLE_BOOKS: Book[] = [
+  CODE_YATRA_BOOK,
+  {
+    id: 'ai-engineering-2026',
+    title: 'The AI Engineer Handbook: From LLMs to Autonomous Agents',
+    subtitle: 'Production Guide to Prompt Engineering, RAG, Fine-Tuning & Multi-Agent Systems',
+    author: 'DeepMind & Cloud AI Architects',
+    edition: '2026 Ultimate Edition',
+    publishedYear: '2026',
+    language: 'English',
+    isbn: 'ISBN 978-0-13-456789-0',
+    copyright: '© 2026 AI Engineering Institute. Open Knowledge Edition.',
+    description: 'An authoritative manual covering architectural patterns for modern Generative AI, embeddings, vector databases, MCP protocol, and production deployment.',
+    coverColor: '#1e1b4b',
+    coverBadge: 'Official 2026 Edition',
+    coverStyle: 'tech',
+    tags: ['AI', 'LLMs', 'Gemini', 'RAG', 'Agentic AI', 'Vector DB', 'MCP'],
+    createdAt: '2026-02-15T00:00:00.000Z',
+    updatedAt: '2026-08-20T00:00:00.000Z',
+    chapters: [
+      {
+        id: 'ai-ch1',
+        title: 'Chapter 1: The New AI Stack in 2026',
+        subtitle: 'From Static Models to Thinking Engines and Tool-Augmented Agents',
+        volume: 'Part 1: Foundational Paradigms',
+        estimatedReadTime: '7 min',
+        topics: ['Thinking Models', 'Function Calling', 'Context Windows', 'Multimodality'],
+        content: `## 1.1 The Evolution of Foundation Models
+
+In 2026, AI architecture shifted from basic prompt-response chatbots to **Agentic Systems** that reason iteratively, invoke tools, and maintain persistent state.
+
+### Core Tenets of the Modern Stack:
+1. **Thinking Capabilities:** Multi-turn internal chain-of-thought verification before producing output.
+2. **Standardized Context Protocols (MCP):** Dynamic schema discovery and remote resource binding.
+3. **Hybrid Search & Grounding:** Combining dense vector retrieval with real-time web search and relational facts.
+
+\`\`\`typescript
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// Generating structured intelligence with tool calling
+const response = await ai.models.generateContent({
+  model: "gemini-3.7-flash",
+  contents: "Analyze this system log and pinpoint any anomaly pattern",
+});
+console.log(response.text);
+\`\`\``,
+      },
+      {
+        id: 'ai-ch2',
+        title: 'Chapter 2: Production-Grade RAG Architecture',
+        subtitle: 'Chunking, Embeddings, Hybrid Search & Re-ranking',
+        volume: 'Part 2: Knowledge Systems',
+        estimatedReadTime: '8 min',
+        topics: ['Semantic Chunking', 'Vector Indexing', 'Cross-Encoders', 'Evaluation'],
+        content: `## 2.1 Why Naive RAG Fails in Enterprise
+
+Traditional top-k vector cosine similarity struggles with tabular data, negation, and temporal queries. Production RAG requires:
+- **Hierarchical Chunking:** Preserving document parent headers and tables.
+- **Hybrid Retrieval:** BM25 lexical search + dense embeddings.
+- **Cross-Encoder Re-ranking:** Re-ordering the top 50 candidates down to the top 5 most relevant passages.`,
+      },
+    ],
+  },
+  {
+    id: 'hindi-python-masterclass',
+    title: 'पायथन एवं सॉफ्टवेयर इंजीनियरिंग सम्पूर्ण मार्गदर्शिका',
+    subtitle: 'शून्य से एडवांस्ड डेवलपर बनने की संपूर्ण यात्रा — २०२६ संस्करण',
+    author: 'भारत टेक कम्युनिटी',
+    edition: '२०२६ हिंदी संस्करण',
+    publishedYear: '2026',
+    language: 'हिन्दी (Hindi)',
+    isbn: 'ISBN 978-81-923456-7-8',
+    copyright: '© २०२६ सर्वाधिकार सुरक्षित। ओपन सोर्स और मुफ्त शिक्षा के लिए समर्पित।',
+    description: 'सरल हिंदी भाषा में कंप्यूटर साइंस, पायथन प्रोग्रामिंग, डेटा स्ट्रक्चर्स, वेब डेवलपमेंट और क्लाउड डेवऑप्स का संपूर्ण ज्ञान।',
+    coverColor: '#831843',
+    coverBadge: 'हिंदी मास्टरक्लास २०२६',
+    coverStyle: 'royal',
+    tags: ['Python', 'DSA', 'FastAPI', 'Backend', 'DevOps', 'Hindi Guide'],
+    createdAt: '2026-03-01T00:00:00.000Z',
+    updatedAt: '2026-08-25T00:00:00.000Z',
+    chapters: [
+      {
+        id: 'hi-ch1',
+        title: 'अध्याय १: पायथन का परिचय और कंप्यूटर फंडामेंटल्स',
+        subtitle: 'कंप्यूटर कैसे सोचता है और पायथन इतना लोकप्रिय क्यों है?',
+        volume: 'भाग १: बुनियादी सिद्धांत',
+        estimatedReadTime: '6 min',
+        topics: ['Memory & CPU', 'Python Syntax', 'Variables & Data Types'],
+        content: `## १.१ पायथन क्या है और यह क्यों खास है?
+
+पायथन एक उच्च-स्तरीय (High-level), इंटरप्रिटेड प्रोग्रामिंग भाषा है जिसे पढ़ना और लिखना अंग्रेजी की तरह बहुत आसान है।
+
+\`\`\`python
+# पहला पायथन प्रोग्राम
+def स्वागत(नाम: str):
+    print(f"नमस्ते {नाम}! कोडिंग की रोमांचक दुनिया में आपका स्वागत है।")
+
+स्वागत("विकास")
+\`\`\`
+
+### मुख्य विशेषताएं:
+- **सरल सिंटेक्स:** शुरुआती लोगों के लिए सबसे आसान।
+- **विशाल लाइब्रेरी इकोसिस्टम:** AI, वेब डेवलपमेंट, डेटा साइंस के लिए समृद्ध लाइब्रेरी।
+- **क्रॉस-प्लेटफ़ॉर्म:** विंडोज, मैक, लिनक्स सभी पर सुचारू रूप से चलता है।`,
+      },
+    ],
+  },
+];
