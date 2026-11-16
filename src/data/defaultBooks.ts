@@ -3507,84 +3507,474 @@ for a in (a1, a2):
     id: 'ch-12',
       volume: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
       title: 'অধ্যায় ১২: SOLID নীতি আৰু ডিজাইন পেটাৰ্ণ',
-      subtitle: 'Single Responsibility, Open-Closed, Liskov, Strategy & Factory Pattern',
-      estimatedReadTime: '10 min',
-      topics: ['SOLID Principles', 'Strategy Pattern (Payments)', 'Factory Pattern (Databases)'],
-      content: `## ১২.১ SOLID নীতিসমূহ
+      subtitle: 'Clean Architecture, Strategy Pattern, Factory Pattern আৰু Dependency Injection',
+      estimatedReadTime: '30 min',
+      topics: ['SOLID Principles', 'Single Responsibility', 'Open-Closed', 'Liskov Substitution', 'Interface Segregation', 'Dependency Inversion', 'Strategy Pattern', 'Factory Pattern', 'Dependency Injection', 'Testing and Trade-offs'],
+      content: \`## ১২.১ SOLID নীতিৰ পৰিচয়
 
-- **S (Single Responsibility Principle):** প্ৰতিটো ক্লাছৰ এটাই মাত্ৰ দায়িত্ব থাকিব লাগে।
-- **O (Open/Closed Principle):** এক্সটেন্ডৰ বাবে খোলা, কিন্তু মূল কোড সলনিৰ বাবে বন্ধ।
-- **L (Liskov Substitution Principle):** চাইল্ড ক্লাছে পেৰেণ্ট ক্লাছৰ ঠাই সম্পূৰ্ণভাৱে ল'ব পাৰিব লাগে।
-- **I (Interface Segregation Principle):** ডাঙৰ ইণ্টাৰফেচক সৰু সৰু নিৰ্দিষ্ট ভাগত ভগাব লাগে।
-- **D (Dependency Inversion Principle):** এবষ্ট্ৰাকচনৰ ওপৰত নিৰ্ভৰ কৰিব লাগে, কংক্ৰিট ক্লাছৰ ওপৰত নহয়।
+SOLID হৈছে object-oriented software design-ৰ পাঁচটা বহুল ব্যৱহৃত guideline-ৰ সংক্ষিপ্ত নাম। ইয়াৰ উদ্দেশ্য হৈছে code বুজিবলৈ সহজ, পৰীক্ষা কৰিবলৈ সুবিধাজনক আৰু পৰিৱৰ্তন কৰিবলৈ তুলনামূলকভাৱে সহজ কৰা। এইবোৰ কঠোৰ আইন নহয়; project-ৰ আকাৰ আৰু প্ৰয়োজন অনুসৰি বিচাৰ-বিবেচনাৰে প্ৰয়োগ কৰিব লাগে।
 
----
+পাঁচটা নীতি:
+- **S — Single Responsibility Principle (SRP)**
+- **O — Open/Closed Principle (OCP)**
+- **L — Liskov Substitution Principle (LSP)**
+- **I — Interface Segregation Principle (ISP)**
+- **D — Dependency Inversion Principle (DIP)**
 
-## ১২.২ ষ্ট্ৰেটেজি পেটাৰ্ণ (Strategy Pattern - Payment Processing)
+## ১২.২ S — Single Responsibility Principle
+
+এটা class বা module-ৰ পৰিৱৰ্তনৰ বাবে এটা স্পষ্ট মুখ্য কাৰণ থাকিব লাগে। অৰ্থাৎ একে class-এ একেলগে বহুতো সম্পৰ্কহীন দায়িত্ব ল’ব নালাগে।
+
+### সমস্যা থকা উদাহৰণ
+
+\`\`\`python
+class প্ৰতিবেদন:
+    def গণনা(self, বিক্ৰী):
+        return sum(বিক্ৰী)
+
+    def ফাইলত_লিখা(self, ফলাফল, পথ):
+        with open(পথ, "w", encoding="utf-8") as ফাইল:
+            ফাইল.write(str(ফলাফল))
+\`\`\`
+
+ইয়াত গণনা আৰু file storage—দুটা পৃথক দায়িত্ব একেটা class-ত আছে।
+
+### উন্নত বিভাজন
+
+\`\`\`python
+class বিক্ৰী_বিশ্লেষক:
+    def মুঠ(self, বিক্ৰী):
+        return sum(বিক্ৰী)
+
+
+class প্ৰতিবেদন_সংৰক্ষক:
+    def সংৰক্ষণ(self, ফলাফল, পথ):
+        with open(পথ, "w", encoding="utf-8") as ফাইল:
+            ফাইল.write(str(ফলাফল))
+
+
+বিক্ৰী = [100, 250, 300]
+বিশ্লেষক = বিক্ৰী_বিশ্লেষক()
+সংৰক্ষক = প্ৰতিবেদন_সংৰক্ষক()
+
+মুঠ = বিশ্লেষক.মুঠ(বিক্ৰী)
+সংৰক্ষক.সংৰক্ষণ(মুঠ, "report.txt")
+\`\`\`
+
+এতিয়া গণনাৰ নিয়ম সলনি কৰিলেও file storage class-ত পৰিৱৰ্তন কৰাৰ প্ৰয়োজন নাই।
+
+## ১২.৩ O — Open/Closed Principle
+
+Software entity-সমূহ নতুন আচৰণ যোগ কৰিবলৈ extensible হ’ব লাগে, কিন্তু প্ৰতিটো নতুন feature-ৰ বাবে পুৰণি, পৰীক্ষিত code বাৰে বাৰে edit কৰিবলগীয়া হ’ব নালাগে।
+
+### Strategy-ৰ সহায়ত discount
 
 \`\`\`python
 from abc import ABC, abstractmethod
-from typing import List
 
-class পেমেণ্ট_পদ্ধতি(ABC):
+
+class Discount(ABC):
     @abstractmethod
-    def পে(self, পৰিমাণ: float):
-        pass
-    @abstractmethod
-    def পৰিশোধ_যোগ্য(self) -> bool:
+    def calculate(self, amount):
         pass
 
-class UPI(পেমেণ্ট_পদ্ধতি):
-    def __init__(self, upi_id: str):
-        self.upi_id = upi_id
-    def পে(self, পৰিমাণ: float):
-        print(f"UPI ({self.upi_id}) যোগে ₹{পৰিমাণ:.2f} পৰিশোধ হ'ল।")
-    def পৰিশোধ_যোগ্য(self) -> bool:
-        return "@" in self.upi_id
 
-class কাৰ্ট:
-    def __init__(self):
-        self.সামগ্ৰী: List[dict] = []
-        self.পদ্ধতি: পেমেণ্ট_পদ্ধতি = None
-    def যোগ(self, নাম: str, দাম: float):
-        self.সামগ্ৰী.append({"নাম": নাম, "দাম": দাম})
-    def মুঠ_দাম(self) -> float:
-        return sum(x["দাম"] for x in self.সামগ্ৰী)
-    def পেমেণ্ট_ছেট(self, পদ্ধতি: পেমেণ্ট_পদ্ধতি):
-        if not পদ্ধতি.পৰিশোধ_যোগ্য():
-            raise ValueError("অবৈধ পেমেণ্ট পদ্ধতি!")
-        self.পদ্ধতি = পদ্ধতি
-    def চেকআউট(self):
-        if not self.পদ্ধতি:
-            raise ValueError("পেমেণ্ট পদ্ধতি ছেট কৰা নাই!")
-        self.পদ্ধতি.পে(self.মুঠ_দাম())
-        print("অৰ্ডাৰ সফল!")
+class NoDiscount(Discount):
+    def calculate(self, amount):
+        return amount
 
-# ব্যৱহাৰ
-ক = কাৰ্ট()
-ক.যোগ("লেপটপ", 75000)
-ক.যোগ("মাউচ", 899)
-ক.পেমেণ্ট_ছেট(UPI("riku@upi"))
-ক.চেকআউট()
+
+class PercentDiscount(Discount):
+    def __init__(self, percent):
+        if not 0 <= percent <= 100:
+            raise ValueError("শতাংশ 0 ৰ পৰা 100-ৰ ভিতৰত হ'ব লাগে")
+        self.percent = percent
+
+    def calculate(self, amount):
+        return amount * (1 - self.percent / 100)
+
+
+def final_price(amount, discount: Discount):
+    if amount < 0:
+        raise ValueError("মূল্য ঋণাত্মক হ'ব নোৱাৰে")
+    return discount.calculate(amount)
+
+
+print(final_price(1000, NoDiscount()))
+print(final_price(1000, PercentDiscount(10)))
 \`\`\`
 
----
+নতুন discount policy যোগ কৰিবলৈ নতুন class লিখিব পাৰি; \`final_price()\`-ৰ মূল logic সলনি কৰাৰ প্ৰয়োজন নাই।
 
-## ১২.৩ ফেক্টৰি পেটাৰ্ণ (Factory Pattern)
+## ১২.৪ L — Liskov Substitution Principle
+
+যদি কোনো function-এ base type-ৰ object আশা কৰে, তেন্তে সেই base type-ৰ উপযুক্ত subtype দিলে function-টোৰ প্ৰতিশ্ৰুতি বা আচৰণ ভংগ হ’ব নালাগে।
+
+Child class-এ parent class-ৰ method override কৰোঁতে:
+- আগৰ valid input-সমূহ অযথা reject কৰিব নালাগে।
+- Parent-এ যি output/guarantee দিছিল তাক ভংগ কৰিব নালাগে।
+- অপ্রত্যাশিত side effect বা নতুন exception যোগ কৰি caller-ক বিপদত পেলাব নালাগে।
+
+### সঠিক substitution-ৰ উদাহৰণ
 
 \`\`\`python
-class ডাটাবেছ_ফেক্টৰি:
+from abc import ABC, abstractmethod
+
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+
+class Rectangle(Shape):
+    def __init__(self, width, height):
+        if width < 0 or height < 0:
+            raise ValueError("দৈৰ্ঘ্য ঋণাত্মক হ'ব নোৱাৰে")
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+
+class Square(Shape):
+    def __init__(self, side):
+        if side < 0:
+            raise ValueError("বাহু ঋণাত্মক হ'ব নোৱাৰে")
+        self.side = side
+
+    def area(self):
+        return self.side * self.side
+
+
+def print_area(shape: Shape):
+    print(shape.area())
+
+
+print_area(Rectangle(4, 5))
+print_area(Square(4))
+\`\`\`
+
+এই interface-ত দুয়োটা shape-এ \`area()\` দিয়ে। মন কৰিব: বাস্তৱ geometry-ত Square-কে mutable Rectangle-ৰ child class কৰিলে width/height সলনি কৰাৰ আচৰণত LSP সমস্যা হ’ব পাৰে। সেয়ে কেৱল গাণিতিক সম্পৰ্ক থাকিলেই inheritance উপযুক্ত নহয়।
+
+## ১২.৫ I — Interface Segregation Principle
+
+এটা ডাঙৰ interface-ত বহুতো method জোৰকৈ ৰাখি সকলো client-কে অপ্ৰয়োজনীয় method implement কৰিবলৈ বাধ্য নকৰিব। তাৰ সলনি সৰু, নিৰ্দিষ্ট interface ব্যৱহাৰ কৰক।
+
+### উদাহৰণ
+
+\`\`\`python
+from abc import ABC, abstractmethod
+
+
+class Printable(ABC):
+    @abstractmethod
+    def print_document(self):
+        pass
+
+
+class Scannable(ABC):
+    @abstractmethod
+    def scan_document(self):
+        pass
+
+
+class BasicPrinter(Printable):
+    def print_document(self):
+        print("Document printed")
+
+
+class MultiFunctionPrinter(Printable, Scannable):
+    def print_document(self):
+        print("Document printed")
+
+    def scan_document(self):
+        print("Document scanned")
+\`\`\`
+
+BasicPrinter-এ scan method implement কৰিবলগীয়া নহ’ল। প্ৰতিটো device-এ নিজৰ প্ৰয়োজনীয় interface-হে গ্ৰহণ কৰিছে।
+
+## ১২.৬ D — Dependency Inversion Principle
+
+উচ্চ-স্তৰৰ business logic-এ নিম্ন-স্তৰৰ concrete implementation-ৰ ওপৰত পোনপটীয়াকৈ নিৰ্ভৰ নকৰি abstraction-ৰ ওপৰত নিৰ্ভৰ কৰা উচিত। Concrete implementation-এ সেই abstraction পূৰণ কৰিব।
+
+### উদাহৰণ: Message Sender
+
+\`\`\`python
+from abc import ABC, abstractmethod
+
+
+class MessageSender(ABC):
+    @abstractmethod
+    def send(self, message):
+        pass
+
+
+class ConsoleSender(MessageSender):
+    def send(self, message):
+        print(f"[Console] {message}")
+
+
+class FileSender(MessageSender):
+    def __init__(self, path):
+        self.path = path
+
+    def send(self, message):
+        with open(self.path, "a", encoding="utf-8") as file:
+            file.write(message + "\\n")
+
+
+class AlertService:
+    def __init__(self, sender: MessageSender):
+        self.sender = sender
+
+    def alert(self, message):
+        self.sender.send(message)
+
+
+service = AlertService(ConsoleSender())
+service.alert("চিস্টেম আৰম্ভ হ'ল")
+\`\`\`
+
+\`AlertService\`-এ console বা file-ৰ বিষয়ে একো নাজানে। ই কেৱল \`MessageSender\` interface জানে। এইদৰে implementation সলনি কৰাটো সহজ হয়।
+
+## ১২.৭ Strategy Pattern
+
+Strategy Pattern-এ একে কাম কৰাৰ বিভিন্ন algorithm বা policy পৃথক class-ত ৰাখে আৰু runtime-ত উপযুক্ত strategy বাছিবলৈ দিয়ে।
+
+উদাহৰণ: এটা shopping cart-ত payment method বেলেগ হ’ব পাৰে। তলৰ code-টো **payment simulation** মাত্ৰ। ই কোনো UPI, bank বা payment gateway-ত বাস্তৱ ধন পঠিয়াব নোৱাৰে আৰু transaction সফল হৈছে বুলি দাবী নকৰে।
+
+\`\`\`python
+from abc import ABC, abstractmethod
+from decimal import Decimal
+
+
+class PaymentStrategy(ABC):
+    @abstractmethod
+    def pay(self, amount: Decimal) -> str:
+        pass
+
+
+class SimulatedUPI(PaymentStrategy):
+    def __init__(self, upi_id):
+        if "@" not in upi_id:
+            raise ValueError("UPI ID-ৰ format সঠিক নহয়")
+        self.upi_id = upi_id
+
+    def pay(self, amount):
+        return f"SIMULATION: UPI {self.upi_id}, amount ₹{amount}"
+
+
+class SimulatedCash(PaymentStrategy):
+    def pay(self, amount):
+        return f"SIMULATION: Cash amount ₹{amount}"
+
+
+class ShoppingCart:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, name, price):
+        value = Decimal(str(price))
+        if not value.is_finite() or value < 0:
+            raise ValueError("বস্তুৰ মূল্য বৈধ হ'ব লাগিব")
+        self.items.append((name, value))
+
+    def total(self):
+        return sum(
+            (price for _, price in self.items),
+            start=Decimal("0.00")
+        )
+
+    def checkout(self, strategy: PaymentStrategy):
+        if not self.items:
+            raise ValueError("কাৰ্ট খালী")
+        return strategy.pay(self.total())
+
+
+cart = ShoppingCart()
+cart.add_item("Notebook", "50.00")
+cart.add_item("Pen", "15.50")
+
+result = cart.checkout(SimulatedUPI("student@demo"))
+print(result)
+\`\`\`
+
+### Strategy Pattern-ৰ সুবিধা
+
+- Payment, discount বা shipping policy পৃথক কৰি ৰাখিব পাৰি।
+- নতুন strategy যোগ কৰোঁতে cart-ৰ মূল code কম সলনি হয়।
+- প্ৰতিটো strategy পৃথকে test কৰিব পাৰি।
+
+### বাস্তৱ payment system-ত অতিৰিক্ত প্ৰয়োজন
+
+বাস্তৱ payment-ৰ বাবে trusted payment provider, server-side verification, signed webhook, idempotency key, secure secret management, reconciliation আৰু error handling প্ৰয়োজন। কেৱল success message print কৰাটো payment সম্পন্ন হোৱাৰ প্ৰমাণ নহয়।
+
+## ১২.৮ Factory Pattern
+
+Factory Pattern-এ object সৃষ্টি কৰাৰ logic-টো ব্যৱহাৰকাৰী code-ৰ পৰা পৃথক কৰে। Client-এ প্ৰতিটো concrete class কেনেকৈ সৃষ্টি হয় সেই detail জানিব নালাগে।
+
+### উদাহৰণ: Notification Factory
+
+\`\`\`python
+from abc import ABC, abstractmethod
+
+
+class Notifier(ABC):
+    @abstractmethod
+    def send(self, message):
+        pass
+
+
+class ConsoleNotifier(Notifier):
+    def send(self, message):
+        print(f"Notification: {message}")
+
+
+class FileNotifier(Notifier):
+    def __init__(self, path):
+        self.path = path
+
+    def send(self, message):
+        with open(self.path, "a", encoding="utf-8") as file:
+            file.write(message + "\\n")
+
+
+class NotifierFactory:
     @staticmethod
-    def তৈয়াৰ(টাইপ: str):
-        if টাইপ == "sql":
-            return "PostgreSQL Engine Initialized"
-        elif টাইপ == "nosql":
-            return "MongoDB Cluster Connected"
-        raise ValueError(f"অজ্ঞাত ডাটাবেছ টাইপ: {টাইপ}")
-\`\`\``,
+    def create(kind):
+        if kind == "console":
+            return ConsoleNotifier()
+        if kind == "file":
+            return FileNotifier("notifications.txt")
+        raise ValueError(f"অজ্ঞাত notifier type: {kind}")
+
+
+notifier = NotifierFactory.create("console")
+notifier.send("আপোনাক স্বাগতম")
+\`\`\`
+
+ইয়াত factory-এ প্ৰকৃত notifier object সৃষ্টি কৰে। কেৱল "Database Connected" ধৰণৰ string ঘূৰাই দিলে database connection সৃষ্টি হোৱা বুলি ক’ব নোৱাৰি। Factory-ৰ কাম object সৃষ্টি কৰা; বাস্তৱ resource সংযোগৰ কাম সংশ্লিষ্ট implementation-এ কৰিব লাগে।
+
+## ১২.৯ Dependency Injection (DI)
+
+Dependency Injection মানে এটা class-এ নিজৰ dependency নিজে সৃষ্টি নকৰি বাহিৰৰ পৰা গ্ৰহণ কৰে।
+
+\`\`\`python
+class WelcomeService:
+    def __init__(self, notifier: Notifier):
+        self.notifier = notifier
+
+    def welcome(self, name):
+        self.notifier.send(f"স্বাগতম, {name}")
+
+
+console = NotifierFactory.create("console")
+service = WelcomeService(console)
+service.welcome("ৰিমা")
+\`\`\`
+
+ইয়াত \`WelcomeService\`-এ factory-ৰ concrete implementation-ৰ ওপৰত নিৰ্ভৰ নকৰি \`Notifier\` abstraction গ্ৰহণ কৰিছে। Test-ত fake notifier পঠিয়াব পাৰি।
+
+## ১২.১০ সৰু Unit Test উদাহৰণ
+
+\`\`\`python
+class FakeNotifier(Notifier):
+    def __init__(self):
+        self.messages = []
+
+    def send(self, message):
+        self.messages.append(message)
+
+
+def test_welcome_service():
+    fake = FakeNotifier()
+    service = WelcomeService(fake)
+
+    service.welcome("ৰিমা")
+
+    assert fake.messages == ["স্বাগতম, ৰিমা"]
+
+
+test_welcome_service()
+print("Test passed")
+\`\`\`
+
+এইটো সৰল assertion-ভিত্তিক উদাহৰণ। ডাঙৰ project-ত \`pytest\`-ৰ দৰে test framework ব্যৱহাৰ কৰি test automatically run কৰা ভাল।
+
+## ১২.১১ Pattern বাছনি কৰাৰ সময়ত সাৱধানতা
+
+| Pattern/নীতি | কেতিয়া সহায়ক | অতিৰিক্ত ব্যৱহাৰৰ বিপদ |
+|---|---|---|
+| SRP | পৃথক দায়িত্ব আৰু পৰিৱৰ্তনৰ কাৰণ থাকিলে | অতি সৰু class-ৰ ভিৰ |
+| OCP | নতুন policy সঘনাই যোগ হ’লে | অযথা abstraction |
+| LSP | Parent/subtype relation থাকিলে | ভুল inheritance hierarchy |
+| ISP | Client-ৰ প্ৰয়োজন পৃথক হ’লে | অতি বেছি ক্ষুদ্ৰ interface |
+| DIP | Business logic-ৰ implementation সলনি হ’ব পাৰে | সৰু script-ত অতিৰিক্ত জটিলতা |
+| Strategy | একে কামৰ একাধিক algorithm থাকিলে | অপ্রয়োজনীয় class বৃদ্ধি |
+| Factory | Object creation জটিল বা কেন্দ্ৰীভূত হ’লে | সাধাৰণ constructor-ৰ সলনি অযথা factory |
+
+SOLID আৰু Design Pattern-ৰ লক্ষ্য code জটিল কৰা নহয়; প্ৰকৃত পৰিৱৰ্তন আৰু testing সহজ কৰা।
+
+## ১২.১২ সাধাৰণ ভুল
+
+1. SRP-ৰ অৰ্থ এটা class-ত মাত্ৰ এটা method থাকিব লাগে বুলি নাভাবিব; মুখ্য দায়িত্বৰ কথা কোৱা হৈছে।
+2. OCP-ৰ বাবে প্ৰতিটো class-ত interface সৃষ্টি কৰাৰ প্ৰয়োজন নাই।
+3. LSP মানে কেৱল method signature একে হ’লেই নহয়; আচৰণৰ contract-ও মানিব লাগে।
+4. ISP-এ client-ক অপ্ৰয়োজনীয় method-ৰ ওপৰত নিৰ্ভৰ কৰাৰ পৰা বচায়।
+5. DIP আৰু Dependency Injection সম্পৰ্কিত, কিন্তু একে শব্দৰ অৰ্থ নহয়। DIP হৈছে design principle; DI হৈছে dependency যোগান ধৰাৰ এটা technique।
+6. Factory-এ object সৃষ্টি কৰে; ই নিজে নিজে external service connect নকৰে।
+7. Payment simulation-ৰ print output-ক বাস্তৱ transaction বুলি নাভাবিব।
+8. Design Pattern মুখস্থ কৰি প্ৰয়োগ নকৰি problem-ৰ প্ৰয়োজন বুজি বাছনি কৰক।
+
+## ১২.১৩ অনুশীলনী
+
+1. SOLID-ৰ পাঁচটা আখৰৰ সম্পূৰ্ণ নাম লিখক।
+2. Single Responsibility Principle-ৰ এটা বাস্তৱ উদাহৰণ দিয়ক।
+3. Open/Closed Principle-ৰ উদ্দেশ্য কি?
+4. Liskov Substitution Principle ভংগ হ’লে কি সমস্যা হ’ব পাৰে?
+5. Interface Segregation Principle-এ client-ক কেনেকৈ সহায় কৰে?
+6. Dependency Inversion Principle-ত abstraction-ৰ ভূমিকা কি?
+7. DIP আৰু Dependency Injection-ৰ পাৰ্থক্য লিখক।
+8. Strategy Pattern কেতিয়া ব্যৱহাৰ কৰিব পাৰি?
+9. Factory Pattern-ৰ এটা সুবিধা লিখক।
+10. Factory-এ string ঘূৰালে বাস্তৱ database connection সৃষ্টি হয়নে?
+11. Payment example-টো কিয় simulation বুলি কোৱা হৈছে?
+12. FakeNotifier unit test-ত কিয় উপযোগী?
+13. অতিৰিক্ত design pattern ব্যৱহাৰ কৰিলে কি অসুবিধা হ’ব পাৰে?
+14. Strategy আৰু Factory Pattern-ৰ পাৰ্থক্য লিখক।
+
+### উত্তৰ-সূচী
+
+1. Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion।
+2. গণনা আৰু file storage পৃথক class-ত ৰখা।
+3. নতুন আচৰণ যোগ কৰোঁতে পুৰণি code-ৰ পৰিৱৰ্তন কমোৱা।
+4. Child object-এ parent-ৰ contract ভংগ কৰি caller-ৰ code ভাঙিব পাৰে।
+5. প্ৰয়োজন নথকা method implement বা depend কৰিব নালাগে।
+6. High-level আৰু low-level module-এ shared abstraction-ৰ ওপৰত নিৰ্ভৰ কৰে।
+7. DIP design principle; DI dependency বাহিৰৰ পৰা পঠিওৱাৰ পদ্ধতি।
+8. একে কামৰ একাধিক algorithm বা policy সলনি কৰিব লাগিলে।
+9. Object creation-ৰ logic client-ৰ পৰা পৃথক কৰে।
+10. নহয়; বাস্তৱ connection-ৰ বাবে উপযুক্ত database client আৰু connection code লাগে।
+11. উদাহৰণটো কোনো payment provider-ৰ সৈতে সংযুক্ত নহয় আৰু বাস্তৱ ধন স্থানান্তৰ নকৰে।
+12. External service নোহোৱাকৈ service-ৰ আচৰণ পৰীক্ষা কৰিব পাৰি।
+13. অপ্রয়োজনীয় class, abstraction আৰু maintenance cost বৃদ্ধি পায়।
+14. Strategy-এ আচৰণ/algorithm সলনি কৰে; Factory-এ object সৃষ্টি কৰাৰ দায়িত্ব লয়।
+
+## ১২.১৪ সাৰাংশ
+
+এই অধ্যায়ত SOLID-ৰ পাঁচটা নীতি, Strategy Pattern, Factory Pattern আৰু Dependency Injection শিকিলোঁ। ভাল software design-ত abstraction আৰু pattern-ৰ ব্যৱহাৰ problem-ৰ প্ৰয়োজন অনুসৰি হ’ব লাগে। অতিৰিক্ত abstraction-তকৈ স্পষ্ট, পৰীক্ষাযোগ্য আৰু সহজ code অধিক মূল্যৱান।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python abc — Abstract Base Classes: https://docs.python.org/3/library/abc.html
+- Python typing: https://docs.python.org/3/library/typing.html
+- Python unittest.mock: https://docs.python.org/3/library/unittest.mock.html
+- Python decimal: https://docs.python.org/3/library/decimal.html
+\`,
     },
-    {
-      id: 'ch-14',
+    id: 'ch-14',
       volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
       title: 'অধ্যায় ১৪: কনকাৰেঞ্চি (AsyncIO & Non-blocking I/O)',
       subtitle: 'Async/Await, asyncio.gather, aiohttp & Concurrent HTTP Requests',
