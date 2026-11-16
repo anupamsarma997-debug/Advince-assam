@@ -844,90 +844,258 @@ Input–Process–Output cycle-এ program-ৰ মৌলিক কাম বু�
       id: 'ch-4',
       volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
       title: 'অধ্যায় ৪: মেম’ৰি মডেল, টাইপ চিষ্টেম আৰু চলকৰ সত্যতা',
-      subtitle: 'Objects, Mutable vs Immutable, Deep Copy আৰু Truthiness',
-      estimatedReadTime: '9 min',
-      topics: ['Python Object Model', 'Mutable vs Immutable', 'Shallow vs Deep Copy', 'Truthy and Falsy'],
-      content: `## ৪.১ পাইথনত সকলো বস্তুৱেই এটা অবজেক্ট
+      subtitle: 'Python Objects, Names, Mutable vs Immutable, Copying আৰু Truthiness',
+      estimatedReadTime: '30–40 min',
+      topics: ['Object Identity and Type', 'Names and References', 'Dynamic Typing', 'Mutable and Immutable Objects', 'Shallow and Deep Copy', 'Equality vs Identity', 'Truthy and Falsy'],
+      content: `## এই অধ্যায়ৰ শিক্ষণ-লক্ষ্য
 
-পাইথনত \`int\`, \`str\`, \`list\`, \`function\` —সকলোবোৰেই অবজেক্ট। প্ৰতিটো অবজেক্টৰ তিনিটা মৌলিক বৈশিষ্ট্য থাকে:
-- **আইডি (Identity):** মেম'ৰি ঠিকনা (\`id()\` ফাংচনত পোৱা যায়)
-- **টাইপ (Type):** অবজেক্টৰ শ্ৰেণী (\`type()\`)
-- **মান (Value):** সংৰক্ষিত ডেটা
+এই অধ্যায় শেষ কৰিলে আপুনি Python object-ৰ identity, type আৰু value বুজাব পাৰিব; variable name আৰু reference-ৰ সম্পৰ্ক বুজিব পাৰিব; mutable/immutable, shallow/deep copy আৰু truthiness সঠিকভাৱে ব্যৱহাৰ কৰিব পাৰিব।
 
-\`\`\`python
-a = 256
-print(id(a))          # মেম'ৰি ঠিকনা
-print(type(a))        # <class 'int'>
+## ৪.১ Python Object Model
 
-# পাইথনে -৫ ৰ পৰা ২৫৬ লৈ সংখ্যাবোৰ কেচ (cache) কৰে:
-b = 256
-print(a is b)         # True (একে মেম'ৰি ঠিকনা)
+Python-ত integer, string, list, dictionary, function আদি সকলো object। প্ৰতিটো object-ৰ তিনিটা গুৰুত্বপূৰ্ণ বৈশিষ্ট্য থাকে:
 
-c = 257
-d = 257
-print(c is d)         # False (আলাদা অবজেক্ট)
-\`\`\`
+- **Identity (পৰিচয়):** object-টোক আন object-ৰ পৰা পৃথককৈ চিনাক্ত কৰে।
+- **Type (ধৰণ):** object-টোৰ ধৰণ; যেনে `int`, `str`, `list`।
+- **Value (মান):** object-টোৱে প্ৰতিনিধিত্ব কৰা তথ্য।
 
----
+```python
+সংখ্যা = 256
+print(type(সংখ্যা))  # <class 'int'>
+print(id(সংখ্যা))    # identity-ৰ বাবে integer identifier
+```
 
-## ৪.২ Mutable বনাম Immutable
+**সাৱধান:** `id()`-এ সদায় physical memory address দিয়ে বুলি ক'ব নোৱাৰি। Python-ৰ নিয়ম অনুসৰি ই object-ৰ identity-ৰ বাবে এটা integer ঘূৰাই দিয়ে। CPython-ত এই মান বহু ক্ষেত্ৰত memory address-ৰ সৈতে জড়িত হ'ব পাৰে, কিন্তু program-এ ইয়াক স্থায়ী memory address বুলি ধৰি ল'ব নালাগে। Object জীৱিত থকা সময়ত ইয়াৰ identity স্থিৰ থাকে।
 
-| প্ৰকাৰ | ডেটা টাইপ | বৈশিষ্ট্য |
-| :--- | :--- | :--- |
-| **Immutable** | \`int\`, \`float\`, \`str\`, \`tuple\`, \`frozenset\`, \`bool\` | মেম'ৰিত সলনি কৰিব নোৱাৰি; নতুন অবজেক্ট সৃষ্টি হয় |
-| **Mutable** | \`list\`, \`dict\`, \`set\`, Custom Classes | In-place উপাদান সলনি কৰিব পাৰি |
+## ৪.২ Variable Name আৰু Object Reference
 
-\`\`\`python
-# Immutable উদাহৰণ
-x = "অসম"
-print(id(x))    # ঠিকনা ১
-x += "ীয়া"
-print(id(x))    # ঠিকনা ২ (নতুন অবজেক্ট)
+Python-ত variable name-এ object-ৰ সৈতে bind হৈ থাকে। Assignment-এ সদায় নতুন object সৃষ্টি নকৰে।
 
-# Mutable উদাহৰণ
-y = [1, 2, 3]
-print(id(y))    # ঠিকনা A
-y.append(4)
-print(id(y))    # ঠিকনা A (একে ঠিকনা)
-\`\`\`
+```python
+প্ৰথম = [10, 20, 30]
+দ্বিতীয় = প্ৰথম
+দ্বিতীয়.append(40)
 
----
+print(প্ৰথম)   # [10, 20, 30, 40]
+print(দ্বিতীয়) # [10, 20, 30, 40]
+```
 
-## ৪.৩ Shallow Copy বনাম Deep Copy
+ইয়াত দুয়োটা নাম একেটা list object-লৈ reference কৰিছে। সেয়ে এটা নামৰ জৰিয়তে list সলনি কৰিলে আন নামৰ জৰিয়তেও সেই পৰিৱৰ্তন দেখা যায়।
 
-\`\`\`python
+### Equality (`==`) আৰু Identity (`is`)
+
+- `==`-এ দুটা object-ৰ value সমান নে নহয় পৰীক্ষা কৰে।
+- `is`-এ দুয়োটা reference একেটা object-লৈ গৈছে নে নাই পৰীক্ষা কৰে।
+
+```python
+ক = [1, 2, 3]
+খ = [1, 2, 3]
+গ = ক
+
+print(ক == খ)  # True: value একে
+print(ক is খ)  # False: পৃথক object
+print(ক is গ)  # True: একেটা object
+```
+
+Value তুলনাৰ বাবে সাধাৰণতে `==` ব্যৱহাৰ কৰক। `is`-ৰ সঠিক আৰু প্ৰচলিত ব্যৱহাৰ হ'ল `None` পৰীক্ষা কৰা:
+
+```python
+ফলাফল = None
+if ফলাফল is None:
+    print("এতিয়াও কোনো ফলাফল নাই")
+```
+
+## ৪.৩ Dynamic Typing আৰু Type Annotation
+
+Python dynamically typed language। Variable name-ৰ বাবে আগতীয়াকৈ স্থায়ী type ঘোষণা কৰাটো বাধ্যতামূলক নহয়।
+
+```python
+মান = 25
+print(type(মান))  # <class 'int'>
+
+মান = "পঁচিশ"
+print(type(মান))  # <class 'str'>
+```
+
+Type পৰীক্ষাৰ বাবে `type()` আৰু `isinstance()` ব্যৱহাৰ কৰিব পাৰি।
+
+```python
+মান = 42
+print(type(মান))
+print(isinstance(মান, int))  # True
+```
+
+`isinstance()`-এ inheritance-ও বিবেচনা কৰে; সেয়ে বহু ক্ষেত্ৰত ই `type(x) == T`-তকৈ অধিক উপযোগী।
+
+Type annotation-এ code পঢ়িবলৈ আৰু static analysis-ত সহায় কৰে। কিন্তু সাধাৰণ Python execution-ত annotation-এ নিজে নিজে value-ৰ type বাধ্যতামূলকভাৱে নিয়ন্ত্ৰণ নকৰে।
+
+```python
+বয়স: int = 20
+বয়স = "বিশ"  # সাধাৰণ execution-ত Python-এ নিজে block নকৰে
+print(বয়স)
+```
+
+## ৪.৪ Mutable আৰু Immutable Objects
+
+**Mutable object**-ৰ content সৃষ্টি হোৱাৰ পিছতো সলনি কৰিব পাৰি। **Immutable object**-ৰ value সৃষ্টি হোৱাৰ পিছত সলনি কৰিব নোৱাৰি।
+
+| ধৰণ | উদাহৰণ | আচৰণ |
+|---|---|---|
+| Immutable | `int`, `float`, `bool`, `str`, `bytes`, `frozenset` | নিজৰ value in-place সলনি কৰিব নোৱাৰি |
+| Mutable | `list`, `dict`, `set`, `bytearray` | content সলনি কৰিব পাৰি |
+
+`tuple` হৈছে immutable container; কিন্তু ইয়াৰ ভিতৰত mutable object থাকিলে সেই object-ৰ content সলনি হ'ব পাৰে।
+
+```python
+তথ্য = (["অসম"], 2026)
+তথ্য[0].append("ভাষা")
+print(তথ্য)  # (['অসম', 'ভাষা'], 2026)
+
+# তথ্য[0] = ["নতুন"]  # TypeError: tuple-ৰ element replace কৰিব নোৱাৰি
+```
+
+### Immutable object-ৰ উদাহৰণ
+
+```python
+শব্দ = "অসম"
+শব্দ = শব্দ + "ীয়া"
+print(শব্দ)
+```
+
+String immutable। Concatenation-এ পুৰণি string-ৰ content সলনি নকৰে; নতুন string value সৃষ্টি কৰি নামটো নতুন object-ৰ সৈতে bind কৰে।
+
+### Mutable object-ৰ উদাহৰণ
+
+```python
+সংখ্যা = [1, 2, 3]
+সংখ্যা.append(4)
+print(সংখ্যা)  # [1, 2, 3, 4]
+```
+
+List-টো একেই object হৈ থাকে; ইয়াৰ content সলনি হয়।
+
+## ৪.৫ Shallow Copy আৰু Deep Copy
+
+Nested list বা dictionary copy কৰোঁতে copy-ৰ গভীৰতা বুজাটো প্ৰয়োজন।
+
+### Shallow Copy
+
+Shallow copy-এ বাহিৰৰ container-টোৰ নতুন object সৃষ্টি কৰে, কিন্তু ভিতৰৰ nested object-সমূহৰ reference ভাগ কৰে।
+
+```python
 import copy
 
-মূল = [[1, 2], [3, 4], [5, 6]]
+মূল = [[1, 2], [3, 4]]
+নকল = copy.copy(মূল)
 
-# Shallow Copy: ভিতৰৰ তালিকাসমূহ একেই থাকে
-আংশিক = copy.copy(মূল)
 মূল[0][0] = 99
-print(আংশিক[0][0])  # ৯৯ (প্ৰভাৱিত হ'ল!)
+print(মূল)   # [[99, 2], [3, 4]]
+print(নকল)   # [[99, 2], [3, 4]]
+```
 
-# Deep Copy: সম্পূৰ্ণ নতুন স্বতন্ত্ৰ ক্লোন
-গভীৰ = copy.deepcopy(মূল)
+ভিতৰৰ list-টো একে object হোৱা বাবে দুয়ো ঠাইতে পৰিৱৰ্তন দেখা গৈছে।
+
+### Deep Copy
+
+Deep copy-এ nested object-সমূহো পুনৰ copy কৰাৰ চেষ্টা কৰে।
+
+```python
+import copy
+
+মূল = [[1, 2], [3, 4]]
+স্বতন্ত্ৰ_নকল = copy.deepcopy(মূল)
+
 মূল[1][1] = 88
-print(গভীৰ[1][1])   # ৪ (অপ্ৰভাৱিত)
-\`\`\`
+print(মূল)             # [[1, 2], [88, 4]]
+print(স্বতন্ত্ৰ_নকল)   # [[1, 2], [3, 4]]
+```
 
----
+Deep copy-ও সকলো object-ৰ ক্ষেত্ৰত একে ধৰণে কাম কৰিব বুলি ধৰা উচিত নহয়। কিছুমান object copy কৰিব নোৱাৰি বা বিশেষ আচৰণ দেখুৱায়; custom class-এ copy-ৰ নিয়ম সলনি কৰিব পাৰে।
 
-## ৪.৪ চলকৰ সত্যতা (Truthiness)
+| পদ্ধতি | বাহিৰৰ object নতুন? | Nested reference ভাগ হয়? |
+|---|---|---|
+| `খ = ক` | নহয় | হয়, একেটা object |
+| `copy.copy(ক)` | হয় | হয় |
+| `copy.deepcopy(ক)` | হয় | সাধাৰণতে নহয়; recursive copy কৰে |
 
-\`\`\`python
-# falsy মানসমূহ:
-# 0, 0.0, "", [], {}, set(), None, False
+## ৪.৬ Truthiness: True আৰু False হিচাপে মূল্যায়ন
 
-def পৰীক্ষা(মান):
+Python-ত কিছুমান value condition-ত `False` আৰু আন কিছুমান `True` হিচাপে আচৰণ কৰে। ইয়াক truthiness বোলা হয়।
+
+সাধাৰণ falsy value:
+
+- `False`, `None`
+- সংখ্যাগত শূন্য: `0`, `0.0`, `0j`
+- খালী string: `""`
+- খালী container: `[]`, `()`, `{}`, `set()`, `range(0)`
+
+সাধাৰণতে non-zero সংখ্যা আৰু non-empty container truthy হয়। Custom class-এ `__bool__()` বা `__len__()`-ৰ জৰিয়তে নিজৰ truthiness নিৰ্ধাৰণ কৰিব পাৰে।
+
+```python
+def সত্যতা_পৰীক্ষা(মান):
     if মান:
-        return f"{মান!r} হ'ল Truthy"
-    return f"{মান!r} হ'ল Falsy"
+        return "Truthy"
+    return "Falsy"
 
-print(পৰীক্ষা([]))      # Falsy
-print(পৰীক্ষা([0]))     # Truthy
-print(পৰীক্ষা("অসম"))   # Truthy
-\`\`\``,
+print(সত্যতা_পৰীক্ষা([]))       # Falsy
+print(সত্যতা_পৰীক্ষা([0]))      # Truthy
+print(সত্যতা_পৰীক্ষা(""))       # Falsy
+print(সত্যতা_পৰীক্ষা("অসম"))    # Truthy
+print(সত্যতা_পৰীক্ষা(0))        # Falsy
+print(সত্যতা_পৰীক্ষা(None))     # Falsy
+```
+
+`[0]`-ত শূন্য সংখ্যা আছে, কিন্তু list-খন খালী নহয়। সেয়ে list-খন truthy।
+
+## ৪.৭ সাধাৰণ ভুল আৰু সাৱধানতা
+
+1. **`is`-ৰে সংখ্যা বা string তুলনা কৰা:** value তুলনাৰ বাবে সাধাৰণতে `==` ব্যৱহাৰ কৰক।
+2. **Integer caching-ৰ ওপৰত নিৰ্ভৰ কৰা:** কিছুমান Python implementation-এ কিছুমান integer পুনৰ ব্যৱহাৰ কৰিব পাৰে। ইয়াক language guarantee বুলি নধৰিব।
+3. **Assignment-ক copy বুলি ভবা:** `খ = ক`-এ নতুন list সৃষ্টি নকৰে।
+4. **Shallow copy-ক সম্পূৰ্ণ স্বাধীন copy বুলি ভবা:** nested mutable object ভাগ হৈ থাকিব পাৰে।
+5. **Type annotation-ক runtime validation বুলি ভবা:** annotation-এ নিজে type বাধ্যতামূলক নকৰে।
+6. **সকলো tuple সম্পূৰ্ণৰূপে immutable বুলি ভবা:** ভিতৰৰ mutable object-ৰ content সলনি হ'ব পাৰে।
+
+## ৪.৮ অনুশীলনী
+
+1. Python object-ৰ Identity, Type আৰু Value বুজাওক।
+2. `id()`-এ সদায় physical memory address দিয়ে নেকি?
+3. `ক = [1, 2]` আৰু `খ = ক` হ'লে `খ.append(3)`-ৰ পিছত `ক`-ৰ মান কি?
+4. `==` আৰু `is`-ৰ পাৰ্থক্য লিখক।
+5. Dynamic typing বুলিলে কি বুজায়?
+6. Type annotation-এ সাধাৰণ execution-ত ভুল type assignment বাধা দিয়ে নেকি?
+7. Mutable আৰু immutable object-ৰ দুটাকৈ উদাহৰণ দিয়ক।
+8. Shallow copy-ত nested list সলনি কৰিলে মূল আৰু নকল দুয়োটাত কিয় প্ৰভাৱ পৰে?
+9. `copy.deepcopy()` কেতিয়া উপযোগী?
+10. `[]`, `[0]`, `0` আৰু `"অসম"`-ৰ ভিতৰত কোনবোৰ truthy?
+11. `None` পৰীক্ষা কৰিবলৈ `is None` কিয় ব্যৱহাৰ কৰা হয়?
+12. Tuple-ৰ ভিতৰৰ list-ত `append()` চলাব পাৰি নে? কাৰণ লিখক।
+
+### অনুশীলনীৰ উত্তৰ
+
+1. Identity-এ object চিনাক্ত কৰে, Type-এ ধৰণ জনায়, Value-এ তথ্য জনায়।
+2. নহয়। ই identity-ৰ integer identifier দিয়ে; সদায় physical address নহয়।
+3. `[1, 2, 3]`; দুয়োটা নাম একে list object-লৈ reference কৰিছে।
+4. `==` value তুলনা কৰে; `is` একে object নে পৰীক্ষা কৰে।
+5. Variable name-এ program চলি থাকোঁতে বিভিন্ন type-ৰ object-ৰ সৈতে bind হ'ব পাৰে।
+6. নহয়। Annotation মূলত documentation আৰু static analysis-ত সহায় কৰে।
+7. Mutable: list, dict। Immutable: int, str।
+8. Shallow copy-এ nested object-ৰ reference ভাগ কৰে।
+9. Nested mutable data-ৰ অধিক স্বাধীন copy প্ৰয়োজন হ'লে।
+10. `[0]` আৰু `"অসম"` truthy; `[]` আৰু `0` falsy।
+11. `None` singleton object; `is None` identity সঠিকভাৱে পৰীক্ষা কৰে।
+12. হয়। ভিতৰৰ list mutable; কিন্তু tuple-ৰ element-টো replace কৰিব নোৱাৰি।
+
+## ৪.৯ অধিক পঢ়াৰ উৎস
+
+- Python Data Model: https://docs.python.org/3/reference/datamodel.html
+- Built-in Functions (`id`, `type`, `isinstance`): https://docs.python.org/3/library/functions.html
+- `copy` module: https://docs.python.org/3/library/copy.html
+- Truth Value Testing: https://docs.python.org/3/library/stdtypes.html#truth-value-testing
+
+## অধ্যায়ৰ সাৰাংশ
+
+Python-ত variable name-এ object-ৰ সৈতে bind হয়। Object-ৰ identity, type আৰু value থাকে। `==`-এ value তুলনা কৰে, আনহাতে `is`-এ identity তুলনা কৰে। Mutable object-ৰ content সলনি কৰিব পাৰি; immutable object-ৰ value সলনি কৰিব নোৱাৰি। Assignment-এ নতুন copy সৃষ্টি নকৰে। Shallow copy-এ nested reference ভাগ কৰে, কিন্তু deep copy-এ nested object-সমূহো copy কৰাৰ চেষ্টা কৰে। Condition-ত value-ৰ truthiness ব্যৱহাৰ হয়; খালী container আৰু শূন্য সাধাৰণতে falsy, কিন্তু non-empty container truthy।`,
     },
     {
       id: 'ch-5',
