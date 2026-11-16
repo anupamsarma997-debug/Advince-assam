@@ -6169,70 +6169,298 @@ Development আৰু production configuration পৃথক ৰাখক।
     },
     id: 'ch-19',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
-      title: 'অধ্যায় ২২: গিট আৰু CI/CD পাইপলাইন',
-      subtitle: 'Git Workflow, Conventional Commits, GitHub Actions & VPS Automated Deployment',
-      estimatedReadTime: '9 min',
-      topics: ['Git Flow & Rebase', 'Conventional Commits', 'GitHub Actions Pipeline', 'Automated VPS Deployment'],
-      content: `## ২২.১ গিট এছেন্সিয়েল ফ্ল’ (Git Essential Flow ২০২৬)
+      title: 'অধ্যায় ১৯: গিট আৰু CI/CD পাইপলাইন',
+      subtitle: 'Git Workflow, Branching, Conventional Commits, GitHub Actions আৰু নিৰাপদ Deployment',
+      estimatedReadTime: '14 min',
+      topics: ['Git Repository আৰু Branch Workflow', 'Merge, Rebase আৰু Conflict Resolution', 'Conventional Commits', 'GitHub Actions CI Pipeline', 'Secrets, Permissions আৰু Deployment Safety'],
+      content: `## ১৯.১ Git-ৰ মূল ধাৰণা
+
+Git হৈছে এটা distributed version control system। ই ফাইলৰ পৰিৱৰ্তনৰ ইতিহাস সংৰক্ষণ কৰে। Git আৰু GitHub একে বস্তু নহয়: Git হৈছে version-control software; GitHub হৈছে Git repository host আৰু collaboration platform।
+
+Git-ৰ তিনিটা গুৰুত্বপূৰ্ণ অৱস্থা:
+1. **Working directory:** বৰ্তমান সম্পাদনা কৰি থকা ফাইল।
+2. **Staging area:** পৰৱৰ্তী commit-ত অন্তৰ্ভুক্ত কৰিবলৈ বাছনি কৰা পৰিৱৰ্তন।
+3. **Repository history:** ইতিমধ্যে commit কৰা snapshot-সমূহ।
 
 \`\`\`bash
-# নতুন ব্ৰাঞ্চ সৃষ্টি
-git checkout -b feature/jwt-auth
-
-# Conventional Commits:
-git add .
-git commit -m "feat(auth): implement token verification"
-git commit -m "fix(api): resolve CORS issue for production"
-git commit -m "test(auth): add JWT expiry unit tests"
-
-# GitHub ত পুশ আৰু PR সৃষ্টি
-git push origin feature/jwt-auth
-gh pr create --title "feat: JWT Authentication" --body "Complete auth integration"
-
-# Rebase (পৰিষ্কাৰ ইতিহাস ৰাখিবলৈ)
-git checkout feature/jwt-auth
-git rebase main
+git init
+git clone https://github.com/USER/PROJECT.git
+git status
+git diff
+git add app.py
+git diff --staged
+git commit -m "feat(api): add health endpoint"
+git log --oneline --graph --decorate
 \`\`\`
+
+**সাৱধান:** \`git add .\`-এ বহু ফাইল staging-ত যোগ কৰিব পাৰে। Commit-ৰ আগতে \`git status\` আৰু \`git diff --staged\` পৰীক্ষা কৰক। Password, API key বা secret file commit নকৰিব।
 
 ---
 
-## ২২.২ GitHub Actions CI/CD (২০২৬)
+## ১৯.২ Branch-ভিত্তিক Workflow
+
+Branch-এ মূল branch-ৰ কামত প্ৰভাৱ নেপেলোৱাকৈ নতুন feature বা bug fix-ত কাম কৰিবলৈ দিয়ে।
+
+\`\`\`bash
+git fetch origin
+git switch main
+git pull --ff-only origin main
+git switch -c feature/user-profile
+
+# কাম আৰু পৰীক্ষাৰ পিছত
+git status
+git diff
+git add app.py
+git commit -m "feat(profile): add user profile endpoint"
+git push -u origin feature/user-profile
+\`\`\`
+
+তাৰ পিছত GitHub-ত Pull Request (PR) সৃষ্টি কৰি code review আৰু automated checks-ৰ পিছত merge কৰিব পাৰি।
+
+**Merge আৰু Rebase:**
+- Merge-এ দুটা branch-ৰ ইতিহাস একত্ৰ কৰে।
+- Rebase-এ এটা branch-ৰ commit-সমূহক নতুন base-ৰ ওপৰত পুনৰ প্ৰয়োগ কৰে; commit hash সলনি হয়।
+
+\`\`\`bash
+git switch feature/user-profile
+git merge main
+
+# অথবা
+git fetch origin
+git rebase origin/main
+\`\`\`
+
+Shared branch-ত অনুমতি নোহোৱাকৈ rebase বা force-push নকৰিব। Rebase conflict সমাধান কৰি \`git add <file>\` আৰু \`git rebase --continue\` ব্যৱহাৰ কৰিব পাৰি; বাতিল কৰিবলৈ \`git rebase --abort\`।
+
+---
+
+## ১৯.৩ Merge Conflict সমাধান
+
+একে ফাইলৰ একে অংশত পৃথক branch-ত অসামঞ্জস্যপূৰ্ণ পৰিৱৰ্তন হ'লে Git-এ নিজে সিদ্ধান্ত ল'ব নোৱাৰে।
+
+\`\`\`text
+<<<<<<< HEAD
+message = "Hello"
+=======
+message = "নমস্কাৰ"
+>>>>>>> feature/greeting
+\`\`\`
+
+সঠিক code নিজে বাছনি বা মিলাই লিখক আৰু conflict marker আঁতৰাওক।
+
+\`\`\`bash
+git status
+# ফাইল সম্পাদনা কৰি conflict সমাধান কৰক
+git add path/to/file.py
+git commit
+\`\`\`
+
+Rebase চলি থাকিলে \`git rebase --continue\` ব্যৱহাৰ কৰক। সমাধানৰ পিছত সংশ্লিষ্ট test চলাওক।
+
+---
+
+## ১৯.৪ Conventional Commits
+
+Commit message-ৰ এটা নিয়মিত format হৈছে Conventional Commits:
+
+\`\`\`text
+<type>(<scope>): <short description>
+\`\`\`
+
+- \`feat\`: নতুন feature।
+- \`fix\`: bug fix।
+- \`docs\`: documentation।
+- \`test\`: test যোগ বা সংশোধন।
+- \`refactor\`: বাহ্যিক আচৰণ নসলোৱাকৈ code গঠন উন্নত কৰা।
+- \`chore\`: maintenance বা tooling।
+
+\`\`\`bash
+git commit -m "feat(auth): add token validation"
+git commit -m "fix(api): handle missing user ID"
+git commit -m "docs(readme): explain local setup"
+git commit -m "test(auth): cover expired token case"
+\`\`\`
+
+Breaking change থাকিলে commit body বা footer-ত \`BREAKING CHANGE:\` উল্লেখ কৰক। কেৱল \`feat\` লিখিলেই feature-টো bug-free নহয়।
+
+---
+
+## ১৯.৫ CI/CD কি?
+
+**CI (Continuous Integration):** code push বা Pull Request-ত স্বয়ংক্ৰিয়ভাৱে lint, test আৰু build চলোৱা।
+
+**CD (Continuous Delivery/Deployment):** পৰীক্ষিত software release বা deployment-ৰ বাবে সাজু কৰা; Continuous Deployment-ত নিয়ম পূৰণ হ'লে production-লৈ স্বয়ংক্ৰিয় deploy কৰা হয়।
+
+সাধাৰণ pipeline:
+1. Code push বা Pull Request।
+2. Dependency install।
+3. Automated test আৰু quality check।
+4. Build বা package তৈয়াৰ।
+5. Artifact সংৰক্ষণ।
+6. অনুমোদিত নিয়ম অনুসৰি staging বা production deployment।
+
+Green pipeline-এ কেৱল নিৰ্ধাৰিত checks সফল হোৱা বুজায়; ই সকলো bug নাই বুলি প্ৰমাণ নকৰে।
+
+---
+
+## ১৯.৬ GitHub Actions-ৰে CI Pipeline
+
+Workflow YAML ফাইল \`.github/workflows/\` directory-ত থাকে। তলৰ উদাহৰণে Python test চলায় আৰু সফল হ'লে build artifact upload কৰে। ই নিজে production server-ত deploy নকৰে।
 
 \`\`\`yaml
-# .github/workflows/ci-cd.yml
-name: CI/CD Pipeline
+# .github/workflows/ci.yml
+name: Python CI
+
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-\${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run Tests
-        run: pytest --cov=app --cov-report=xml
+          python-version: "3.12"
+          cache: "pip"
 
-  deploy:
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        run: python -m pytest -q
+
+  build:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - name: Build and Push Docker
-        run: docker build -t codeyatra-api:latest .
-\`\`\``,
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p dist
+          cp -r app dist/app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-build
+          path: dist/
+\`\`\`
+
+এই উদাহৰণত \`app/\` directory আৰু \`requirements.txt\` থকা Python project ধৰা হৈছে। Project-ৰ গঠন বেলেগ হ'লে path আৰু install command সলনি কৰিব লাগিব।
+
+- \`on\`: কোন event-ত workflow চলিব।
+- \`jobs\`: পৃথক কামসমূহ।
+- \`needs: test\`: test সফল হোৱাৰ পিছতহে build চলায়।
+- \`permissions\`: workflow token-ৰ অধিকাৰ সীমিত কৰে।
+- \`concurrency\`: একে group-ৰ পুৰণি workflow বাতিল কৰিব পাৰে।
+- \`uses\`: পুনৰ ব্যৱহাৰযোগ্য action।
+- \`run\`: shell command।
+
+বাস্তৱ project-ত action version আৰু supply-chain security পৰীক্ষা কৰক। অধিক কঠোৰ নিৰাপত্তাৰ বাবে action-সমূহৰ পূৰ্ণ commit SHA pin কৰা আৰু dependency version lock কৰা উত্তম।
+
+---
+
+## ১৯.৭ Secrets আৰু Deployment Security
+
+API key, database password বা SSH private key source code-ত লিখি নাৰাখিব। GitHub repository-ৰ **Settings → Secrets and variables → Actions**-ত secret সংৰক্ষণ কৰিব পাৰি।
+
+\`\`\`yaml
+- name: Check deployment credential
+  env:
+    DEPLOY_TOKEN: \${{ secrets.DEPLOY_TOKEN }}
+  run: |
+    test -n "$DEPLOY_TOKEN"
+    echo "Deployment credential is available"
+\`\`\`
+
+ইয়াত secret-ৰ মান print কৰা হোৱা নাই। বাস্তৱ deployment-ত credential কেৱল প্ৰয়োজনীয় কামৰ বাবে ব্যৱহাৰ কৰক।
+
+নিৰাপত্তাৰ নিয়ম:
+1. Secret কেতিয়াও log-ত print নকৰিব।
+2. প্ৰয়োজন নোহোৱা workflow-ত secret নিদিব।
+3. \`GITHUB_TOKEN\`-ৰ permission ন্যূনতম ৰাখক।
+4. Production environment-ত reviewer approval আৰু branch restriction ব্যৱহাৰ কৰক।
+5. সম্ভৱ হ'লে OIDC-ভিত্তিক short-lived credential ব্যৱহাৰ কৰক।
+6. Untrusted Pull Request code-লৈ production secret নিদিব।
+7. Secret leak হ'লে তৎক্ষণাৎ revoke বা rotate কৰক।
+
+Deployment-ৰ আগতে test/build, staging smoke test, database backup, migration plan আৰু rollback ব্যৱস্থা নিশ্চিত কৰক। Build artifact নিজে live website নহয়; VPS বা cloud-ত deploy কৰিবলৈ পৃথক deployment configuration আৰু access control লাগে।
+
+---
+
+## ১৯.৮ ভুল Commit আৰু পৰিৱৰ্তন ঘূৰাই অনা
+
+\`\`\`bash
+# Staging-ৰ পৰা ফাইল আঁতৰোৱা; working file অক্ষত থাকে
+git restore --staged app.py
+
+# শেষ commit-ৰ পিছৰ local edit বাতিল কৰে
+# সাৱধান: local edit হেৰুৱাব পাৰে
+git restore app.py
+
+# আগৰ commit-ৰ বিপৰীতে নতুন revert commit সৃষ্টি কৰে
+git revert <commit-hash>
+\`\`\`
+
+Shared branch-ত push কৰা commit বাতিল কৰিবলৈ সাধাৰণতে \`git revert\` অধিক নিৰাপদ, কাৰণ ই ইতিহাস মচি নিদিয়ে। \`git reset --hard\`-এ পৰিৱৰ্তন হেৰুৱাব পাৰে; বুজি নোপোৱাকৈ ব্যৱহাৰ নকৰিব।
+
+---
+
+## ১৯.৯ অনুশীলনী
+
+1. Git আৰু GitHub-ৰ মাজৰ পাৰ্থক্য লিখক।
+2. Working directory, staging area আৰু repository history ব্যাখ্যা কৰক।
+3. Feature branch সৃষ্টি কৰি commit আৰু push কৰাৰ command লিখক।
+4. Merge আৰু rebase-ৰ পাৰ্থক্য কি?
+5. Conventional Commit-ৰ তিনিটা উদাহৰণ দিয়ক।
+6. CI pipeline-ত \`needs: test\`-ৰ কাম কি?
+7. GitHub Actions-ত secret source code-ত ৰখা উচিত নে?
+8. Shared branch-ত ভুল commit বাতিল কৰিবলৈ \`git revert\` কিয় উপযোগী?
+
+### উত্তৰ-সংকেত
+
+1. Git হৈছে version-control tool; GitHub হৈছে hosting আৰু collaboration platform।
+2. Working directory-ত edit, staging area-ত commit-ৰ বাবে বাছনি, history-ত সংৰক্ষিত commit থাকে।
+3. \`git switch -c feature/name\`, \`git add\`, \`git commit\`, \`git push -u origin feature/name\`।
+4. Merge-এ branch একত্ৰ কৰে; rebase-এ commit নতুন base-ৰ ওপৰত পুনৰ প্ৰয়োগ কৰে।
+5. \`feat(ui): add search\`, \`fix(api): handle timeout\`, \`docs: update setup guide\`।
+6. Test সফল হোৱাৰ পিছতহে dependent job চলায়।
+7. নহয়; GitHub Secrets ব্যৱহাৰ কৰিব লাগে।
+8. Revert-এ নতুন commit সৃষ্টি কৰি পৰিৱৰ্তন উলটাই দিয়ে আৰু shared history অক্ষত ৰাখে।
+
+---
+
+## ১৯.১০ সাৰাংশ
+
+Git-এ code-ৰ ইতিহাস আৰু collaboration নিয়ন্ত্ৰণ কৰে। Branch, commit, merge, rebase আৰু conflict resolution-এ দলীয় কাম সংগঠিত কৰে। Conventional Commits-এ ইতিহাস বুজিবলৈ সহজ কৰে। GitHub Actions-এ test আৰু build স্বয়ংক্ৰিয় কৰে; নিৰাপদ deployment-ৰ বাবে secret management, ন্যূনতম permission, approval আৰু rollback plan অত্যাৱশ্যক।
+
+### চৰকাৰী নথি
+
+- Git: https://git-scm.com/doc
+- GitHub Actions: https://docs.github.com/actions
+- Conventional Commits: https://www.conventionalcommits.org/
+- GitHub Actions security: https://docs.github.com/actions/security-guides/security-hardening-for-github-actions
+`,
     },
-    {
-      id: 'ch-20',
+    id: 'ch-20',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২৩: Pytest আৰু টেষ্ট-ড্ৰিভন ডেভেলপমেণ্ট (TDD)',
       subtitle: 'TDD Red-Green-Refactor, Fixtures, Mocking & Property-Based Testing',
