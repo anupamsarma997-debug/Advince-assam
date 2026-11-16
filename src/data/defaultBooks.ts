@@ -5175,100 +5175,558 @@ Production-ready API-ৰ বাবে কেৱল FastAPI code যথেষ্�
     },
     id: 'ch-17',
       volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
-      title: 'অধ্যায় ২০: আধুনিক JavaScript (ES6+) আৰু React ১৯',
-      subtitle: 'Modern ES2025 Features, React 19 Hooks, Server Components & Custom Hooks',
-      estimatedReadTime: '10 min',
-      topics: ['Modern JavaScript Features', 'React 19 Custom Hooks', 'React Server Components', 'State Optimization'],
-      content: `## ২০.১ আধুনিক জাভাস্ক্রিপ্ট (ES6+ / ES2025)
+      title: 'অধ্যায় ১৭: আধুনিক JavaScript (ES6+) আৰু React 19',
+      subtitle: 'JavaScript Modules, Async Programming, React Hooks, Actions, Forms আৰু Server Components',
+      estimatedReadTime: '35 min',
+      topics: ['Modern JavaScript Syntax', 'Destructuring and Spread', 'Array Methods', 'Modules', 'Promises and Async/Await', 'Fetch and AbortController', 'React Components and JSX', 'Props and State', 'React Hooks', 'React 19 Actions', 'useActionState and useOptimistic', 'Form Handling', 'Server Components', 'Accessibility and Testing'],
+      content: \`## ১৭.১ আধুনিক JavaScript-ৰ পৰিচয়
+
+JavaScript হৈছে web browser-ত বহুলভাৱে ব্যৱহৃত programming language। আধুনিক JavaScript-ত ES2015 (ES6)-ৰ পৰা বহু সুবিধা যোগ হৈছে। ECMAScript হৈছে language-ৰ standard; JavaScript engine-এ সেই standard-ৰ feature সমৰ্থন কৰে।
+
+এই অধ্যায়ত ব্যৱহাৰ কৰা code-সমূহ আধুনিক browser আৰু সমৰ্থিত JavaScript runtime-ৰ বাবে। সকলো feature প্ৰতিটো পুৰণি browser-ত নাথাকিবও পাৰে।
+
+## ১৭.২ let, const আৰু Scope
+
+\`let\` আৰু \`const\` block-scoped; \`var\` function-scoped। নতুন code-ত সাধাৰণতে \`const\` ব্যৱহাৰ কৰক, value পুনৰ assign কৰিব লাগিলে \`let\` ব্যৱহাৰ কৰক।
 
 \`\`\`javascript
-// ১. Destructuring
-const ব্যৱহাৰকাৰী = { নাম: "ৰিকু", বয়স: 25, ঠিকনা: { চহৰ: "গুৱাহাটী" } };
-const { নাম, বয়স, ঠিকনা: { চহৰ } } = ব্যৱহাৰকাৰী;
+const নাম = "ৰিকু";
+let বয়স = 25;
 
-// ২. Spread & Rest
-const সংখ্যা = [1, 2, 3];
-const নতুন = [...সংখ্যা, 4, 5];
+বয়স = 26;
 
-// ৩. Async/Await with Error Handling
-async function ডেটা_আনা(url) {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("নেটৱৰ্ক ত্ৰুটি!");
-    return await res.json();
-  } catch (err) {
-    console.error("ত্ৰুটি:", err.message);
-    return null;
-  }
-}
+// const-ত object reference পুনৰ assign কৰিব নোৱাৰি,
+// কিন্তু object-ৰ property সলনি কৰিব পাৰি।
+const ব্যৱহাৰকাৰী = { নাম: "ৰিকু" };
+ব্যৱহাৰকাৰী.নাম = "ৰিমা";
 
-// ৪. Optional Chaining & Nullish Coalescing
-const চহৰ_নাম = ব্যৱহাৰকাৰী?.ঠিকনা?.চহৰ;
-const মান = null ?? "ডিফল্ট মান";
+console.log(নাম, বয়স, ব্যৱহাৰকাৰী);
 \`\`\`
 
----
+\`const\` মানে object সম্পূৰ্ণ immutable নহয়; কেৱল variable-টোত নতুন reference assign কৰিব নোৱাৰি।
 
-## ২০.২ React ১৯ কম্পোনেন্ট & Custom Hook
+## ১৭.৩ Arrow Function আৰু Template Literal
+
+Arrow function-এ function লিখাৰ সংক্ষিপ্ত syntax দিয়ে। ইয়াৰ নিজস্ব \`this\` নাথাকে; বাহিৰৰ lexical scope-ৰ \`this\` ব্যৱহাৰ কৰে।
+
+\`\`\`javascript
+const যোগ = (a, b) => a + b;
+
+const শুভেচ্ছা = (নাম) => {
+  return \`নমস্কাৰ, \${নাম}!\`;
+};
+
+console.log(যোগ(10, 20));
+console.log(শুভেচ্ছা("ৰিকু"));
+\`\`\`
+
+Object method বা constructor-ত dynamic \`this\` প্ৰয়োজন হ'লে arrow function সদায় উপযুক্ত নহয়।
+
+## ১৭.৪ Destructuring, Spread আৰু Rest
+
+Destructuring-এ array বা object-ৰ value পৃথক variable-ত ল'বলৈ সহায় কৰে।
+
+\`\`\`javascript
+const ব্যক্তি = {
+  নাম: "ৰিকু",
+  বয়স: 25,
+  ঠিকনা: { চহৰ: "গুৱাহাটী" }
+};
+
+const {
+  নাম,
+  বয়স,
+  ঠিকনা: { চহৰ }
+} = ব্যক্তি;
+
+const সংখ্যা = [1, 2, 3];
+const [প্ৰথম, দ্বিতীয়] = সংখ্যা;
+
+const নতুনসংখ্যা = [...সংখ্যা, 4, 5];
+
+function যোগফল(...মানসমূহ) {
+  return মানসমূহ.reduce((মুঠ, মান) => মুঠ + মান, 0);
+}
+
+console.log(নাম, বয়স, চহৰ, প্ৰথম, দ্বিতীয়);
+console.log(নতুনসংখ্যা, যোগফল(1, 2, 3, 4));
+\`\`\`
+
+Spread আৰু Rest syntax একে \`...\` চিহ্ন ব্যৱহাৰ কৰে, কিন্তু context অনুসৰি অৰ্থ পৃথক। Object বা array-ৰ spread সাধাৰণতে shallow copy; nested object স্বয়ংক্ৰিয়ভাৱে deep copy নহয়।
+
+## ১৭.৫ Array Methods: map, filter আৰু reduce
+
+Array-ৰ data transform আৰু filter কৰিবলৈ এই method-সমূহ বহুলভাৱে ব্যৱহাৰ কৰা হয়।
+
+\`\`\`javascript
+const নম্বৰ = [2, 4, 6, 8];
+
+const দুগুণ = নম্বৰ.map(x => x * 2);
+const ডাঙৰ = নম্বৰ.filter(x => x > 4);
+const মুঠ = নম্বৰ.reduce((sum, x) => sum + x, 0);
+
+console.log(দুগুণ); // [4, 8, 12, 16]
+console.log(ডাঙৰ);  // [6, 8]
+console.log(মুঠ);   // 20
+\`\`\`
+
+- \`map()\`-এ প্ৰতিটো element transform কৰি নতুন array দিয়ে।
+- \`filter()\`-এ condition পূৰণ কৰা element-সমূহৰ নতুন array দিয়ে।
+- \`reduce()\`-এ value-সমূহ একত্ৰিত কৰি এটা ফলাফল দিয়ে।
+
+React-ত list render কৰিবলৈ \`map()\` বহুল ব্যৱহৃত। প্ৰতিটো item-ৰ বাবে stable আৰু unique \`key\` দিব লাগে।
+
+## ১৭.৬ Optional Chaining আৰু Nullish Coalescing
+
+Optional chaining (\`?.\`)-এ null বা undefined থকা nested property access-ত error হোৱাৰ পৰা ৰক্ষা কৰে। Nullish coalescing (\`??\`)-এ কেৱল null বা undefined হ'লে default value দিয়ে।
+
+\`\`\`javascript
+const ব্যৱহাৰকাৰী = {
+  নাম: "ৰিকু",
+  ঠিকনা: { চহৰ: "গুৱাহাটী" }
+};
+
+const চহৰ = ব্যৱহাৰকাৰী?.ঠিকনা?.চহৰ;
+const ফোন = ব্যৱহাৰকাৰী?.যোগাযোগ?.ফোন ?? "নিদিয়া হৈছে";
+
+console.log(চহৰ, ফোন);
+\`\`\`
+
+\`||\` আৰু \`??\` একে নহয়। \`||\`-এ 0, false আৰু empty string-কো fallback বুলি গণ্য কৰে; \`??\`-এ কেৱল null আৰু undefined-ত fallback দিয়ে।
+
+## ১৭.৭ JavaScript Modules
+
+ডাঙৰ application-ত code পৃথক file-ত ভাগ কৰি export আৰু import কৰা হয়।
+
+\`\`\`javascript
+// math.js
+export function যোগ(a, b) {
+  return a + b;
+}
+
+export const PI = 3.14159;
+\`\`\`
+
+\`\`\`javascript
+// app.js
+import { যোগ, PI } from "./math.js";
+
+console.log(যোগ(10, 20));
+console.log(PI);
+\`\`\`
+
+ES Modules-ত \`export default\` আৰু named export দুয়োটা আছে। Browser-ত module ব্যৱহাৰ কৰিবলৈ HTML script-ত \`type="module"\` লাগে। Build tool-এ module bundle কৰাৰ কামো কৰিব পাৰে।
+
+## ১৭.৮ Promise আৰু Async/Await
+
+Network request বা file operation-ৰ দৰে asynchronous কামত Promise ব্যৱহাৰ কৰা হয়। Promise-ৰ অৱস্থা pending, fulfilled বা rejected হ'ব পাৰে।
+
+\`\`\`javascript
+function অপেক্ষা(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function কাম() {
+  console.log("আৰম্ভ");
+  await অপেক্ষা(500);
+  console.log("শেষ");
+}
+
+কাম().catch(error => {
+  console.error("সমস্যা:", error);
+});
+\`\`\`
+
+\`async\` function সদায় Promise return কৰে। \`await\`-এ সেই Promise settle নোহোৱালৈ function-ৰ ভিতৰৰ execution স্থগিত ৰাখে; ই সম্পূৰ্ণ JavaScript thread বন্ধ নকৰে।
+
+## ১৭.৯ Fetch API আৰু Error Handling
+
+\`fetch()\`-এ HTTP request পঠিয়ায়। HTTP 404 বা 500 হ'লেই Promise reject নহয়; সেয়েহে \`response.ok\` পৰীক্ষা কৰিব লাগে।
+
+\`\`\`javascript
+async function ডেটা_আনা(url) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(\`HTTP error: \${response.status}\`);
+  }
+
+  return response.json();
+}
+
+ডেটা_আনা("/api/users")
+  .then(data => console.log(data))
+  .catch(error => console.error("Request ব্যৰ্থ:", error));
+\`\`\`
+
+Request cancel কৰিবলৈ \`AbortController\` ব্যৱহাৰ কৰিব পাৰি।
+
+\`\`\`javascript
+async function ডেটা_আনা(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error(\`HTTP \${response.status}\`);
+    }
+
+    return await response.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+\`\`\`
+
+এই উদাহৰণত পাঁচ ছেকেণ্ডৰ পিছত request abort কৰা হয়। Production code-ত AbortError-সহ error type পৃথকভাৱে handle কৰিব লাগে।
+
+## ১৭.১০ React কি?
+
+React হৈছে user interface নিৰ্মাণৰ JavaScript library। UI-টো reusable component-ত ভাগ কৰা হয়। Component সাধাৰণতে JavaScript function, যিয়ে JSX return কৰে।
 
 \`\`\`jsx
-import React, { useState, useEffect } from 'react';
+function Greeting() {
+  return <h1>নমস্কাৰ, অসম!</h1>;
+}
 
-// Custom API Hook
-export function useAPI(url) {
+export default function App() {
+  return (
+    <main>
+      <Greeting />
+      <p>React component-ৰ উদাহৰণ।</p>
+    </main>
+  );
+}
+\`\`\`
+
+JSX HTML-ৰ দৰে দেখায়, কিন্তু ই JavaScript syntax extension। JSX-ত JavaScript expression লিখিবলৈ \`{}\` ব্যৱহাৰ কৰা হয়।
+
+## ১৭.১১ Props আৰু State
+
+Props parent component-ৰ পৰা child component-লৈ data পঠিয়ায়। Props-কে component-এ mutate কৰিব নালাগে। State হৈছে component-ৰ নিজা পৰিৱৰ্তনশীল UI data।
+
+\`\`\`jsx
+import { useState } from "react";
+
+function Counter({ আৰম্ভণি = 0 }) {
+  const [গণনা, setগণনা] = useState(আৰম্ভণি);
+
+  return (
+    <section>
+      <p>গণনা: {গণনা}</p>
+      <button onClick={() => setগণনা(previous => previous + 1)}>
+        বৃদ্ধি কৰক
+      </button>
+    </section>
+  );
+}
+
+export default function App() {
+  return <Counter আৰম্ভণি={5} />;
+}
+\`\`\`
+
+State update-ত আগৰ state-ৰ ওপৰত নিৰ্ভৰ কৰিলে updater function ব্যৱহাৰ কৰাটো ভাল। State-ৰ value সরাসৰি mutate নকৰিব।
+
+## ১৭.১২ React Hooks
+
+Hooks-এ function component-ত state আৰু আন React feature ব্যৱহাৰ কৰিবলৈ দিয়ে। Hook-সমূহ component বা custom Hook-ৰ শীৰ্ষ স্তৰত call কৰিব লাগে; loop, condition বা nested function-ৰ ভিতৰত নহয়।
+
+সাধাৰণ Hooks:
+
+- \`useState\` — local state।
+- \`useEffect\` — external system-ৰ সৈতে synchronization।
+- \`useContext\` — context value পঢ়া।
+- \`useRef\` — render-ৰ মাজত mutable reference ৰখা।
+- \`useMemo\` — expensive calculation memoize কৰা।
+- \`useCallback\` — function identity memoize কৰা।
+
+### useEffect-ৰ উদাহৰণ
+
+\`\`\`jsx
+import { useEffect, useState } from "react";
+
+function Clock() {
+  const [সময়, setসময়] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setসময়(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return <p>বৰ্তমান সময়: {সময়.toLocaleTimeString()}</p>;
+}
+\`\`\`
+
+Effect-ৰ cleanup-এ component unmount বা dependency সলনি হ'লে timer বন্ধ কৰে। কেৱল state-ৰ পৰা আন state গণনা কৰিব পাৰিলে অপ্রয়োজনীয় Effect নিলিখিব।
+
+## ১৭.১৩ Custom Hook
+
+একাধিক component-ত একে stateful logic ব্যৱহাৰ কৰিবলৈ custom Hook সৃষ্টি কৰিব পাৰি। Custom Hook-ৰ নাম \`use\`-ৰে আৰম্ভ হোৱা উচিত।
+
+\`\`\`jsx
+import { useEffect, useState } from "react";
+
+export function useUsers(url) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let cancelled = false;
-    async function fetchData() {
+    const controller = new AbortController();
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
       try {
-        setLoading(true);
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
-        const json = await res.json();
-        if (!cancelled) setData(json);
+        const response = await fetch(url, {
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error(\`HTTP \${response.status}\`);
+        }
+
+        const result = await response.json();
+        setData(result);
       } catch (err) {
-        if (!cancelled) setError(err.message);
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
-    fetchData();
-    return () => { cancelled = true; };
+
+    load();
+    return () => controller.abort();
   }, [url]);
 
   return { data, loading, error };
 }
+\`\`\`
 
-export function UserDashboard() {
-  const [filter, setFilter] = useState('');
-  const { data, loading, error } = useAPI('/api/v1/users');
+এই Hook-টো array-ৰূপে user data আহিব বুলি ধৰি লয়। বাস্তৱ API-ৰ response shape অনুসৰি validation আৰু type checking যোগ কৰিব লাগে।
 
-  if (loading) return <div>লোড হৈ আছে...</div>;
-  if (error) return <div>ত্ৰুটি: {error}</div>;
+## ১৭.১৪ React 19-ৰ Actions আৰু Form Handling
+
+React 19-ত Action-ভিত্তিক form handling-ৰ সুবিধা উন্নত হৈছে। Form-ৰ \`action\` prop-ত function দিব পাৰি। \`useActionState\`-এ action-ৰ result আৰু pending state পৰিচালনা কৰাত সহায় কৰে।
+
+\`\`\`jsx
+import { useActionState } from "react";
+
+async function saveName(previousState, formData) {
+  const name = formData.get("name");
+
+  if (typeof name !== "string" || name.trim().length < 2) {
+    return { message: "নাম কমেও ২টা আখৰৰ হ'ব লাগিব" };
+  }
+
+  // শিক্ষামূলক উদাহৰণ: ইয়াত server-লৈ save কৰা হোৱা নাই।
+  return { message: \`নাম গ্ৰহণ কৰা হ'ল: \${name.trim()}\` };
+}
+
+export function NameForm() {
+  const [state, formAction, pending] = useActionState(
+    saveName,
+    { message: "" }
+  );
 
   return (
-    <div className="dashboard">
-      <h1>ব্যৱহাৰকাৰী ডেশ্ববৰ্ড</h1>
-      <input 
-        placeholder="সন্ধান কৰক..." 
-        value={filter} 
-        onChange={e => setFilter(e.target.value)} 
-      />
-      <ul>
-        {data.filter(u => u.name?.toLowerCase().includes(filter.toLowerCase())).map(u => (
-          <li key={u.id}><strong>{u.name}</strong> — {u.email}</li>
-        ))}
-      </ul>
-    </div>
+    <form action={formAction}>
+      <label>
+        নাম:
+        <input name="name" required />
+      </label>
+
+      <button type="submit" disabled={pending}>
+        {pending ? "অপেক্ষা কৰক..." : "জমা দিয়ক"}
+      </button>
+
+      <p aria-live="polite">{state.message}</p>
+    </form>
   );
 }
-\`\`\``,
+\`\`\`
+
+ইয়াত action-এ কেৱল local result দেখুৱায়; কোনো database বা server-ত তথ্য সংৰক্ষণ নকৰে। বাস্তৱ application-ত server-side validation, authentication আৰু error handling লাগিব।
+
+## ১৭.১৫ useOptimistic আৰু useFormStatus
+
+\`useOptimistic\`-এ server action সম্পূৰ্ণ হোৱাৰ আগতেই UI-ত সম্ভাৱ্য নতুন state দেখুৱাব পাৰে। Server operation ব্যৰ্থ হ'লে বাস্তৱ state-লৈ ঘূৰি আহিব লাগে।
+
+\`\`\`jsx
+import { useOptimistic, useState } from "react";
+
+function MessageList({ initialMessages, sendMessage }) {
+  const [messages, setMessages] = useState(initialMessages);
+
+  const [optimisticMessages, addOptimisticMessage] =
+    useOptimistic(messages, (current, text) => [
+      ...current,
+      { text, sending: true }
+    ]);
+
+  async function formAction(formData) {
+    const text = String(formData.get("message") || "").trim();
+    if (!text) return;
+
+    addOptimisticMessage(text);
+
+    const saved = await sendMessage(text);
+    setMessages(current => [...current, saved]);
+  }
+
+  return (
+    <>
+      <ul>
+        {optimisticMessages.map((message, index) => (
+          <li key={index}>
+            {message.text}
+            {message.sending ? " (পঠিওৱা হৈছে...)" : ""}
+          </li>
+        ))}
+      </ul>
+
+      <form action={formAction}>
+        <input name="message" required />
+        <button type="submit">পঠিয়াওক</button>
+      </form>
+    </>
+  );
+}
+\`\`\`
+
+এইটো optimistic UI-ৰ ধাৰণা বুজাবলৈ। Production-ত stable message ID, duplicate submission control আৰু failure rollback/error feedback যোগ কৰিব লাগে। \`useFormStatus\`-এ parent form-ৰ submission status পঢ়িবলৈ সহায় কৰে; ইয়াক form-ৰ ভিতৰত থকা child component-ত call কৰিব লাগে।
+
+## ১৭.১৬ Server Components আৰু Client Components
+
+React Server Components-এ server-ত component render কৰি client-লৈ প্ৰয়োজনীয় output পঠিয়াবলৈ দিয়ে। কিন্তু Server Components ব্যৱহাৰ কৰিবলৈ framework বা server environment-ৰ সমৰ্থন লাগে; সাধাৰণ client-only React app-ত কেৱল import কৰিলেই এই সুবিধা পোৱা নাযায়।
+
+- Server Component-ত server-side data access কৰিব পাৰি।
+- Client Component-ত state, event handler আৰু browser API ব্যৱহাৰ কৰিব পাৰি।
+- Client boundary চিহ্নিত কৰিবলৈ সমৰ্থিত framework-ত \`"use client"\` directive ব্যৱহাৰ কৰা হয়।
+- Server-only secret বা database credential client bundle-ত প্ৰকাশ কৰিব নালাগে।
+
+\`\`\`jsx
+// Framework-সমৰ্থিত Server Component-ৰ ধাৰণামূলক উদাহৰণ
+export default async function UsersPage() {
+  const response = await fetch("https://example.com/api/users");
+
+  if (!response.ok) {
+    throw new Error("User data load কৰিব পৰা নগ'ল");
+  }
+
+  const users = await response.json();
+
+  return (
+    <main>
+      <h1>ব্যৱহাৰকাৰী</h1>
+      <ul>
+        {users.map(user => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+\`\`\`
+
+এই code-টো framework-সমৰ্থিত server environment-ৰ উদাহৰণ। Browser-only React app-ত এইদৰে server component চলিব বুলি ধৰি ল'ব নালাগে।
+
+## ১৭.১৭ Accessibility আৰু ভাল অভ্যাস
+
+1. Button, input আৰু link-ৰ বাবে অৰ্থপূৰ্ণ HTML element ব্যৱহাৰ কৰক।
+2. প্ৰতিটো input-ৰ সৈতে label সংযোগ কৰক।
+3. Keyboard-ৰে UI ব্যৱহাৰ কৰিব পৰা হ'ব লাগে।
+4. Loading আৰু error message screen reader-ৰ বাবে প্ৰকাশ কৰক।
+5. List render কৰোঁতে stable key ব্যৱহাৰ কৰক।
+6. Props mutate নকৰিব; state immutable ধৰণে update কৰক।
+7. প্ৰতিটো data request-ত error আৰু loading state বিবেচনা কৰক।
+8. Component-সমূহ সৰু আৰু পুনৰ ব্যৱহাৰযোগ্য ৰাখক।
+9. অপ্রয়োজনীয় Effect আৰু memoization এৰাই চলক।
+10. Server-side authorization-ৰ বিকল্প হিচাপে frontend restriction ব্যৱহাৰ নকৰিব।
+
+## ১৭.১৮ সাধাৰণ ভুল
+
+1. \`const\`-এ object-ৰ ভিতৰৰ property-ও immutable কৰে বুলি ধৰা।
+2. Spread operator-এ deep copy কৰে বুলি ধৰা।
+3. \`||\` আৰু \`??\`-ক একে বুলি ব্যৱহাৰ কৰা।
+4. Fetch-ত \`response.ok\` পৰীক্ষা নকৰা।
+5. React list-ত index-ক সদায় key হিচাপে ব্যৱহাৰ কৰা।
+6. State-ৰ value সরাসৰি mutate কৰা।
+7. Hook-সমূহ condition-ৰ ভিতৰত call কৰা।
+8. Effect-ৰ cleanup নকৰা।
+9. সকলো asynchronous error handle নকৰা।
+10. Server Component আৰু Client Component-ৰ পাৰ্থক্য নুবুজা।
+
+## ১৭.১৯ অনুশীলনী
+
+1. \`let\` আৰু \`const\`-ৰ পাৰ্থক্য কি?
+2. Arrow function-ৰ \`this\` কেনেকৈ নিৰ্ধাৰিত হয়?
+3. Destructuring-ৰ এটা উদাহৰণ লিখক।
+4. Spread আৰু Rest-ৰ পাৰ্থক্য কি?
+5. \`map()\`, \`filter()\` আৰু \`reduce()\`-ৰ কাম লিখক।
+6. Optional chaining কিয় ব্যৱহাৰ কৰা হয়?
+7. \`||\` আৰু \`??\`-ৰ পাৰ্থক্য কি?
+8. JavaScript module-ত named export কেনেকৈ import কৰে?
+9. Promise-ৰ তিনিটা state কি?
+10. Fetch request-ত HTTP error কেনেকৈ চিনাক্ত কৰিব?
+11. React component আৰু JSX কি?
+12. Props আৰু State-ৰ পাৰ্থক্য কি?
+13. Hook call কৰাৰ নিয়ম কি?
+14. \`useEffect\`-ৰ cleanup কিয় লাগে?
+15. Custom Hook-ৰ নাম কেনেকৈ আৰম্ভ হয়?
+16. React 19-ৰ \`useActionState\`-এ কি সুবিধা দিয়ে?
+17. \`useOptimistic\` কেতিয়া ব্যৱহাৰ হয়?
+18. Server Component আৰু Client Component-ৰ পাৰ্থক্য কি?
+
+### উত্তৰ-সূচী
+
+1. দুয়োটা block-scoped; \`const\` পুনৰ assign কৰিব নোৱাৰি, \`let\` কৰিব পাৰি।
+2. Arrow function-ৰ নিজস্ব \`this\` নাথাকে; lexical scope-ৰ \`this\` ব্যৱহাৰ কৰে।
+3. Object বা array-ৰ value variable-ত পৃথককৈ লোৱা।
+4. Spread value expand কৰে; Rest বাকী value একত্ৰিত কৰে।
+5. map transform, filter condition অনুসৰি বাছনি, reduce একত্ৰিত কৰে।
+6. null বা undefined থকা nested access-ত error এৰাবলৈ।
+7. \`||\` সকলো falsy value-ত fallback; \`??\` কেৱল null/undefined-ত।
+8. \`import { name } from "./file.js"\`।
+9. pending, fulfilled, rejected।
+10. \`response.ok\` আৰু status code পৰীক্ষা কৰি।
+11. Component UI-ৰ reusable অংশ; JSX JavaScript-ত UI markup লিখাৰ syntax।
+12. Props parent-ৰ পৰা আহে; State component-ৰ নিজা পৰিৱৰ্তনশীল data।
+13. Component/custom Hook-ৰ top level-ত, condition বা loop-ৰ বাহিৰত।
+14. Timer, subscription বা request cleanup কৰিবলৈ।
+15. \`use\`-ৰে, যেনে \`useUsers\`।
+16. Action result, initial state আৰু pending status পৰিচালনা কৰে।
+17. Server operation শেষ হোৱাৰ আগতে optimistic UI দেখুৱাবলৈ।
+18. Server Component server-side render/data access-ৰ বাবে; Client Component browser interaction আৰু state-ৰ বাবে।
+
+## ১৭.২০ সাৰাংশ
+
+এই অধ্যায়ত আধুনিক JavaScript syntax, array method, module, Promise, Fetch API আৰু React component architecture আলোচনা কৰা হ'ল। React-ৰ Props, State, Hooks, Custom Hooks আৰু React 19-ৰ Action-ভিত্তিক form handling-ৰ লগতে Server আৰু Client Component-ৰ সীমা বুজোৱা হৈছে।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- MDN JavaScript Guide: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+- ECMAScript Specification: https://tc39.es/ecma262/
+- React Documentation: https://react.dev/learn
+- React Hooks: https://react.dev/reference/react
+- React 19: https://react.dev/blog/2024/12/05/react-19
+- Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+\`,
     },
-    {
-      id: 'ch-18',
+    id: 'ch-18',
       volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
       title: 'অধ্যায় ২১: ফুলষ্টেক ইন্টিগ্ৰেচন — React + FastAPI',
       subtitle: 'CORS Config, Centralized API Client, Token Auth & Form Handling',
