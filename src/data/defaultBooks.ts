@@ -3976,64 +3976,360 @@ SOLID আৰু Design Pattern-ৰ লক্ষ্য code জটিল কৰ�
     },
     id: 'ch-14',
       volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
-      title: 'অধ্যায় ১৪: কনকাৰেঞ্চি (AsyncIO & Non-blocking I/O)',
-      subtitle: 'Async/Await, asyncio.gather, aiohttp & Concurrent HTTP Requests',
-      estimatedReadTime: '9 min',
-      topics: ['Event Loop & Coroutines', 'asyncio.gather', 'Async HTTP Client with aiohttp', 'Throughput Benchmarking'],
-      content: `## ১৪.১ AsyncIO-ৰ মৌলিক ধাৰণা
+      title: 'অধ্যায় ১৪: AsyncIO আৰু নন-ব্লকিং I/O',
+      subtitle: 'Coroutine, Event Loop, Task, gather, TaskGroup, Semaphore আৰু aiohttp',
+      estimatedReadTime: '30 min',
+      topics: ['Concurrency vs Parallelism', 'Coroutine and Event Loop', 'await and asyncio.run', 'Task and gather', 'TaskGroup', 'Timeout and Cancellation', 'Semaphore and Bounded Concurrency', 'aiohttp HTTP Client', 'Error Handling', 'When AsyncIO Helps'],
+      content: \`## ১৪.১ Concurrency আৰু Parallelism
+
+**Concurrency** মানে একাধিক কামৰ অগ্ৰগতি একে সময়ছোৱাত পৰিচালনা কৰা। এটা CPU core-ত কামসমূহৰ মাজত সলনি কৰি (interleaving) এইটো কৰিব পাৰি। **Parallelism** মানে একে মুহূৰ্ততে একাধিক কাম বাস্তৱতে চলা, সাধাৰণতে একাধিক CPU core বা processor-ত।
+
+Python-ৰ \`asyncio\` মূলত I/O-bound কামৰ concurrency-ৰ বাবে উপযোগী—যেনে network request, socket, asynchronous file/database client। ই নিজে CPU-ৰ গধুৰ গণনা একাধিক core-ত parallel কৰি নিদিয়ে। CPU-bound কামৰ বাবে প্ৰয়োজন অনুসৰি multiprocessing বা native code বিবেচনা কৰক।
+
+## ১৪.২ Coroutine আৰু Event Loop
+
+\`async def\`-এ coroutine function সংজ্ঞায়িত কৰে। সেই function কল কৰিলে coroutine object পোৱা যায়; function-ৰ কাম চলাবলৈ সাধাৰণতে তাক \`await\` কৰিব লাগে বা task হিচাপে schedule কৰিব লাগে।
+
+Event loop-এ ready task-সমূহ চলায়। এটা coroutine-এ \`await\` কৰি অপেক্ষা কৰিলে event loop-এ আন ready coroutine-লৈ নিয়ন্ত্ৰণ দিব পাৰে।
+
+### প্ৰথম AsyncIO উদাহৰণ
 
 \`\`\`python
 import asyncio
 import time
 
-async def ফেচ_ডেটা(আইডি: int, পলম: float):
-    """নকল API কল"""
-    print(f"অনুৰোধ {আইডি} আৰম্ভ...")
-    await asyncio.sleep(পলম)  # নন-ব্লকিং I/O
-    print(f"অনুৰোধ {আইডি} সম্পূৰ্ণ!")
-    return {"id": আইডি, "status": 200, "data": f"ফলাফল-{আইডি}"}
+
+async def ডেটা_আনা(আইডি: int, পলম: float):
+    print(f"অনুৰোধ {আইডি} আৰম্ভ")
+    await asyncio.sleep(পলম)  # non-blocking অপেক্ষা
+    print(f"অনুৰোধ {আইডি} সম্পূৰ্ণ")
+    return {"id": আইডি, "status": "ok"}
+
 
 async def মুখ্য():
-    আৰম্ভ = time.time()
-    # সমান্তৰালভাৱে একাধিক অনুৰোধ এক্সিকিউট কৰা
-    ফলাফল = await asyncio.gather(
-        ফেচ_ডেটা(1, 1.0),
-        ফেচ_ডেটা(2, 0.5),
-        ফেচ_ডেটা(3, 1.5),
-        ফেচ_ডেটা(4, 0.2)
-    )
-    print(f"\\nমুঠ সময়: {time.time() - আৰম্ভ:.2f}s")
-    print("ফলাফলসমূহ:", ফলাফল)
+    আৰম্ভ = time.perf_counter()
 
-# asyncio.run(মুখ্য())
+    ফলাফল = await asyncio.gather(
+        ডেটা_আনা(1, 1.0),
+        ডেটা_আনা(2, 0.5),
+        ডেটা_আনা(3, 1.5),
+        ডেটা_আনা(4, 0.2),
+    )
+
+    print("ফলাফল:", ফলাফল)
+    print(f"মুঠ elapsed time: {time.perf_counter() - আৰম্ভ:.2f}s")
+
+
+if __name__ == "__main__":
+    asyncio.run(মুখ্য())
 \`\`\`
 
----
+এই উদাহৰণত \`asyncio.sleep()\`-এ event loop-ক আন task চলাবলৈ সুযোগ দিয়ে। ইয়াত দেখুওৱা elapsed time-টো কেৱল এই delay-সমূহৰ উদাহৰণ; বাস্তৱ API benchmark নহয়।
 
-## ১৪.২ Async HTTP Client (aiohttp)
+**মনত ৰাখিব:** \`time.sleep()\` synchronous আৰু event loop-টো block কৰে। Async coroutine-ৰ ভিতৰত non-blocking delay-ৰ বাবে \`await asyncio.sleep()\` ব্যৱহাৰ কৰক।
+
+## ১৪.৩ \`asyncio.run()\`, \`await\` আৰু Task
+
+- \`asyncio.run(coro)\`: সাধাৰণ Python script-ৰ পৰা top-level coroutine চলোৱাৰ সুবিধাজনক entry point।
+- \`await\`: awaitable-ৰ ফলাফলৰ বাবে অপেক্ষা কৰে আৰু event loop-ক অন্য কাম চলাবলৈ সুযোগ দিয়ে।
+- \`asyncio.create_task(coro)\`: coroutine-টোক task হিচাপে schedule কৰে।
+- \`asyncio.gather()\`: একাধিক awaitable একেলগে অপেক্ষা কৰি ফলাফলৰ list দিয়ে।
 
 \`\`\`python
-import aiohttp
 import asyncio
 
-async def বাস্তৱ_API_কল():
-    async with aiohttp.ClientSession() as session:
-        urls = [
-            "https://api.github.com/users/python",
-            "https://api.github.com/users/google",
-            "https://api.github.com/users/microsoft"
-        ]
-        tasks = [session.get(url) for url in urls]
-        responses = await asyncio.gather(*tasks)
-        for resp in responses:
-            data = await resp.json()
-            print(f"{data.get('login')}: {data.get('public_repos')} public repos")
 
-# asyncio.run(বাস্তৱ_API_কল())
-\`\`\``,
+async def কাম(নাম, পলম):
+    await asyncio.sleep(পলম)
+    return f"{নাম} শেষ"
+
+
+async def মুখ্য():
+    task1 = asyncio.create_task(কাম("প্ৰথম কাম", 1))
+    task2 = asyncio.create_task(কাম("দ্বিতীয় কাম", 0.5))
+
+    ফলাফল1 = await task1
+    ফলাফল2 = await task2
+    print(ফলাফল1, ফলাফল2)
+
+
+asyncio.run(মুখ্য())
+\`\`\`
+
+Task সৃষ্টি কৰিলেই কামটো event loop-ত schedule হয়। Task-ৰ reference ৰাখক আৰু শেষত await কৰক; নহ’লে exception নেদেখা বা কাম সম্পূৰ্ণ হোৱাৰ আগতে program শেষ হোৱাৰ সমস্যা হ’ব পাৰে।
+
+## ১৪.৪ \`asyncio.gather()\` আৰু Error Handling
+
+\`gather()\`-এ একাধিক awaitable-ৰ ফলাফল argument-ৰ ক্ৰমত ঘূৰাই দিয়ে, task শেষ হোৱাৰ ক্ৰমত নহয়। Default-ত কোনো awaitable-এ exception দিলে সেই exception caller-লৈ propagate হয়। আন কামসমূহ স্বয়ংক্ৰিয়ভাৱে সকলো ক্ষেত্ৰত cancel হয় বুলি ধৰি নল’ব।
+
+\`\`\`python
+import asyncio
+
+
+async def কাম(আইডি):
+    await asyncio.sleep(0.1 * আইডি)
+    if আইডি == 2:
+        raise ValueError("কাম ২-ত ভুল")
+    return f"ফলাফল-{আইডি}"
+
+
+async def মুখ্য():
+    ফলাফল = await asyncio.gather(
+        কাম(1),
+        কাম(2),
+        কাম(3),
+        return_exceptions=True,
+    )
+
+    for item in ফলাফল:
+        if isinstance(item, Exception):
+            print("ব্যৰ্থতা:", repr(item))
+        else:
+            print("সফল:", item)
+
+
+asyncio.run(মুখ্য())
+\`\`\`
+
+\`return_exceptions=True\` দিলে exception-সমূহ ফলাফলৰ list-ত value হিচাপে আহে। Production code-ত সেই exception-সমূহ স্পষ্টভাৱে log আৰু handle কৰিব লাগে।
+
+## ১৪.৫ Python 3.11+: TaskGroup
+
+Python 3.11-ত \`asyncio.TaskGroup\` যোগ কৰা হৈছে। ই structured concurrency-ৰ সুবিধা দিয়ে: group-ৰ ভিতৰত সৃষ্টি কৰা task-সমূহ group শেষ হোৱাৰ আগতে সম্পূৰ্ণ বা cancel হোৱাৰ ব্যৱস্থা হয়।
+
+\`\`\`python
+import asyncio
+
+
+async def কাম(নাম, পলম):
+    await asyncio.sleep(পলম)
+    print(নাম, "সম্পূৰ্ণ")
+
+
+async def মুখ্য():
+    async with asyncio.TaskGroup() as group:
+        group.create_task(কাম("A", 0.5))
+        group.create_task(কাম("B", 0.2))
+        group.create_task(কাম("C", 0.8))
+
+    print("সকলো task শেষ")
+
+
+asyncio.run(মুখ্য())
+\`\`\`
+
+TaskGroup-ৰ কোনো task-ত exception হ’লে group-এ sibling task-সমূহ cancel কৰাৰ চেষ্টা কৰে আৰু exception-সমূহ সাধাৰণতে ExceptionGroup-ৰ ৰূপত report কৰে। সেইবাবে production code-ত error handling design কৰিব লাগে।
+
+## ১৪.৬ Timeout আৰু Cancellation
+
+Network বা বাহ্যিক service-ৰ বাবে অপেক্ষাৰ সময় সীমাহীন কৰি ৰাখিব নালাগে। Timeout-এ নিৰ্দিষ্ট সময়ৰ ভিতৰত কাম শেষ নহ’লে control ঘূৰাই দিয়ে।
+
+\`\`\`python
+import asyncio
+
+
+async def ধীৰ_কাম():
+    await asyncio.sleep(5)
+    return "শেষ"
+
+
+async def মুখ্য():
+    try:
+        ফলাফল = await asyncio.wait_for(
+            ধীৰ_কাম(),
+            timeout=1.0,
+        )
+        print(ফলাফল)
+    except asyncio.TimeoutError:
+        print("সময়সীমা পাৰ হ'ল")
+
+
+asyncio.run(মুখ্য())
+\`\`\`
+
+Timeout হ’লে \`wait_for()\`-এ অপেক্ষা কৰা task cancel কৰাৰ চেষ্টা কৰে। Coroutine-এ cancellation-ৰ প্ৰতি সন্মান দেখুৱাব লাগে। Cleanup-ৰ বাবে \`try/finally\` ব্যৱহাৰ কৰক আৰু \`asyncio.CancelledError\`-ক অযথা গোপন নকৰিব।
+
+## ১৪.৭ Semaphore-ৰে একেলগে চলা কাম সীমিত কৰা
+
+হাজাৰটা HTTP request একেলগে পঠিয়ালে server, network আৰু নিজৰ device-ৰ ওপৰত অতিৰিক্ত চাপ পৰিব পাৰে। \`asyncio.Semaphore\`-এ একে সময়তে চলা section-ৰ সংখ্যা সীমিত কৰে।
+
+\`\`\`python
+import asyncio
+
+
+async def অনুৰোধ(আইডি, semaphore):
+    async with semaphore:
+        print("আৰম্ভ:", আইডি)
+        await asyncio.sleep(0.2)
+        print("শেষ:", আইডি)
+        return আইডি
+
+
+async def মুখ্য():
+    semaphore = asyncio.Semaphore(3)
+
+    ফলাফল = await asyncio.gather(
+        *(অনুৰোধ(i, semaphore) for i in range(10))
+    )
+    print("সম্পূৰ্ণ:", ফলাফল)
+
+
+asyncio.run(মুখ্য())
+\`\`\`
+
+ইয়াত একে সময়তে সৰ্বাধিক ৩টা coroutine-এ semaphore-ৰ ভিতৰৰ কাম কৰিব পাৰে। এই সীমা server-ৰ rate limit, API policy আৰু নিজৰ resource অনুসৰি বাছিব লাগে।
+
+## ১৪.৮ Async HTTP Client: aiohttp
+
+\`aiohttp\` হৈছে third-party library। ব্যৱহাৰৰ আগতে install কৰিব লাগিব:
+
+\`\`\`bash
+python -m pip install aiohttp
+\`\`\`
+
+HTTP request-ৰ বাবে \`ClientSession\` পুনৰ ব্যৱহাৰ কৰাটো ভাল; ইয়াৰ connection pooling-এ একাধিক request-ত সহায় কৰে। প্ৰতিটো request-ৰ response-ও context manager-ৰে handle কৰক।
+
+### সুৰক্ষিত আৰু সীমিত HTTP request-ৰ উদাহৰণ
+
+\`\`\`python
+import asyncio
+import aiohttp
+
+
+URLS = [
+    "https://api.github.com/users/python",
+    "https://api.github.com/users/google",
+    "https://api.github.com/users/microsoft",
+]
+
+
+async def এটা_API_আনা(session, url, semaphore):
+    async with semaphore:
+        try:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                data = await response.json()
+                return {
+                    "url": url,
+                    "login": data.get("login"),
+                    "public_repos": data.get("public_repos"),
+                }
+        except asyncio.TimeoutError:
+            return {"url": url, "error": "timeout"}
+        except aiohttp.ClientResponseError as exc:
+            return {"url": url, "error": f"HTTP {exc.status}"}
+        except aiohttp.ClientError as exc:
+            return {"url": url, "error": str(exc)}
+
+
+async def মুখ্য():
+    timeout = aiohttp.ClientTimeout(total=10)
+    headers = {"User-Agent": "AsyncIO-Learning-Example"}
+    semaphore = asyncio.Semaphore(3)
+
+    async with aiohttp.ClientSession(
+        timeout=timeout,
+        headers=headers,
+    ) as session:
+        tasks = [
+            এটা_API_আনা(session, url, semaphore)
+            for url in URLS
+        ]
+        ফলাফল = await asyncio.gather(*tasks)
+
+    for item in ফলাফল:
+        print(item)
+
+
+if __name__ == "__main__":
+    asyncio.run(মুখ্য())
+\`\`\`
+
+এই code-ত:
+1. এটা \`ClientSession\` পুনৰ ব্যৱহাৰ কৰা হৈছে।
+2. প্ৰতিটো response \`async with\`-এ বন্ধ/মুক্ত কৰে।
+3. Timeout ১০ ছেকেণ্ড ধৰা হৈছে।
+4. Semaphore-এ concurrency সীমিত কৰিছে।
+5. HTTP status error আৰু network error পৃথকভাৱে handle কৰা হৈছে।
+6. \`gather()\`-এ URL-ৰ ক্ৰম অনুসৰি ফলাফল দিয়ে।
+
+উদাহৰণৰ URL-সমূহ বাহ্যিক service-ৰ ওপৰত নিৰ্ভৰশীল। Network, API policy বা service availability অনুসৰি request ব্যৰ্থ হ’ব পাৰে। এই অধ্যায়ত বাস্তৱ request execute কৰা হোৱা নাই; code-টো শিক্ষামূলক উদাহৰণ।
+
+## ১৪.৯ AsyncIO-ৰ সাধাৰণ ভুল
+
+1. Coroutine function কল কৰিলেই কাম সম্পূৰ্ণ হয় বুলি নাভাবিব; coroutine-টো await বা schedule কৰিব লাগে।
+2. Async function-ৰ ভিতৰত দীঘলীয়া \`time.sleep()\` ব্যৱহাৰ কৰি event loop block নকৰিব।
+3. CPU-bound কাম \`asyncio\`-এ নিজে parallel কৰি দিব বুলি আশা নকৰিব।
+4. Task সৃষ্টি কৰি reference নৰখা বা await নকৰা ভুল।
+5. Network request-ত timeout নথকা বিপজ্জনক।
+6. Response body পঢ়াৰ আগতে response context বন্ধ নকৰিব।
+7. প্ৰতিটো request-ৰ বাবে নতুন session সৃষ্টি কৰাটো সাধাৰণতে অপচয়।
+8. API rate limit আৰু concurrency limit মানি চলক।
+9. Cancellation-ৰ সময় cleanup কৰিবলৈ \`finally\` ব্যৱহাৰ কৰক।
+10. \`asyncio.run()\` ইতিমধ্যে চলি থকা event loop-ৰ ভিতৰত পুনৰ কল নকৰিব। Notebook বা কিছুমান interactive environment-ত event loop আগতেই চলি থাকিব পাৰে।
+
+## ১৪.১০ AsyncIO কেতিয়া ব্যৱহাৰ কৰিব?
+
+| কাম | উপযুক্ত পদ্ধতি |
+|---|---|
+| বহু network request | asyncio + async HTTP client |
+| Async database client | সেই library-ৰ async API |
+| CPU-ৰ গধুৰ image processing | multiprocessing বা optimized native library |
+| সাধাৰণ synchronous script | সাধাৰণ function যথেষ্ট হ’ব পাৰে |
+| বহু socket connection | asyncio উপযোগী হ’ব পাৰে |
+| অতি সৰু এটা request | async ব্যৱহাৰ কৰিলে অতিৰিক্ত জটিলতা হ’ব পাৰে |
+
+AsyncIO ব্যৱহাৰ কৰিলেই program সদায় দ্ৰুত হ’ব নালাগে। লাভ তেতিয়াহে হয় যেতিয়া বহু I/O operation-এ অপেক্ষা কৰি থাকে আৰু সেই অপেক্ষাৰ সময়ত event loop-এ অন্য কাম কৰিব পাৰে।
+
+## ১৪.১১ অনুশীলনী
+
+1. Concurrency আৰু Parallelism-ৰ পাৰ্থক্য লিখক।
+2. Coroutine কি?
+3. \`async def\`-এ কি সৃষ্টি কৰে?
+4. Event Loop-ৰ কাম কি?
+5. \`await\` কিয় ব্যৱহাৰ কৰা হয়?
+6. \`asyncio.run()\`-ৰ কাম কি?
+7. \`asyncio.gather()\`-এ ফলাফল কোন ক্ৰমত দিয়ে?
+8. \`return_exceptions=True\`-ৰ অৰ্থ কি?
+9. Python 3.11-ৰ TaskGroup-ৰ এটা সুবিধা লিখক।
+10. Timeout কিয় প্ৰয়োজন?
+11. Semaphore-এ কি নিয়ন্ত্ৰণ কৰে?
+12. aiohttp-ত ClientSession পুনৰ ব্যৱহাৰ কিয় ভাল?
+13. Async function-ৰ ভিতৰত \`time.sleep()\` কিয় এৰাব লাগে?
+14. CPU-bound কামৰ বাবে AsyncIO সদায় উপযুক্ত নে?
+15. HTTP response-ৰ status code error handle কৰিবলৈ কোন method ব্যৱহাৰ কৰিব পাৰি?
+
+### উত্তৰ-সূচী
+
+1. Concurrency-ত একাধিক কামৰ অগ্ৰগতি একে সময়ছোৱাত পৰিচালিত হয়; parallelism-ত কাম একে মুহূৰ্ততে একাধিক processor/core-ত চলে।
+2. স্থগিত আৰু পুনৰ আৰম্ভ কৰিব পৰা asynchronous computation-ৰ object।
+3. Coroutine function; কল কৰিলে coroutine object পোৱা যায়।
+4. Ready task-সমূহ schedule আৰু execute কৰা।
+5. Awaitable-ৰ ফলাফলৰ বাবে অপেক্ষা কৰি event loop-ক অন্য কাম কৰিবলৈ সুযোগ দিবলৈ।
+6. Top-level coroutine চলাই event loop পৰিচালনা কৰে।
+7. gather-ত দিয়া argument-ৰ ক্ৰমত।
+8. Exception-সমূহ ফলাফলৰ list-ত value হিচাপে ঘূৰাই দিয়ে।
+9. Task-সমূহৰ lifecycle এটা group-ৰ ভিতৰত সংগঠিত কৰে আৰু error-ত sibling cancellation পৰিচালনা কৰে।
+10. অনন্তকাল অপেক্ষা ৰোধ কৰিবলৈ।
+11. একে সময়তে semaphore-ৰ ভিতৰত প্ৰৱেশ কৰা task-ৰ সংখ্যা।
+12. Connection pooling আৰু resource management-ৰ বাবে।
+13. ই event loop block কৰে।
+14. নহয়; CPU-bound কামৰ বাবে multiprocessing বা optimized native code উপযুক্ত হ’ব পাৰে।
+15. \`response.raise_for_status()\`।
+
+## ১৪.১২ সাৰাংশ
+
+এই অধ্যায়ত AsyncIO-ৰ coroutine, event loop, await, task, gather, TaskGroup, timeout, cancellation, semaphore আৰু aiohttp শিকিলোঁ। AsyncIO মূলত I/O-bound workload-ত concurrency-ৰ বাবে উপযোগী। সঠিক resource cleanup, timeout, error handling আৰু concurrency limit production code-ত অতি গুৰুত্বপূৰ্ণ।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python asyncio: https://docs.python.org/3/library/asyncio.html
+- asyncio Tasks: https://docs.python.org/3/library/asyncio-task.html
+- asyncio Synchronization Primitives: https://docs.python.org/3/library/asyncio-sync.html
+- aiohttp Client Quickstart: https://docs.aiohttp.org/en/stable/client_quickstart.html
+\`,
     },
-    {
-      id: 'ch-16',
+    id: 'ch-16',
       volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
       title: 'অধ্যায় ১৬: লগিResource, এক্সেপচন আৰ্কিটেকচাৰ আৰু মনিটৰিং',
       subtitle: 'Production Logging, Rotating File Handler, Custom Exception Hierarchy',
