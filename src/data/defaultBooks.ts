@@ -3974,7 +3974,7 @@ SOLID আৰু Design Pattern-ৰ লক্ষ্য code জটিল কৰ�
 - Python decimal: https://docs.python.org/3/library/decimal.html
 \`,
     },
-    id: 'ch-14',
+    id: 'ch-13',
       volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
       title: 'অধ্যায় ১৪: AsyncIO আৰু নন-ব্লকিং I/O',
       subtitle: 'Coroutine, Event Loop, Task, gather, TaskGroup, Semaphore আৰু aiohttp',
@@ -4329,7 +4329,7 @@ AsyncIO ব্যৱহাৰ কৰিলেই program সদায় দ্�
 - aiohttp Client Quickstart: https://docs.aiohttp.org/en/stable/client_quickstart.html
 \`,
     },
-    id: 'ch-16',
+    id: 'ch-14',
       volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
       title: 'অধ্যায় ১৬: লগিং, এক্সেপচন আৰ্কিটেকচাৰ আৰু মনিটৰিং',
       subtitle: 'Production Logging, Rotating File Handler, Custom Exception Hierarchy আৰু Error Handling',
@@ -4731,7 +4731,7 @@ Production system-ত log-ৰ লগতে metric (যেনে request count, l
 - Errors and Exceptions Tutorial: https://docs.python.org/3/tutorial/errors.html
 \`,
     },
-    id: 'ch-17',
+    id: 'ch-15',
       volume: 'খণ্ড ৬: ডাটাবেছ আৰ্কিটেকচাৰ আৰু আধুনিক বেকএণ্ড ইঞ্জিনিয়াৰিং',
       title: 'অধ্যায় ১৭: ৰিলেশ্যনেল ডাটাবেছ, SQL আৰু ACID ধৰ্ম',
       subtitle: 'SQLite In-depth, Parameterized Queries, Indexing & ACID Transactions',
@@ -4792,90 +4792,388 @@ def ডাটাবেছ_পৰিচালনা():
 | **Durability** | এবাৰ কমিট হোৱা ডেটা বিদ্যুৎ বিচ্ছিন্ন হ'লেও চিৰস্থায়ী হৈ থাকিব |`,
     },
     {
-      id: 'ch-19',
+      id: 'ch-16',
       volume: 'খণ্ড ৬: ডাটাবেছ আৰ্কিটেকচাৰ আৰু আধুনিক বেকএণ্ড ইঞ্জিনিয়াৰিং',
-      title: 'অধ্যায় ১৯: প্ৰডাকচন-ৰেডি RESTful API (FastAPI & Pydantic V2)',
-      subtitle: 'Lifespan Events, Pydantic V2 Models, Dependency Injection & JWT Security',
-      estimatedReadTime: '11 min',
-      topics: ['FastAPI 2026 Lifespan', 'Pydantic V2 Validation', 'Dependency Injection (Depends)', 'JWT Authentication'],
-      content: `## ১৯.১ FastAPI এপ্লিকেচন (২০২৬ সংস্কৰণ)
+      title: 'অধ্যায় ১৬: প্ৰডাকচন-ৰেডি RESTful API (FastAPI আৰু Pydantic V2)',
+      subtitle: 'Lifespan, Data Validation, Dependency Injection, Password Hashing আৰু JWT Authentication',
+      estimatedReadTime: '30 min',
+      topics: ['REST API Fundamentals', 'HTTP Methods and Status Codes', 'FastAPI Routing', 'Pydantic V2 Models', 'Response Models', 'Dependency Injection', 'Password Hashing', 'JWT Access Tokens', 'Environment Secrets', 'API Testing and Production Limitations'],
+      content: \`## ১৬.১ REST API-ৰ মৌলিক ধাৰণা
+
+API (Application Programming Interface)-এ দুটা software system-ৰ মাজত যোগাযোগৰ নিয়ম নিৰ্ধাৰণ কৰে। REST হৈছে web API design-ৰ এটা architectural style।
+
+সাধাৰণ HTTP method-সমূহ:
+
+| Method | সাধাৰণ ব্যৱহাৰ |
+|---|---|
+| GET | তথ্য পঢ়া |
+| POST | নতুন resource সৃষ্টি |
+| PUT | resource সম্পূৰ্ণৰূপে update |
+| PATCH | resource-ৰ নিৰ্দিষ্ট অংশ update |
+| DELETE | resource মচি পেলোৱা |
+
+গুৰুত্বপূৰ্ণ HTTP status code:
+
+- 200 OK — request সফল।
+- 201 Created — নতুন resource সৃষ্টি হ'ল।
+- 204 No Content — সফল, কিন্তু response body নাই।
+- 400 Bad Request — request-ত ভুল।
+- 401 Unauthorized — authentication প্ৰয়োজন বা ব্যৰ্থ।
+- 403 Forbidden — পৰিচয় জনা আছে, কিন্তু অনুমতি নাই।
+- 404 Not Found — resource পোৱা নগ'ল।
+- 422 Unprocessable Content — validation ব্যৰ্থ।
+- 500 Internal Server Error — server-ৰ ভিতৰুৱা সমস্যা।
+
+## ১৬.২ FastAPI আৰু প্ৰয়োজনীয় package
+
+FastAPI Python-ৰ এটা web framework। ইয়াত type hints আৰু Pydantic-ৰ সহায়ত request validation আৰু API documentation পোৱা যায়।
+
+এই অধ্যায়ৰ উদাহৰণসমূহৰ বাবে Python 3.10+ আৰু package-সমূহ install কৰিব লাগিব:
+
+\`\`\`bash
+pip install fastapi uvicorn "pydantic[email]" pwdlib[argon2] PyJWT
+\`\`\`
+
+API চলাবলৈ:
+
+\`\`\`bash
+uvicorn main:app --reload
+\`\`\`
+
+ইয়াত \`main.py\`-ত FastAPI instance-ৰ নাম \`app\` বুলি ধৰা হৈছে। \`--reload\` কেৱল development-ৰ সুবিধাৰ বাবে; production-ত ব্যৱহাৰ নকৰিব।
+
+## ১৬.৩ FastAPI application আৰু Lifespan
+
+Application আৰম্ভ আৰু বন্ধ হোৱাৰ সময়ত resource setup আৰু cleanup কৰিবৰ বাবে lifespan ব্যৱহাৰ কৰিব পাৰি।
 
 \`\`\`python
-from fastapi import FastAPI, HTTPException, status, Depends, BackgroundTasks
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
-from typing import List, Optional, Annotated
-from datetime import datetime
-import uuid
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("চাৰ্ভাৰ আৰম্ভ হ'ল!")
+    print("Application আৰম্ভ হ'ল")
+    # ইয়াত database pool বা আন resource initialize কৰিব পাৰি
     yield
-    print("চাৰ্ভাৰ বন্ধ হ'ল!")
+    # Application বন্ধ হোৱাৰ আগতে resource বন্ধ কৰক
+    print("Application বন্ধ হ'ল")
+
 
 app = FastAPI(
-    title="অসমীয়া API ২০২৬",
-    description="প্ৰডাকচন-ৰেডি এণ্টাৰপ্ৰাইজ ব্যৱহাৰকাৰী ব্যৱস্থাপনা API",
-    version="2.0.0",
-    lifespan=lifespan
+    title="অসমীয়া শিক্ষামূলক API",
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
-db = {}
 
-# Pydantic V2 মডেল
-class UserBase(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
-    username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr
-    full_name: Optional[str] = None
-    age: Optional[int] = Field(None, ge=0, le=150)
-
-class UserIn(UserBase):
-    password: str = Field(..., min_length=8)
-
-class UserOut(UserBase):
-    id: str
-    created_at: datetime
-    is_active: bool = True
-
-@app.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserIn):
-    if any(u["email"] == user.email for u in db.values()):
-        raise HTTPException(status_code=400, detail="এই ইমেইলৰে ইতিমধ্যে পঞ্জীয়ন আছে!")
-    
-    user_id = str(uuid.uuid4())
-    user_data = user.model_dump()
-    user_data["id"] = user_id
-    user_data["created_at"] = datetime.now()
-    user_data["is_active"] = True
-    db[user_id] = user_data
-    return user_data
-
-@app.get("/users", response_model=List[UserOut])
-async def list_users():
-    return list(db.values())
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 \`\`\`
 
----
+Server চলিলে \`/docs\`-ত interactive Swagger documentation আৰু \`/redoc\`-ত ReDoc documentation চাব পাৰি। এই endpoint-সমূহৰ availability deployment configuration-ৰ ওপৰত নিৰ্ভৰ কৰে।
 
-## ১৯.২ API চিকিউৰিটি (JWT & OAuth2)
+## ১৬.৪ Pydantic V2-ৰে Input Validation
+
+Client-ৰ পৰা অহা data বিশ্বাস কৰিব নালাগে। Pydantic model-এ field type আৰু constraint validate কৰে।
 
 \`\`\`python
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import jwt
-from passlib.context import CryptContext
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-SECRET_KEY = "আপোনাৰ-অতি-গোপন-ছিক্ৰেট-কি"
+
+class UserCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr
+    age: int = Field(ge=18, le=120)
+
+
+class UserPublic(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    age: int
+\`\`\`
+
+- \`UserCreate\` হৈছে client-এ পঠোৱা input model।
+- \`UserPublic\` হৈছে client-ক দেখুওৱা response model।
+- \`Field\`-এ length আৰু numeric range-ৰ দৰে constraint নিৰ্ধাৰণ কৰে।
+- \`EmailStr\` ব্যৱহাৰ কৰিবলৈ email validation dependency install কৰিব লাগে।
+
+Password-ৰ দৰে secret field response model-ত অন্তৰ্ভুক্ত নকৰিব।
+
+## ১৬.৫ CRUD API-ৰ শিক্ষামূলক উদাহৰণ
+
+তলৰ উদাহৰণত in-memory dictionary ব্যৱহাৰ কৰা হৈছে। Server restart হ'লে data হেৰাই যাব; একাধিক worker-ৰ মাজত data share নহয়। সেয়েহে এইটো database-ৰ বিকল্প নহয় আৰু production storage বুলি গণ্য কৰিব নালাগে।
+
+\`\`\`python
+from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+app = FastAPI(title="Learning User API")
+
+class UserCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr
+    age: int = Field(ge=18, le=120)
+
+class UserPublic(UserCreate):
+    id: int
+
+users: dict[int, dict] = {}
+next_id = 1
+
+
+@app.post(
+    "/users",
+    response_model=UserPublic,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_user(payload: UserCreate):
+    global next_id
+
+    if any(user["email"] == str(payload.email) for user in users.values()):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="এই email ইতিমধ্যে ব্যৱহৃত হৈছে",
+        )
+
+    record = payload.model_dump()
+    record["email"] = str(payload.email)
+    record["id"] = next_id
+    users[next_id] = record
+    next_id += 1
+    return record
+
+
+@app.get("/users", response_model=list[UserPublic])
+def list_users():
+    return list(users.values())
+
+
+@app.get("/users/{user_id}", response_model=UserPublic)
+def get_user(user_id: int):
+    user = users.get(user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="ব্যৱহাৰকাৰী পোৱা নগ'ল")
+    return user
+
+
+@app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int):
+    if user_id not in users:
+        raise HTTPException(status_code=404, detail="ব্যৱহাৰকাৰী পোৱা নগ'ল")
+    del users[user_id]
+    return None
+\`\`\`
+
+এই code-টো CRUD আৰু response model বুজাবলৈ। ইয়াত login, authorization, persistent database, concurrency control বা production-grade uniqueness constraint নাই। বাস্তৱ service-ত database transaction আৰু unique index ব্যৱহাৰ কৰিব লাগে।
+
+## ১৬.৬ Dependency Injection
+
+FastAPI-ৰ \`Depends\`-এ common logic endpoint-সমূহত পুনৰ ব্যৱহাৰ কৰিবলৈ সহায় কৰে।
+
+\`\`\`python
+from typing import Annotated
+from fastapi import Depends, FastAPI, Header, HTTPException
+
+app = FastAPI()
+
+
+def require_client_key(
+    client_key: Annotated[str | None, Header()] = None,
+):
+    if client_key != "development-only-key":
+        raise HTTPException(status_code=401, detail="Invalid client key")
+    return client_key
+
+
+@app.get("/private-info")
+def private_info(
+    key: Annotated[str, Depends(require_client_key)],
+):
+    return {"message": "Access granted"}
+\`\`\`
+
+এইটো কেৱল dependency injection বুজাবলৈ development example। Code-ত দেখুওৱা static key বাস্তৱ authentication নহয়; production-ত secret manager, proper identity verification আৰু authorization ব্যৱস্থা লাগে।
+
+## ১৬.৭ Password Hashing
+
+Password কেতিয়াও plain text ৰূপত database-ত সংৰক্ষণ কৰিব নালাগে। Password hashing-ৰ বাবে Argon2-ৰ দৰে password hashing algorithm ব্যৱহাৰ কৰিব পাৰি।
+
+\`\`\`python
+from pwdlib import PasswordHash
+
+password_hash = PasswordHash.recommended()
+
+
+def hash_password(password: str) -> str:
+    return password_hash.hash(password)
+
+
+def verify_password(password: str, stored_hash: str) -> bool:
+    return password_hash.verify(password, stored_hash)
+
+
+hashed = hash_password("a-long-example-password")
+print(verify_password("a-long-example-password", hashed))
+\`\`\`
+
+- Hashing encryption নহয়; সাধাৰণতে hash-ৰ পৰা মূল password উলিয়াব নোৱাৰি।
+- প্ৰতিটো password-ৰ বাবে library-এ salt ব্যৱস্থাপনা কৰে।
+- Password-ৰ ন্যূনতম দৈৰ্ঘ্য আৰু rate limiting-ও প্ৰয়োজন।
+- Password বা hash log-ত লিখিব নালাগে।
+
+## ১৬.৮ JWT Access Token-ৰ ধাৰণা
+
+JWT (JSON Web Token)-এ signed claim বহন কৰে। সাধাৰণতে access token-ত user identifier আৰু expiry time থাকে।
+
+**গুৰুত্বপূৰ্ণ:** Signed JWT encrypted নহয়। Token-ৰ payload-ত password, API key বা গোপন ব্যক্তিগত তথ্য নাৰাখিব।
+
+তলৰ code-টো token সৃষ্টি আৰু expiry বুজাবলৈ। ইয়াত secret environment variable-ৰ পৰা লোৱা হৈছে।
+
+\`\`\`python
+import os
+from datetime import datetime, timedelta, timezone
+import jwt
+
+SECRET_KEY = os.environ["JWT_SECRET_KEY"]
 ALGORITHM = "HS256"
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def টোকেন_সৃষ্টি(ডাটা: dict):
-    return jwt.encode(ডাটা, SECRET_KEY, algorithm=ALGORITHM)
-\`\`\``,
+
+def create_access_token(user_id: str) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": user_id,
+        "iat": now,
+        "exp": now + timedelta(minutes=15),
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(
+        token,
+        SECRET_KEY,
+        algorithms=[ALGORITHM],
+        options={"require": ["sub", "exp"]},
+    )
+\`\`\`
+
+Environment variable set নকৰিলে application-এ secret load কৰিব নোৱাৰিব। Secret-টো source code বা Git repository-ত commit নকৰিব। Production-ত secret যথেষ্ট শক্তিশালী আৰু গোপন ৰাখিব, token revocation/rotation strategy নিৰ্ধাৰণ কৰিব আৰু HTTPS বাধ্যতামূলক কৰিব।
+
+## ১৬.৯ Authentication আৰু Authorization
+
+- **Authentication:** ব্যৱহাৰকাৰী কোন সেয়া যাচাই কৰা।
+- **Authorization:** সেই ব্যৱহাৰকাৰীয়ে কোন resource বা action ব্যৱহাৰ কৰিব পাৰে সেয়া নিৰ্ধাৰণ কৰা।
+
+JWT valid হ'লেই সকলো user-ৰ সকলো data চোৱাৰ অনুমতি নাথাকে। প্ৰতিটো protected endpoint-ত resource ownership আৰু role permission পৰীক্ষা কৰিব লাগে।
+
+উদাহৰণ: এজন user-এ নিজৰ profile update কৰিব পাৰে, কিন্তু আন user-ৰ profile নহয়। এই নিয়ম server-side-ত enforce কৰিব লাগিব; কেৱল frontend button লুকুৱাই ৰাখিলে সুৰক্ষা নহয়।
+
+## ১৬.১০ API Testing
+
+FastAPI-ৰ \`TestClient\`-এ HTTP endpoint পৰীক্ষা কৰিবলৈ সহায় কৰে। Test-ৰ বাবে \`httpx\` install কৰিব লাগে।
+
+\`\`\`python
+from fastapi.testclient import TestClient
+from main import app
+
+client = TestClient(app)
+
+
+def test_health_endpoint():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+\`\`\`
+
+Test-ত সফল response-ৰ লগতে invalid input, missing field, duplicate email, unauthorized request, nonexistent resource আৰু permission failure-ও পৰীক্ষা কৰিব লাগে। ওপৰৰ test-টো কেৱল health endpoint-ৰ উদাহৰণ; এই অধ্যায়ৰ সকলো code test কৰা হৈছে বুলি ইয়াৰ অৰ্থ নহয়।
+
+## ১৬.১১ Production-লৈ নিয়াৰ আগতে
+
+Production-ready API-ৰ বাবে কেৱল FastAPI code যথেষ্ট নহয়। তলৰ বিষয়সমূহো প্ৰয়োজন:
+
+1. Persistent database আৰু migration।
+2. Database transaction আৰু uniqueness constraint।
+3. Password hashing আৰু secure login flow।
+4. Endpoint-ভিত্তিক authorization আৰু ownership checks।
+5. HTTPS, secret management আৰু token expiry।
+6. Rate limiting আৰু request size limit।
+7. Structured logging আৰু sensitive data redaction।
+8. Automated tests আৰু dependency updates।
+9. Backup, monitoring আৰু error alert।
+10. CORS-ৰ সঠিক allowlist; সকলো origin-লৈ উন্মুক্ত নকৰা।
+
+এই অধ্যায়ৰ উদাহৰণসমূহ শিক্ষামূলক। বাস্তৱ ব্যৱহাৰৰ আগতে security review, database design, deployment configuration আৰু test কৰিব লাগিব।
+
+## ১৬.১২ সাধাৰণ ভুল
+
+1. Password plain text-ত সংৰক্ষণ কৰা।
+2. JWT secret source code-ত লিখা।
+3. JWT payload encrypted বুলি ধৰি লোৱা।
+4. সকলো user-ক সকলো resource-ৰ access দিয়া।
+5. Response model-ত password বা secret field ৰখা।
+6. In-memory dictionary-ক production database বুলি ধৰা।
+7. সকলো error-ৰ বাবে 200 status code দিয়া।
+8. Input validation নকৰা।
+9. HTTPS আৰু rate limiting উপেক্ষা কৰা।
+10. Development server-ৰ \`--reload\` production-ত ব্যৱহাৰ কৰা।
+
+## ১৬.১৩ অনুশীলনী
+
+1. REST API কি?
+2. GET আৰু POST-ৰ পাৰ্থক্য লিখক।
+3. PUT আৰু PATCH কেতিয়া ব্যৱহাৰ কৰা হয়?
+4. HTTP 201 আৰু 404-ৰ অৰ্থ কি?
+5. FastAPI-ত \`/docs\`-ৰ কাম কি?
+6. Pydantic model-এ কি সুবিধা দিয়ে?
+7. Request model আৰু response model পৃথক কিয়?
+8. Dependency Injection কি?
+9. Password plain text-ত সংৰক্ষণ কৰা উচিত নে?
+10. Password hashing আৰু encryption-ৰ পাৰ্থক্য কি?
+11. JWT payload-ত secret ৰাখিব পাৰিনে?
+12. Authentication আৰু Authorization-ৰ পাৰ্থক্য কি?
+13. In-memory dictionary production database নহয় কিয়?
+14. Rate limiting কিয় প্ৰয়োজন?
+15. API testing-ত কোন কোন failure case পৰীক্ষা কৰিব লাগে?
+
+### উত্তৰ-সূচী
+
+1. Web system-সমূহৰ মাজত resource আৰু operation আদান-প্ৰদানৰ architectural style।
+2. GET তথ্য পঢ়ে; POST সাধাৰণতে resource সৃষ্টি কৰে।
+3. PUT-এ সম্পূৰ্ণ resource replace কৰে; PATCH-এ আংশিক update কৰে।
+4. 201 মানে resource সৃষ্টি; 404 মানে resource পোৱা নগ'ল।
+5. Interactive API documentation আৰু request পৰীক্ষাৰ সুবিধা।
+6. Input data type আৰু constraint validate কৰে।
+7. Client-লৈ secret field প্ৰকাশ নকৰিবলৈ আৰু input/output পৃথক কৰিবলৈ।
+8. Shared dependency বা logic endpoint-ত inject কৰাৰ পদ্ধতি।
+9. নালাগে; secure password hashing কৰিব লাগে।
+10. Hashing একমুখী; encryption key-ৰে decrypt কৰিব পাৰি।
+11. নালাগে; JWT signed হ'লেও payload সাধাৰণতে পঢ়িব পাৰি।
+12. Authentication পৰিচয় যাচাই; Authorization অনুমতি নিৰ্ধাৰণ।
+13. Restart-ত data হেৰায় আৰু বহু worker-ৰ মাজত share নহয়।
+14. Abuse, brute-force আৰু অতিৰিক্ত request নিয়ন্ত্ৰণ কৰিবলৈ।
+15. Invalid input, missing data, duplicate record, unauthorized access, not found আৰু permission failure।
+
+## ১৬.১৪ সাৰাংশ
+
+এই অধ্যায়ত REST API, HTTP method/status code, FastAPI, Pydantic V2, Lifespan, Dependency Injection, password hashing, JWT আৰু API testing-ৰ মৌলিক ধাৰণা আলোচনা কৰা হ'ল। শিক্ষামূলক উদাহৰণ আৰু production security-ৰ মাজৰ পাৰ্থক্য বুজাটো অতি গুৰুত্বপূৰ্ণ।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- FastAPI: https://fastapi.tiangolo.com/
+- FastAPI Security: https://fastapi.tiangolo.com/tutorial/security/
+- Pydantic: https://docs.pydantic.dev/latest/
+- Python JWT (PyJWT): https://pyjwt.readthedocs.io/
+- pwdlib: https://frankie567.github.io/pwdlib/
+- HTTP Semantics (RFC 9110): https://www.rfc-editor.org/rfc/rfc9110
+\`,
     },
-    {
-      id: 'ch-20',
+    id: 'ch-17',
       volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
       title: 'অধ্যায় ২০: আধুনিক JavaScript (ES6+) আৰু React ১৯',
       subtitle: 'Modern ES2025 Features, React 19 Hooks, Server Components & Custom Hooks',
@@ -4970,7 +5268,7 @@ export function UserDashboard() {
 \`\`\``,
     },
     {
-      id: 'ch-21',
+      id: 'ch-18',
       volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
       title: 'অধ্যায় ২১: ফুলষ্টেক ইন্টিগ্ৰেচন — React + FastAPI',
       subtitle: 'CORS Config, Centralized API Client, Token Auth & Form Handling',
@@ -5020,7 +5318,7 @@ export const api = new APIClient();
 \`\`\``,
     },
     {
-      id: 'ch-22',
+      id: 'ch-19',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২২: গিট আৰু CI/CD পাইপলাইন',
       subtitle: 'Git Workflow, Conventional Commits, GitHub Actions & VPS Automated Deployment',
@@ -5085,7 +5383,7 @@ jobs:
 \`\`\``,
     },
     {
-      id: 'ch-23',
+      id: 'ch-20',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২৩: Pytest আৰু টেষ্ট-ড্ৰিভন ডেভেলপমেণ্ট (TDD)',
       subtitle: 'TDD Red-Green-Refactor, Fixtures, Mocking & Property-Based Testing',
@@ -5125,7 +5423,7 @@ def test_বাহ্যিক_API():
 \`\`\``,
     },
     {
-      id: 'ch-24',
+      id: 'ch-21',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২৪: ডকাৰ আৰু কন্টেইনাৰাইজেশন',
       subtitle: 'Multi-stage Dockerfile, Non-root User Security & Docker Compose Full-Stack',
@@ -5188,7 +5486,7 @@ volumes:
 \`\`\``,
     },
     {
-      id: 'ch-25',
+      id: 'ch-22',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২৫: এজ এআই, এনোমালি ডিটেকচন আৰু আধুনিক ট্ৰেণ্ড',
       subtitle: 'Z-Score Anomaly Detection, Scikit-Learn, SLMs, MCP & RAG Systems',
@@ -5356,7 +5654,7 @@ export const SAMPLE_BOOKS: Book[] = [
         volume: 'Part 1: Foundational Paradigms',
         estimatedReadTime: '7 min',
         topics: ['Thinking Models', 'Function Calling', 'Context Windows', 'Multimodality'],
-        content: `## 1.1 The Evolution of Foundation Models
+        content: `## 22.1 The Evolution of Foundation Models
 
 In 2026, AI architecture shifted from basic prompt-response chatbots to **Agentic Systems** that reason iteratively, invoke tools, and maintain persistent state.
 
@@ -5385,7 +5683,7 @@ console.log(response.text);
         volume: 'Part 2: Knowledge Systems',
         estimatedReadTime: '8 min',
         topics: ['Semantic Chunking', 'Vector Indexing', 'Cross-Encoders', 'Evaluation'],
-        content: `## 2.1 Why Naive RAG Fails in Enterprise
+        content: `## 22.1 Why Naive RAG Fails in Enterprise
 
 Traditional top-k vector cosine similarity struggles with tabular data, negation, and temporal queries. Production RAG requires:
 - **Hierarchical Chunking:** Preserving document parent headers and tables.
