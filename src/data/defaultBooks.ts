@@ -4,13 +4,13 @@ export const CODE_YATRA_BOOK: Book = {
   id: 'code-yatra-2026',
   title: 'কোড-যাত্ৰা মহাপুথি: শূণ্যৰ পৰা এক্সপাৰ্ট ছফ্টৱেৰ ডেভেলপাৰ',
   subtitle: 'The Complete Assamese Developer Masterclass — ২০২৬ সংস্কৰণ',
-  author: 'অসম ক’ডিং একাডেমী & এক্সপাৰ্ট ডেভেলপাৰ টীম',
+  author: 'লেখকৰ নাম যোগ কৰিব লাগিব',
   edition: '২০২৬ প্ৰিমিয়াম সংস্কৰণ',
   publishedYear: '২০২৬',
   language: 'অসমীয়া (Assamese)',
-  isbn: 'ISBN 978-93-5492-2026-X',
-  copyright: '© ২০২৬ কোড-যাত্ৰা মহাপুথি। সকলো অধিকাৰ সংৰক্ষিত | মুক্ত উৎসৰ প্ৰেমত্পৰ্ণ।',
-  description: '৫ বছৰীয়া শিশুৰ অন্তৰ্দৃষ্টি আৰু এনিমে-কমিক ধাৰণাৰ পৰা আৰম্ভ কৰি আধুনিক এন্টাৰপ্ৰাইজ ছফ্টৱেৰ ইঞ্জিনিয়াৰিঙৰ গভীৰতালৈকে অসমীয়া ভাষাত প্ৰথমখন প্ৰফেচনেল প্ৰগ্ৰামিং গ্ৰন্থ।',
+  isbn: '',
+  copyright: '© ২০২৬ | প্ৰকাশৰ আগতে লেখক আৰু অধিকাৰ-সংক্রান্ত তথ্য নিশ্চিত কৰিব লাগিব।',
+  description: 'কম্পিউটাৰ বিজ্ঞান, প্ৰগ্ৰামিং আৰু আধুনিক ছফ্টৱেৰ নিৰ্মাণৰ বিষয়সমূহ অসমীয়া ভাষাত সহজভাৱে শিকিবলৈ প্ৰস্তুত কৰা এখন বিকাশাধীন শিক্ষামূলক গ্ৰন্থ।',
   coverColor: '#0f172a',
   coverBadge: 'The Complete Assamese Developer Masterclass',
   coverStyle: 'royal',
@@ -72,75 +72,229 @@ export const CODE_YATRA_BOOK: Book = {
       id: 'ch-1',
       volume: 'খণ্ড ১: কম্পিউটাৰ বিজ্ঞানৰ মৌলিক ভেটি আৰু লজিক',
       title: 'অধ্যায় ১: কম্পিউটাৰ আৰ্কিটেকচাৰ, মেম’ৰি আৰু বাইনাৰী চিষ্টেম',
-      subtitle: 'Von Neumann Architecture, Registers, RAM, Storage আৰু Binary Arithmetic',
-      estimatedReadTime: '8 min',
-      topics: ['Von Neumann Architecture', 'CPU, ALU & CU', 'RAM & Storage', 'Binary & Hexadecimal'],
-      content: `## ১.১ ভন নিউমেন আৰ্কিটেকচাৰ (Von Neumann Architecture)
+      subtitle: 'Von Neumann Architecture, CPU, Registers, Memory আৰু Binary Arithmetic',
+      estimatedReadTime: '20–30 min',
+      topics: ['Von Neumann Architecture', 'CPU, ALU & CU', 'Registers & Cache', 'RAM & Storage', 'Bits, Bytes & Binary', 'Hexadecimal'],
+      content: \`## এই অধ্যায়ৰ লক্ষ্য
 
-আধুনিক কম্পিউটাৰৰ ভেটি ১৯৪৫ চনত জন ভন নিউমেনে প্ৰস্তাৱ কৰা এক ঐতিহাসিক আৰ্কিটেকচাৰ। এই মডেল অনুসৰি কম্পিউটাৰৰ চাৰিটা মুখ্য উপাদান থাকে:
+এই অধ্যায় পঢ়াৰ পিছত আপুনি CPU, memory, binary আৰু hexadecimal-ৰ মৌলিক ধাৰণা বুজাব পাৰিব; decimal আৰু binary ৰূপান্তৰ কৰিব পাৰিব; আৰু Python-ত bitwise operator-ৰ ফল ব্যাখ্যা কৰিব পাৰিব।
 
-### ১. চেণ্ট্ৰেল প্ৰচেছিং ইউনিট (CPU):
-CPU হৈছে কম্পিউটাৰৰ মগজু। ইয়াৰ ভিতৰত তিনিটা মূল অংশ থাকে:
-- **এ.এল.ইউ (ALU - Arithmetic Logic Unit):** গাণিতিক আৰু যুক্তিগত গণনা কৰে (যেনে— যোগ, বিয়োগ, গুণ, ভাগ, AND, OR, NOT অপাৰেচন)।
-- **কণ্ট্ৰ'ল ইউনিট (CU):** প্ৰগ্ৰামৰ ইনষ্ট্ৰাকচনৰ ক্ৰম নিয়ন্ত্ৰণ কৰে। ই মেম'ৰিৰ পৰা নিৰ্দেশনা আনে (Fetch), বিশ্লেষণ কৰে (Decode) আৰু কাৰ্যকৰী কৰে (Execute)।
-- **ৰেজিষ্টাৰসমূহ (Registers):** CPUৰ ভিতৰত থকা অতি দ্ৰুততম স্মৃতি কোষ। ৰেজিষ্টাৰৰ আকাৰ সাধাৰণতে ৩২ বিট বা ৬৪ বিট হয়।
+## ১.১ কম্পিউটাৰ আৰ্কিটেকচাৰ কি?
 
-### ২. প্ৰাথমিক মেম'ৰি (RAM):
-RAM (Random Access Memory) এটা ভোলাটাইল মেম'ৰি—অৰ্থাৎ বিদ্যুৎ বন্ধ হ'লে ডেটা মচি যায়। RAM-ৰ প্ৰতিটো মেম'ৰি চেলৰ এটা নিৰ্দিষ্ট ঠিকনা (Address) থাকে। ২০২৬ চনত DDR5 ৬৪০০MHz+ আৰু CAMM2 মডিউল প্ৰচলিত।
+কম্পিউটাৰ আৰ্কিটেকচাৰ (Computer Architecture) বুলিলে কম্পিউটাৰৰ processor, memory, input-output আৰু এই অংশসমূহে কেনেদৰে একেলগে কাম কৰে তাৰ মৌলিক নক্সা আৰু নিয়মসমূহক বুজায়।
 
-### ৩. গৌণ মেম'ৰি (Storage):
-- **HDD (Hard Disk Drive):** মেগনেটিক প্লেটাৰৰ ওপৰত ডেটা সংৰক্ষণ কৰে। মূল্য কম কিন্তু গতি তুলনামূলকভাৱে ধীৰ।
-- **SSD (Solid State Drive):** ফ্লেছ মেম'ৰি চিপ ব্যৱহাৰ কৰে। HDD তকৈ ১০-১০০ গুণ বেগী। NVMe Gen5 SSD সৰ্বাধিক দ্ৰুত (১৪GB/s+)।
-- **Cloud Storage:** AWS S3, Google Cloud Storage — আধুনিক এণ্টাৰপ্ৰাইজ ক্লাউড সঞ্চয়স্থল।
+### Von Neumann Architecture
 
-### ৪. ইনপুট/আউটপুট ডিভাইচ (I/O):
-কীবৰ্ড, মাউচ, মনিটৰ, নেটৱৰ্ক কাৰ্ড আদি। ডেটা বাছ (Data Bus) আৰু এড্ৰেছ বাছ (Address Bus)ৰ জৰিয়তে এইসমূহ CPU আৰু মেম'ৰিৰ সৈতে সংযুক্ত।
+১৯৪৫ চনৰ First Draft of a Report on the EDVAC নথিখনৰ সৈতে Von Neumann architecture-ৰ ঐতিহাসিক ধাৰণাটো জড়িত। ইয়াৰ এটা মূল বৈশিষ্ট্য হৈছে—প্ৰগ্ৰামৰ নিৰ্দেশনা আৰু ডেটা একে read-write memory-ত সংৰক্ষণ কৰা হয়। আধুনিক কম্পিউটাৰত ইয়াৰ বহু উন্নত ৰূপ আৰু পৰিৱৰ্তন ব্যৱহাৰ কৰা হয়।
 
----
+সৰল ধাৰণাচিত্ৰ:
 
-## ১.২ বিট, বাইট আৰু বাইনাৰী গণিত
+~~~text
+        +----------------------+
+        |      Input Unit      |
+        +----------+-----------+
+                   |
+                   v
+        +----------------------+
+        |         CPU          |
+        | +------+  +--------+ |
+        | |  ALU |  |   CU   | |
+        | +------+  +--------+ |
+        |     Registers        |
+        +----------+-----------+
+                   |
+             Data / Address
+                Buses
+                   |
+                   v
+        +----------------------+
+        |      Main Memory     |
+        | Instructions + Data |
+        +----------------------+
+                   |
+                   v
+        +----------------------+
+        |     Output Unit      |
+        +----------------------+
+~~~
 
-কম্পিউটাৰে কেৱল \`0\` আৰু \`1\` বুজি পায়। এই দুটা অৱস্থাই এটা **বিট (Bit)** গঠন কৰে। ৮টা বিটে এটা **বাইট (Byte)** গঠন কৰে।
+এই চিত্ৰটো শিক্ষামূলক সৰলীকৰণ; সকলো আধুনিক কম্পিউটাৰৰ ভিতৰৰ সংযোগ একে নহয়।
 
-| একক | মান |
-| :--- | :--- |
-| **১ বিট (Bit)** | ০ বা ১ |
-| **১ নিবল (Nibble)** | ৪ বিট |
-| **১ বাইট (Byte)** | ৮ বিট (২⁸ = ২৫৬টা ভিন্ন মান) |
-| **১ কিলোবাইট (KB)** | ১০২৪ বাইট |
-| **১ মেগাবাইট (MB)** | ১০২৪ KB |
-| **১ গিগাবাইট (GB)** | ১০২৪ MB |
-| **১ টেৰাবাইট (TB)** | ১০২৪ GB |
+### CPU — Central Processing Unit
 
-### বাইনাৰী অপাৰেচন (Python উদাহৰণ):
+CPU-এ প্ৰগ্ৰামৰ নিৰ্দেশনা execute কৰে আৰু কম্পিউটাৰৰ বিভিন্ন কাৰ্য সমন্বয় কৰে।
 
-\`\`\`python
-# পাইথনত বিটৱাইজ অপাৰেচন
-a = 5  # বাইনাৰী: 0101
-b = 3  # বাইনাৰী: 0011
+- **ALU (Arithmetic Logic Unit):** যোগ, বিয়োগ, তুলনা, AND, OR আদি গাণিতিক আৰু যুক্তিগত অপাৰেচন কৰে।
+- **Control Unit (CU):** নিৰ্দেশনা আনিবলৈ, decode কৰিবলৈ আৰু প্ৰয়োজনীয় অংশলৈ নিয়ন্ত্ৰণ সংকেত পঠিয়াবলৈ সহায় কৰে।
+- **Registers:** CPU-ৰ ভিতৰত থকা অতি দ্ৰুত আৰু সৰু storage location। ইয়াত বৰ্তমান কামত লাগি থকা ডেটা, ঠিকনা বা নিৰ্দেশনাৰ অংশ সাময়িকভাৱে ৰখা হয়।
 
-print("AND (a & b):", a & b)        # 0001 -> 1
-print("OR  (a | b):", a | b)        # 0111 -> 7
-print("XOR (a ^ b):", a ^ b)        # 0110 -> 6
-print("NOT (~a):", ~a)              # 1's complement -> -6
-print("Left Shift  (a << 1):", a << 1)  # 1010 -> 10
-print("Right Shift (a >> 1):", a >> 1)  # 0010 -> 2
-\`\`\`
+**মনত ৰাখিব:** সকলো register-ৰ আকাৰ একে নহয়। ৩২-bit বা ৬৪-bit CPU-ত সাধাৰণ integer register-ৰ আকাৰ সেই শব্দ-আকাৰৰ সৈতে মিলিব পাৰে, কিন্তু বিশেষ-purpose register-ৰ আকাৰ বেলেগ হ’ব পাৰে।
 
-### বাইনাৰীৰ পৰা দশমিক আৰু দশমিকৰ পৰা বাইনাৰী:
-দশমিক ১৩ ক বাইনাৰীত ১১০১ লিখা হয়:
-$$1 \\times 2^3 + 1 \\times 2^2 + 0 \\times 2^1 + 1 \\times 2^0 = 8 + 4 + 0 + 1 = 13$$
+### Fetch–Decode–Execute Cycle
 
-বাইনৰী ১০১১০ ক দশমিকে ৰূপান্তৰ:
-$$1 \\times 2^4 + 0 \\times 2^3 + 1 \\times 2^2 + 1 \\times 2^1 + 0 \\times 2^0 = 16 + 0 + 4 + 2 + 0 = 22$$
+1. **Fetch:** মেম’ৰিৰ পৰা পৰৱৰ্তী নিৰ্দেশনা আনে।
+2. **Decode:** নিৰ্দেশনাটোৱে কি কাম কৰিব লাগিব সেয়া বুজে।
+3. **Execute:** নিৰ্দেশনাৰ কাম সম্পন্ন কৰে।
+4. **Write back:** প্ৰয়োজন হ’লে ফলাফল register বা memory-ত লিখে।
 
-### হেক্সাডেসিমেল (Hexadecimal):
-বাইনাৰী সংখ্যা দীঘল হ'লে হেক্সাডেসিমেল (০-৯ আৰু A-F) ব্যৱহাৰ কৰা হয়। প্ৰতি ৪টা বিটে এটা হেক্স ডিজিট গঠন কৰে:
-\`\`\`python
-# 0xFF = 11111111 = 255
-val = 0xFF
-print(f"Hex 0xFF = {val} in decimal")
-\`\`\``,
+এইটো এটা শিক্ষামূলক মডেল; বাস্তৱ CPU-ত pipelining, caching আৰু out-of-order execution-ৰ দৰে অধিক জটিল কৌশল থাকিব পাৰে।
+
+## ১.২ মেম’ৰি: Register, Cache, RAM আৰু Storage
+
+কম্পিউটাৰত মেম’ৰি একেটা বস্তু নহয়। বিভিন্ন ধৰণৰ storage-ৰ গতি, ক্ষমতা আৰু ব্যৱহাৰ বেলেগ।
+
+| ধৰণ | সাধাৰণ ব্যৱহাৰ | বৈশিষ্ট্য |
+|---|---|---|
+| Register | CPU-ৰ তাৎক্ষণিক কাম | অতি সৰু আৰু অতি দ্ৰুত |
+| Cache | সঘনাই ব্যৱহৃত ডেটা | CPU-ৰ ওচৰত; RAM-তকৈ সাধাৰণতে দ্ৰুত |
+| RAM | চলি থকা প্ৰগ্ৰাম আৰু ডেটা | Volatile; বিদ্যুৎ বন্ধ হ’লে সাধাৰণতে ডেটা নাথাকে |
+| SSD / HDD | দীৰ্ঘম্যাদী ফাইল সংৰক্ষণ | Non-volatile storage |
+
+### RAM — Random Access Memory
+
+RAM হৈছে কম্পিউটাৰৰ প্ৰাথমিক working memory। চলি থকা app, প্ৰগ্ৰাম আৰু ডেটাৰ বহু অংশ ইয়াত ৰখা হয়।
+
+- RAM সাধাৰণতে **volatile**: বিদ্যুৎ যোগান বন্ধ হ’লে ইয়াৰ ডেটা নষ্ট হয়।
+- RAM-ৰ ঠিকনা ব্যৱহাৰ কৰি ডেটাৰ স্থান চিনাক্ত কৰা হয়।
+- অধিক RAM থাকিলে একেলগে অধিক প্ৰগ্ৰাম চলাবলৈ সহায় হ’ব পাৰে; কিন্তু কম্পিউটাৰৰ গতি কেৱল RAM-ৰ পৰিমাণৰ ওপৰত নিৰ্ভৰ নকৰে।
+
+### Secondary Storage
+
+- **HDD (Hard Disk Drive):** ঘূৰি থকা magnetic platter-ত ডেটা সংৰক্ষণ কৰে। সাধাৰণতে কম খৰচত অধিক capacity পোৱা যায়, কিন্তু mechanical অংশ থকাৰ বাবে latency বেছি।
+- **SSD (Solid State Drive):** flash memory ব্যৱহাৰ কৰে আৰু চলন্ত mechanical platter নাথাকে। বহু সাধাৰণ কামত HDD-তকৈ দ্ৰুত, কিন্তু সকলো SSD-ৰ গতি একে নহয়।
+- **NVMe SSD:** PCIe-ৰ ওপৰত NVMe protocol ব্যৱহাৰ কৰা SSD। গতি model, PCIe generation, workload আৰু cooling-ৰ ওপৰত নিৰ্ভৰ কৰে। বিজ্ঞাপনৰ সৰ্বোচ্চ sequential speed-কে সকলো কামৰ বাস্তৱ গতি বুলি ধৰিব নালাগে।
+- **Cloud Storage:** ইণ্টাৰনেটৰ জৰিয়তে দূৰৰ data centre-ত ফাইল সংৰক্ষণ কৰা সেৱা; উদাহৰণ AWS S3 আৰু Google Cloud Storage। ইয়াৰ বাবে network connection আৰু provider-ৰ নিয়ম প্ৰযোজ্য।
+
+## ১.৩ Input, Output আৰু Bus
+
+- **Input device:** Keyboard, mouse, microphone, camera আদি—কম্পিউটাৰলৈ ডেটা বা নিৰ্দেশনা দিয়ে।
+- **Output device:** Monitor, speaker, printer আদি—কম্পিউটাৰৰ ফলাফল দেখুৱায় বা প্ৰদান কৰে।
+- **Data Bus:** অংশসমূহৰ মাজত ডেটা স্থানান্তৰ কৰে।
+- **Address Bus:** কোন memory location বা device-ৰ সৈতে যোগাযোগ কৰা হ’ব সেয়া নিৰ্দেশ কৰে।
+- **Control signals:** পঢ়া, লিখা আৰু অন্যান্য কাৰ্যৰ সময় সমন্বয় কৰে।
+
+বাস্তৱ আধুনিক system-ত bus আৰু interconnect-ৰ গঠন অধিক জটিল; ওপৰৰ বৰ্ণনা মৌলিক ধাৰণাৰ বাবে।
+
+## ১.৪ Bit, Nibble আৰু Byte
+
+কম্পিউটাৰৰ ডিজিটেল ডেটা binary digit-ৰ সহায়ত প্ৰকাশ কৰা হয়।
+
+- **Bit:** Binary digit; ইয়াৰ মান ০ বা ১।
+- **Nibble:** ৪ bit।
+- **Byte:** ৮ bit। এটা byte-এ 2⁸ = 256 টা পৃথক bit-pattern প্ৰকাশ কৰিব পাৰে।
+
+### Storage unit: দুটা convention মনত ৰাখিব
+
+দৈনন্দিন computing-ত দুটা একক-পদ্ধতি দেখা যায়:
+
+| একক | Decimal (SI) | Binary (IEC) |
+|---|---:|---:|
+| kilo / Ki | 1,000 bytes (kB) | 1,024 bytes (KiB) |
+| mega / Mi | 1,000,000 bytes (MB) | 1,048,576 bytes (MiB) |
+| giga / Gi | 1,000,000,000 bytes (GB) | 1,073,741,824 bytes (GiB) |
+| tera / Ti | 1,000,000,000,000 bytes (TB) | 1,099,511,627,776 bytes (TiB) |
+
+**গুৰুত্বপূৰ্ণ:** 1 KB = 1024 bytes বুলি বহু পুৰণি পাঠ্যত লিখা হয়। সঠিক binary একক হৈছে 1 KiB = 1024 bytes; SI অনুসৰি 1 kB = 1000 bytes। এই কিতাপত দুয়োটা পৃথককৈ ব্যৱহাৰ কৰা হ’ব।
+
+## ১.৫ Binary Number System
+
+Decimal system-ত ১০টা digit (০–৯) ব্যৱহাৰ হয়। Binary system-ত মাত্ৰ দুটা digit—০ আৰু ১—ব্যৱহাৰ হয়। প্ৰতিটো স্থানৰ মান ২-ৰ ঘাত অনুসৰি বৃদ্ধি পায়।
+
+উদাহৰণ: Binary 1101₂ ক Decimal-লৈ ৰূপান্তৰ:
+
+1 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰ = 8 + 4 + 0 + 1 = 13
+
+সেয়ে 1101₂ = 13₁₀।
+
+### Decimal 13 ক Binary-লৈ ৰূপান্তৰ
+
+২-ৰে ভাগ কৰি remainder লিখোঁ:
+
+| ভাগ | ভাগফল | অৱশিষ্ট |
+|---|---:|---:|
+| 13 ÷ 2 | 6 | 1 |
+| 6 ÷ 2 | 3 | 0 |
+| 3 ÷ 2 | 1 | 1 |
+| 1 ÷ 2 | 0 | 1 |
+
+অৱশিষ্ট তলৰ পৰা ওপৰলৈ পঢ়িলে 1101₂। সেয়ে 13₁₀ = 1101₂।
+
+আন এটা উদাহৰণ: 10110₂
+
+1 × 2⁴ + 0 × 2³ + 1 × 2² + 1 × 2¹ + 0 × 2⁰ = 16 + 0 + 4 + 2 + 0 = 22
+
+সেয়ে 10110₂ = 22₁₀।
+
+## ১.৬ Python-ত Bitwise Operations
+
+Python-ত integer-ৰ ওপৰত bitwise operator ব্যৱহাৰ কৰিব পাৰি।
+
+~~~python
+a = 5       # binary 0101
+b = 3       # binary 0011
+
+print(a & b)   # AND: 1
+print(a | b)   # OR: 7
+print(a ^ b)   # XOR: 6
+print(a << 1)  # Left shift: 10
+print(a >> 1)  # Right shift: 2
+print(~a)      # -6
+~~~
+
+| Operator | অৰ্থ | 0101 আৰু 0011-ৰ ফল |
+|---|---|---|
+| & | AND: দুয়োটা bit 1 হ’লেহে 1 | 0001 |
+| \`|\` | OR: যিকোনো এটা bit 1 হ’লে 1 | 0111 |
+| ^ | XOR: bit দুটা বেলেগ হ’লে 1 | 0110 |
+| << | বাওঁফালে shift | 0101 << 1 = 1010 |
+| >> | সোঁফালে shift | 0101 >> 1 = 0010 |
+
+**Python-ৰ NOT (~) সম্পৰ্কে সাৱধানতা:** Python integer fixed 8-bit বা 32-bit unsigned value নহয়। Python-ত ~x-ৰ ফল -(x + 1); সেয়ে ~5-ৰ ফল -6। ইয়াক কেৱল ৪টা bit উলটাই 1010 পোৱা বুলি ব্যাখ্যা কৰিলে ভুল হ’ব।
+
+Hexadecimal-ত ১৬টা digit ব্যৱহাৰ হয়: 0–9 আৰু A–F। ৪টা binary bit-এ এটা hexadecimal digit প্ৰকাশ কৰে।
+
+~~~python
+value = 0xFF
+print(value)       # 255
+print(bin(value))  # 0b11111111
+print(hex(255))    # 0xff
+~~~
+
+## ১.৭ নিজে চেষ্টা কৰক
+
+1. Bit আৰু Byte-ৰ মাজত পাৰ্থক্য কি?
+2. ৪ bit-এ কিমানটা পৃথক pattern প্ৰকাশ কৰিব পাৰে?
+3. 1011₂ ক Decimal-লৈ ৰূপান্তৰ কৰক।
+4. Decimal 18 ক Binary-লৈ ৰূপান্তৰ কৰক।
+5. 1 kB আৰু 1 KiB-ৰ পাৰ্থক্য লিখক।
+6. RAM কিয় volatile memory বুলি কোৱা হয়?
+7. Register আৰু RAM-ৰ মাজত দুটা পাৰ্থক্য লিখক।
+8. a = 6, b = 3 হ’লে a & b, a | b আৰু a ^ b-ৰ ফল কি?
+9. Python-ত ~5 কিয় -6 হয়?
+10. SSD আৰু HDD-ৰ মাজত মূল পাৰ্থক্য কি?
+
+### উত্তৰসূচী
+
+1. Bit হৈছে ০ বা ১; Byte হৈছে ৮ bit।
+2. 2⁴ = 16 টা pattern।
+3. 1011₂ = 8 + 0 + 2 + 1 = 11₁₀।
+4. 18₁₀ = 10010₂।
+5. 1 kB = 1000 bytes; 1 KiB = 1024 bytes।
+6. বিদ্যুৎ যোগান বন্ধ হ’লে RAM-ৰ data সাধাৰণতে নাথাকে।
+7. Register CPU-ৰ ভিতৰত অতি সৰু আৰু অতি দ্ৰুত; RAM অধিক capacity-ৰ working memory।
+8. AND = 2, OR = 7, XOR = 5।
+9. Python-ত ~x = -(x+1); সেয়ে ~5 = -6।
+10. HDD magnetic platter ব্যৱহাৰ কৰে; SSD flash memory ব্যৱহাৰ কৰে।
+
+## ১.৮ অধিক পঢ়াৰ বাবে নিৰ্ভৰযোগ্য উৎস
+
+- John von Neumann, First Draft of a Report on the EDVAC (1945): https://www.wiley.com/en-us/First+Draft+of+a+Report+on+the+EDVAC-p-9780471648891
+- Python official documentation — Bitwise Operations: https://docs.python.org/3/library/stdtypes.html#bitwise-operations-on-integer-types
+- NIST — SI prefixes: https://www.nist.gov/pml/owm/metric-si-prefixes
+- IEC — Prefixes for binary multiples (KiB, MiB, GiB): https://www.iec.ch/si-prefixes
+
+**অধ্যায়ৰ সাৰাংশ:** কম্পিউটাৰে binary data-ৰ ওপৰত কাম কৰে। CPU-এ নিৰ্দেশনা execute কৰে; register আৰু cache-এ তাৎক্ষণিক কামত সহায় কৰে; RAM-এ চলি থকা program-ৰ data ৰাখে; আৰু SSD/HDD-এ দীৰ্ঘম্যাদী storage দিয়ে। Binary আৰু hexadecimal বুজিলে কম্পিউটাৰৰ ভিতৰৰ data representation বুজিবলৈ সহজ হয়।
+\`,
     },
     {
       id: 'ch-2',
