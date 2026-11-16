@@ -4331,69 +4331,407 @@ AsyncIO ব্যৱহাৰ কৰিলেই program সদায় দ্�
     },
     id: 'ch-16',
       volume: 'খণ্ড ৫: এডভান্সড পাইথন, চিষ্টেম আৰু কনকাৰেঞ্চি',
-      title: 'অধ্যায় ১৬: লগিResource, এক্সেপচন আৰ্কিটেকচাৰ আৰু মনিটৰিং',
-      subtitle: 'Production Logging, Rotating File Handler, Custom Exception Hierarchy',
-      estimatedReadTime: '8 min',
-      topics: ['RotatingFileHandler', 'Structured Logging', 'Custom Exception Hierarchy', 'Try-Except-Else-Finally'],
-      content: `## ১৬.১ প্ৰফেচনেল লগিঙৰ ব্যৱস্থা
+      title: 'অধ্যায় ১৬: লগিং, এক্সেপচন আৰ্কিটেকচাৰ আৰু মনিটৰিং',
+      subtitle: 'Production Logging, Rotating File Handler, Custom Exception Hierarchy আৰু Error Handling',
+      estimatedReadTime: '25 min',
+      topics: ['Logging Levels', 'Logger and Handler', 'RotatingFileHandler', 'UTF-8 Log Files', 'Structured Logging', 'Custom Exception Hierarchy', 'Exception Chaining', 'Try-Except-Else-Finally', 'Traceback and logger.exception', 'Sensitive Data and Monitoring'],
+      content: \`## ১৬.১ Logging কিয় প্ৰয়োজন?
+
+Program চলি থাকোঁতে কি ঘটিছে তাৰ তথ্য সংৰক্ষণ কৰাৰ পদ্ধতিক Logging বোলে। Debugging-ৰ উপৰিও production system-ত সমস্যা চিনাক্ত কৰা, request-ৰ অৱস্থা বুজা আৰু operational monitoring-ত log সহায়ক।
+
+সাধাৰণতে Python logging-ৰ পাঁচটা গুৰুত্বপূৰ্ণ level আছে:
+
+| Level | ব্যৱহাৰ |
+|---|---|
+| DEBUG | বিকাশৰ সময়ৰ সূক্ষ্ম তথ্য |
+| INFO | স্বাভাৱিক ঘটনা, যেনে service আৰম্ভ |
+| WARNING | সম্ভাৱ্য সমস্যা, কিন্তু কাম চলি আছে |
+| ERROR | কোনো operation ব্যৰ্থ |
+| CRITICAL | অতি গুৰুতৰ সমস্যা |
+
+Level-ৰ সংখ্যা ক্ৰমে বৃদ্ধি পায়: DEBUG, INFO, WARNING, ERROR, CRITICAL। Logger-ৰ level-তকৈ কম priority-ৰ message সাধাৰণতে emit নহয়।
+
+## ১৬.২ Logger, Handler আৰু Formatter
+
+Python logging-ৰ মূল অংশসমূহ:
+
+- **Logger:** application-ৰ পৰা log message গ্ৰহণ কৰে।
+- **Handler:** log ক’লৈ যাব নিৰ্ধাৰণ কৰে—console, file আদি।
+- **Formatter:** message-টো কেনেদৰে দেখুওৱা হ’ব নিৰ্ধাৰণ কৰে।
+- **Filter:** কোন message আগবঢ়োৱা হ’ব তাৰ অতিৰিক্ত নিয়ম দিব পাৰে।
+
+এটা logger-ত একাধিক handler যোগ কৰিব পাৰি। উদাহৰণস্বৰূপে INFO-ৰ পৰা console-লৈ আৰু DEBUG-ৰ পৰা file-লৈ log পঠিয়াব পাৰি।
+
+### Console আৰু Rotating File Logging
 
 \`\`\`python
 import logging
 import sys
 from logging.handlers import RotatingFileHandler
 
-# লগাৰ কনফিগাৰেচন
-logger = logging.getLogger("CodeYatra")
-logger.setLevel(logging.DEBUG)
 
-# কন্স'ল হেণ্ডলাৰ
-console = logging.StreamHandler(sys.stdout)
-console.setLevel(logging.INFO)
-console_fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s - %(message)s")
-console.setFormatter(console_fmt)
+def configure_logging():
+    logger = logging.getLogger("CodeYatra")
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
 
-# ফাইল হেণ্ডলাৰ (ৰোটেটিং ১MB ফাইল, ৫টা বেকআপ)
-file_handler = RotatingFileHandler("app.log", maxBytes=1024*1024, backupCount=5)
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(console_fmt)
+    # Function-টো পুনৰ কল হ'লেও duplicate handler নযোগাব
+    if logger.handlers:
+        return logger
 
-logger.addHandler(console)
-logger.addHandler(file_handler)
+    formatter = logging.Formatter(
+        "%(asctime)s %(levelname)s %(name)s "
+        "%(filename)s:%(lineno)d - %(message)s"
+    )
 
-logger.info("চিষ্টেম সুচাৰুৰূপে আৰম্ভ হ'ল।")
-logger.warning("মেম'ৰি ৮০% ব্যৱহৃত!")
+    console = logging.StreamHandler(sys.stdout)
+    console.setLevel(logging.INFO)
+    console.setFormatter(formatter)
+
+    file_handler = RotatingFileHandler(
+        "app.log",
+        maxBytes=1_000_000,
+        backupCount=5,
+        encoding="utf-8",
+    )
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+
+    logger.addHandler(console)
+    logger.addHandler(file_handler)
+    return logger
+
+
+logger = configure_logging()
+
+logger.debug("Debug detail")
+logger.info("চিষ্টেম আৰম্ভ হ'ল")
+logger.warning("মেম'ৰি ব্যৱহাৰ বাঢ়িছে")
+logger.error("এটা operation ব্যৰ্থ হ'ল")
 \`\`\`
 
----
+এই configuration-ত:
+1. Console-ত INFO আৰু তাৰ ওপৰৰ message দেখা যায়।
+2. File-ত DEBUG-সহ সকলো level লিখা হয়।
+3. File ১,০০০,০০০ bytes-ৰ ওচৰ পালেই rotation হয়।
+4. বৰ্তমান file-ৰ লগতে সৰ্বাধিক ৫টা backup file ৰখা হয়।
+5. \`encoding="utf-8"\`-এ Assamese text লিখাত সহায় কৰে।
+6. \`propagate = False\`-এ root logger-লৈ পুনৰ propagate হৈ duplicate output হোৱাৰ সম্ভাৱনা কমায়।
 
-## ১৬.২ কাষ্টম এক্সেপচন হায়াৰাৰ্কি
+\`maxBytes\`-ৰ মান সঠিক file size-ৰ guarantee নহয়; rotation-ৰ সীমা নিৰ্ধাৰণ কৰা হয়। Production-ত log directory-ৰ permission, disk space আৰু retention policy-ও পৰীক্ষা কৰিব লাগে।
+
+## ১৬.৩ Logging-ত Duplicate Handler-ৰ সমস্যা
+
+একেটা logger-ত একাধিকবাৰ handler যোগ কৰিলে একেটা message বহুবার দেখা যাব পাৰে। Application-ৰ module import বা startup path-ত logging setup পুনৰ চলিলে এই সমস্যা হয়।
+
+- Logging configuration সাধাৰণতে application startup-ত এবাৰ কৰক।
+- Library code-ত root logger configure নকৰিব; নিজৰ module logger ব্যৱহাৰ কৰক।
+- Handler যোগ কৰাৰ আগতে setup policy নিৰ্ধাৰণ কৰক।
+- Production application-ত configuration file বা \`logging.config.dictConfig()\` ব্যৱহাৰ কৰিব পাৰি।
+
+Library-ৰ সাধাৰণ pattern:
+
+\`\`\`python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def load_data():
+    logger.info("ডেটা load আৰম্ভ")
+\`\`\`
+
+Library-এ নিজে console/file handler যোগ নকৰি application-এ logging configuration নিয়ন্ত্ৰণ কৰাটো ভাল।
+
+## ১৬.৪ Structured Logging
+
+সাধাৰণ text log মানুহে পঢ়িবলৈ সুবিধাজনক। কিন্তু বহু service-ৰ log search আৰু analysis কৰিবলৈ key-value বা JSON-ধৰণৰ structured data অধিক সুবিধাজনক।
+
+Python-ৰ built-in logging-ত \`extra\` parameter-এ অতিরিক্ত field যোগ কৰিব পাৰে।
+
+\`\`\`python
+import logging
+
+logger = logging.getLogger("orders")
+
+logger.info(
+    "Order processed",
+    extra={
+        "order_id": "ORD-1001",
+        "status": "completed",
+    },
+)
+\`\`\`
+
+সাধাৰণ Formatter-এ নিজে নিজে সকলো custom field print নকৰে। সেই field দেখুৱাবলৈ custom Formatter বা JSON logging library/configuration লাগে। তলত এটা সৰল JSON formatter-ৰ উদাহৰণ দিয়া হৈছে।
+
+\`\`\`python
+import json
+import logging
+
+
+class JSONFormatter(logging.Formatter):
+    def format(self, record):
+        data = {
+            "time": self.formatTime(record),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+
+        for key in ("order_id", "status"):
+            if hasattr(record, key):
+                data[key] = getattr(record, key)
+
+        if record.exc_info:
+            data["exception"] = self.formatException(record.exc_info)
+
+        return json.dumps(data, ensure_ascii=False)
+
+
+logger = logging.getLogger("orders-json")
+logger.setLevel(logging.INFO)
+logger.propagate = False
+
+handler = logging.StreamHandler()
+handler.setFormatter(JSONFormatter())
+logger.addHandler(handler)
+
+logger.info(
+    "Order processed",
+    extra={"order_id": "ORD-1001", "status": "completed"},
+)
+\`\`\`
+
+JSON formatter-টো এটা শিক্ষামূলক উদাহৰণ। Production-ত field validation, timestamp format, nested data আৰু log ingestion platform-ৰ format অনুসৰি উন্নত কৰিব লাগিব।
+
+## ১৬.৫ Sensitive Data লগ নকৰিব
+
+Log-ত password, OTP, API key, access token, session cookie, সম্পূৰ্ণ card number বা ব্যক্তিগত গোপন তথ্য লিখিব নালাগে। Log file-ও sensitive data store হ’ব পাৰে।
+
+ভুল পদ্ধতি:
+
+\`\`\`python
+# এনে code ব্যৱহাৰ নকৰিব
+# logger.info("Login data: %s", user_input)
+\`\`\`
+
+ভাল পদ্ধতি:
+
+\`\`\`python
+logger.info("Login attempt received for user_id=%s", user_id)
+\`\`\`
+
+- প্ৰয়োজনত user identifier-ও redact বা pseudonymize কৰক।
+- Log file-ৰ access সীমিত ৰাখক।
+- Retention আৰু deletion policy নিৰ্ধাৰণ কৰক।
+- User input log কৰোঁতে newline বা control character-ৰ জৰিয়তে log injection হ’ব পাৰে; উপযুক্ত sanitization কৰক।
+
+## ১৬.৬ Custom Exception Hierarchy
+
+নিজৰ application-ৰ error-সমূহ স্পষ্টভাৱে চিনাক্ত কৰিবলৈ custom exception class সৃষ্টি কৰিব পাৰি। সাধাৰণতে application-specific base exception-ৰ পৰা নিৰ্দিষ্ট exception-সমূহ inherit কৰোৱা হয়।
 
 \`\`\`python
 class CodeYatraError(Exception):
-    """বেচ এক্সেপচন"""
+    """এই application-ৰ সকলো custom error-ৰ base class."""
+
+
+class ValidationError(CodeYatraError):
+    def __init__(self, field: str, message: str):
+        self.field = field
+        super().__init__(f"[{field}] {message}")
+
+
+class UserNotFoundError(CodeYatraError):
     pass
 
-class ভেলিডেশনError(CodeYatraError):
-    def __init__(self, ক্ষেত্ৰ: str, বাৰ্তা: str):
-        self.ক্ষেত্ৰ = ক্ষেত্ৰ
-        self.বাৰ্তা = বাৰ্তা
-        super().__init__(f"[{ক্ষেত্ৰ}] {বাৰ্তা}")
 
-def ব্যৱহাৰকাৰী_সৃষ্টি(তথ্য: dict):
-    if "ইমেইল" not in তথ্য:
-        raise ভেলিডেশনError("ইমেইল", "ইমেইল বাধ্যতামূলক!")
-    if তথ্য.get("বয়স", 0) < 18:
-        raise ভেলিডেশনError("বয়স", "বয়স ১৮ বছৰৰ কম হ'ব নোৱাৰে!")
-    return {"status": "created"}
+def create_user(data: dict):
+    email = data.get("email")
+    if not isinstance(email, str) or not email.strip():
+        raise ValidationError("email", "সঠিক email বাধ্যতামূলক")
+
+    age = data.get("age")
+    if isinstance(age, bool) or not isinstance(age, int):
+        raise ValidationError("age", "বয়স পূৰ্ণসংখ্যা হ'ব লাগিব")
+    if age < 18:
+        raise ValidationError("age", "বয়স ১৮ বছৰৰ কম হ'ব নোৱাৰে")
+
+    return {"status": "created", "email": email.strip()}
+
 
 try:
-    ব্যৱহাৰকাৰী_সৃষ্টি({"নাম": "ৰিকু", "বয়স": 16})
-except ভেলিডেশনError as e:
-    print(f"ভেলিডেশন ত্ৰুটি: {e}")
-\`\`\``,
+    result = create_user({"email": "riku@example.com", "age": 16})
+except ValidationError as exc:
+    print("Validation error:", exc)
+\`\`\`
+
+এই উদাহৰণত:
+- \`CodeYatraError\` হৈছে application-ৰ base exception।
+- \`ValidationError\`-এ কোন field-ত সমস্যা হৈছে সেই তথ্য ৰাখে।
+- \`bool\` Python-ত \`int\`-ৰ subclass; সেইবাবে বয়স validate কৰোঁতে \`True\`-ক ১ বছৰ বুলি গ্ৰহণ নকৰিবলৈ পৃথক check কৰা হৈছে।
+- ভুল data পালে function-এ স্পষ্ট exception raise কৰে।
+
+## ১৬.৭ Exception Chaining
+
+এটা low-level exception-ৰ কাৰণে application-level exception সৃষ্টি হ’লে \`raise ... from exc\` ব্যৱহাৰ কৰি মূল কাৰণটো সংৰক্ষণ কৰিব পাৰি।
+
+\`\`\`python
+class DataLoadError(Exception):
+    pass
+
+
+def load_number(text):
+    try:
+        return int(text)
+    except ValueError as exc:
+        raise DataLoadError("সংখ্যা load কৰিব পৰা নগ'ল") from exc
+
+
+try:
+    load_number("abc")
+except DataLoadError as exc:
+    print("Application error:", exc)
+    print("মূল কাৰণ:", repr(exc.__cause__))
+\`\`\`
+
+Exception chaining-এ debugging-ত সহায় কৰে। মূল exception-টো নীৰৱে বাদ নিদিব।
+
+## ১৬.৮ try, except, else আৰু finally
+
+- \`try\`: যি code-ত exception হ’ব পাৰে।
+- \`except\`: নিৰ্দিষ্ট exception handle কৰে।
+- \`else\`: try block-ত exception নহ’লেহে চলে।
+- \`finally\`: exception হওক বা নহওক, cleanup-ৰ বাবে চলে।
+
+\`\`\`python
+def divide(a, b):
+    try:
+        result = a / b
+    except ZeroDivisionError:
+        print("শূন্যৰে ভাগ কৰিব নোৱাৰি")
+        return None
+    else:
+        print("ভাগ সফল")
+        return result
+    finally:
+        print("ভাগৰ operation শেষ")
+
+
+print(divide(10, 2))
+print(divide(10, 0))
+\`\`\`
+
+অতি বহল \`except Exception\` ব্যৱহাৰ কৰি সকলো error একে ধৰণে গোপন নকৰিব। সম্ভৱ হ’লে নিৰ্দিষ্ট exception handle কৰক। \`KeyboardInterrupt\` আৰু \`SystemExit\`-ৰ দৰে user/system control signal-সমূহো অযথা capture নকৰিব।
+
+## ১৬.৯ Traceback আৰু logger.exception()
+
+Exception handle কৰোঁতে traceback-সহ log কৰিবলৈ \`logger.exception()\` ব্যৱহাৰ কৰিব পাৰি। ইয়াক সাধাৰণতে \`except\` block-ৰ ভিতৰত কল কৰা হয়।
+
+\`\`\`python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
+logger = logging.getLogger("service")
+
+
+def read_config(path):
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            return file.read()
+    except FileNotFoundError:
+        logger.exception("Configuration file পোৱা নগ'ল")
+        raise
+
+
+try:
+    read_config("settings.json")
+except FileNotFoundError:
+    print("Configuration file অনুপস্থিত; service আৰম্ভ কৰিব নোৱাৰি")
+\`\`\`
+
+\`logger.exception()\`-এ exception information-সহ log কৰে। একে exception-টো পুনৰ raise কৰিলে উপৰৰ স্তৰেও handle কৰিব পাৰে। কিন্তু একেটা error প্ৰতিটো স্তৰত log কৰিলে duplicate traceback হ’ব পাৰে; কোন স্তৰত log কৰা উচিত সেয়া design কৰক।
+
+## ১৬.১০ Monitoring আৰু Logging-ৰ পাৰ্থক্য
+
+Logging-এ ঘটনা আৰু context-ৰ record ৰাখে। Monitoring-এ system-ৰ health আৰু আচৰণ সময়ৰ সৈতে পৰ্যবেক্ষণ কৰে।
+
+| বিষয় | Logging | Monitoring |
+|---|---|---|
+| মূল লক্ষ্য | কি ঘটিল তাৰ record | system সুস্থ নে নহয় বুজা |
+| উদাহৰণ | Login failed | Error rate বৃদ্ধি |
+| তথ্য | Event/message | Metric, alert, trace আদি |
+| ব্যৱহাৰ | Debugging আৰু audit | Availability আৰু performance |
+
+Production system-ত log-ৰ লগতে metric (যেনে request count, latency, error rate), alert আৰু distributed tracing-ও প্ৰয়োজন হ’ব পাৰে। Log থাকিলেই monitoring সম্পূৰ্ণ নহয়।
+
+## ১৬.১১ সাধাৰণ ভুল
+
+1. সকলো message-কে ERROR level-ত লিখা।
+2. একেটা logger-ত বাৰে বাৰে handler যোগ কৰা।
+3. Password, token বা OTP log কৰা।
+4. Exception ধৰি একো নকৰাকৈ নীৰৱে বাদ দিয়া।
+5. সকলো exception-ৰ বাবে একেটা generic message ব্যৱহাৰ কৰা।
+6. Log file-ৰ size, rotation আৰু retention উপেক্ষা কৰা।
+7. Assamese text-ৰ বাবে file encoding নিৰ্দিষ্ট নকৰা।
+8. Library code-ৰ পৰা root logger-ৰ configuration সলনি কৰা।
+9. \`logger.exception()\`-ক except block-ৰ বাহিৰত ব্যৱহাৰ কৰি traceback আশা কৰা।
+10. Logging-ক সম্পূৰ্ণ monitoring বুলি ধৰি লোৱা।
+
+## ১৬.১২ অনুশীলনী
+
+1. Logging কিয় ব্যৱহাৰ কৰা হয়?
+2. DEBUG আৰু INFO-ৰ পাৰ্থক্য কি?
+3. Logger, Handler আৰু Formatter-ৰ কাম লিখক।
+4. RotatingFileHandler কিয় উপযোগী?
+5. \`backupCount=5\`-এ কি বুজায়?
+6. Logging configuration বাৰে বাৰে চলালে কি সমস্যা হ’ব পাৰে?
+7. Structured logging কি?
+8. \`extra\` parameter-ৰ কাম কি?
+9. Password আৰু API token log কৰা উচিত নে?
+10. Custom exception hierarchy-ৰ সুবিধা কি?
+11. \`raise ... from exc\`-এ কি কৰে?
+12. try block-ত error নহ’লে কোন block চলে?
+13. \`finally\` কিয় ব্যৱহাৰ কৰা হয়?
+14. \`logger.exception()\` ক’ত ব্যৱহাৰ কৰা উচিত?
+15. Logging আৰু Monitoring-ৰ পাৰ্থক্য লিখক।
+
+### উত্তৰ-সূচী
+
+1. Program-ৰ ঘটনা, সমস্যা আৰু operation-ৰ তথ্য সংৰক্ষণ কৰিবলৈ।
+2. DEBUG অধিক সূক্ষ্ম diagnostic তথ্য; INFO স্বাভাৱিক operation-ৰ তথ্য।
+3. Logger message গ্ৰহণ কৰে, Handler গন্তব্য বাছে, Formatter output-ৰ format নিৰ্ধাৰণ কৰে।
+4. File ডাঙৰ হৈ disk ভৰাই পেলোৱাৰ আশংকা কমায় আৰু পুৰণি log backup ৰাখে।
+5. বৰ্তমান file-ৰ উপৰিও সৰ্বাধিক ৫টা rotated backup ৰখাৰ সীমা।
+6. Duplicate log output আৰু অপ্রয়োজনীয় handler সৃষ্টি হ’ব পাৰে।
+7. Key-value বা machine-readable field-সহ log record।
+8. LogRecord-ত অতিৰিক্ত custom field যোগ কৰে।
+9. নালাগে; sensitive data বাদ বা redact কৰিব লাগে।
+10. Application-ৰ error-সমূহ স্পষ্টভাৱে পৃথক কৰি handle কৰিব পাৰি।
+11. নতুন exception-ৰ সৈতে মূল exception-ৰ কাৰণ সংযোগ কৰে।
+12. else block।
+13. Cleanup code নিশ্চিতভাৱে চলাবলৈ।
+14. সাধাৰণতে exception handle কৰা except block-ৰ ভিতৰত।
+15. Logging event record কৰে; Monitoring system health আৰু trend পৰ্যবেক্ষণ কৰে।
+
+## ১৬.১৩ সাৰাংশ
+
+এই অধ্যায়ত Python logging level, logger-handler-formatter, rotating file, structured logging, sensitive data protection, custom exception hierarchy, exception chaining আৰু try-except-else-finally শিকিলোঁ। Production application-ত স্পষ্ট log, নিৰাপদ data handling, উপযুক্ত error handling আৰু monitoring একেলগে ব্যৱহাৰ কৰা উচিত।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python Logging HOWTO: https://docs.python.org/3/howto/logging.html
+- Python Logging Cookbook: https://docs.python.org/3/howto/logging-cookbook.html
+- logging.handlers: https://docs.python.org/3/library/logging.handlers.html
+- Built-in Exceptions: https://docs.python.org/3/library/exceptions.html
+- Errors and Exceptions Tutorial: https://docs.python.org/3/tutorial/errors.html
+\`,
     },
-    {
-      id: 'ch-17',
+    id: 'ch-17',
       volume: 'খণ্ড ৬: ডাটাবেছ আৰ্কিটেকচাৰ আৰু আধুনিক বেকএণ্ড ইঞ্জিনিয়াৰিং',
       title: 'অধ্যায় ১৭: ৰিলেশ্যনেল ডাটাবেছ, SQL আৰু ACID ধৰ্ম',
       subtitle: 'SQLite In-depth, Parameterized Queries, Indexing & ACID Transactions',
