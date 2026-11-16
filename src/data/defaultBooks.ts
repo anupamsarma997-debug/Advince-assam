@@ -1434,76 +1434,407 @@ Structural Pattern Matching-এ value-ৰ গঠন অনুসৰি program-�
       subtitle: 'Iterator Protocol, Generators, Yield আৰু Context Managers',
       estimatedReadTime: '8 min',
       topics: ['__iter__ and __next__', 'Generators & Yield', 'Generator Expressions', 'Context Managers'],
-      content: `## ৬.১ ইটাৰেটৰ প্ৰট’কল (Iterator Protocol)
+      content: `## ৬.১ অধ্যায়টোৰ লক্ষ্য
 
-পাইথনত কোনো অবজেক্টত \`__iter__()\` আৰু \`__next__()\` মেথড থাকিলে সি ইটাৰেবল হয়।
+এই অধ্যায়ৰ শেষত আপুনি—
 
-\`\`\`python
+- Iterable, Iterator আৰু Iterator Protocol-ৰ পাৰ্থক্য বুজিব পাৰিব।
+- \`iter()\` আৰু \`next()\` কেনেকৈ কাম কৰে বুজিব পাৰিব।
+- নিজৰ Iterator Class লিখিব পাৰিব।
+- Generator Function, \`yield\`, \`yield from\` আৰু Generator Expression ব্যৱহাৰ কৰিব পাৰিব।
+- Lazy Evaluation-ৰ সুবিধা আৰু সীমাবদ্ধতা চিনাক্ত কৰিব পাৰিব।
+- \`with\` আৰু Context Manager-ৰ জৰিয়তে সম্পদ সুৰক্ষিতভাৱে ব্যৱহাৰ কৰিব পাৰিব।
+
+## ৬.২ লুপৰ ভিতৰৰ প্ৰক্ৰিয়া
+
+আমি সাধাৰণতে \`for\` লুপ এনেদৰে লিখোঁ—
+
+~~~python
+ফল = [10, 20, 30]
+
+for মান in ফল:
+    print(মান)
+~~~
+
+কিন্তু Python-এ প্ৰতিটো বস্তুৰ ক্ষেত্ৰত নিজে নিজে পৰৱৰ্তী মান কেনেকৈ পাব? ইয়াৰ উত্তৰ হৈছে **Iterator Protocol**। \`for\` লুপে প্ৰথমে বস্তুটোৰ পৰা এটা iterator পায়, তাৰ পিছত এটাৰ পিছত এটা মান বিচাৰে। মান শেষ হ'লে iterator-এ \`StopIteration\` সংকেত দিয়ে আৰু লুপ বন্ধ হয়।
+
+## ৬.৩ Iterable আৰু Iterator-ৰ পাৰ্থক্য
+
+**Iterable (পুনৰাবৃত্তিযোগ্য বস্তু):** যিটো বস্তুৰ পৰা \`iter(obj)\` ব্যৱহাৰ কৰি iterator পোৱা যায়, সেয়া iterable। উদাহৰণ: list, tuple, string, dictionary আৰু set।
+
+**Iterator (ইটাৰেটৰ):** যিটো বস্তুৱে \`next(obj)\`-ৰ জৰিয়তে পৰৱৰ্তী মান দিয়ে আৰু শেষ হ'লে \`StopIteration\` তোলে, সেয়া iterator।
+
+~~~python
+সংখ্যা = [10, 20, 30]  # Iterable
+ইটাৰেটৰ = iter(সংখ্যা)  # Iterator
+
+print(next(ইটাৰেটৰ))  # 10
+print(next(ইটাৰেটৰ))  # 20
+print(next(ইটাৰেটৰ))  # 30
+
+# পৰৱৰ্তী next() কৰিলে StopIteration হ'ব
+~~~
+
+এটা list নিজে iterator নহয়; কিন্তু তাৰ পৰা iterator তৈয়াৰ কৰিব পাৰি। Iterator সাধাৰণতে নিজৰ অৱস্থা (state) ৰাখে। ওপৰৰ উদাহৰণত কোনটো মান শেষবাৰ দিয়া হ'ল, সেই অৱস্থা iterator-এ মনত ৰাখে।
+
+## ৬.৪ Iterator Protocol: \`__iter__()\` আৰু \`__next__()\`
+
+এটা iterator-এ দুটা বিশেষ পদ্ধতি সমৰ্থন কৰে—
+
+1. \`__iter__()\`: iterator-টো নিজেই ঘূৰাই দিয়ে।
+2. \`__next__()\`: পৰৱৰ্তী মান ঘূৰাই দিয়ে; মান শেষ হ'লে \`StopIteration\` তোলে।
+
+নিজৰ iterator class-ৰ উদাহৰণ—
+
+~~~python
 class গণনা_ইটাৰেটৰ:
     def __init__(self, আৰম্ভণি, শেষ):
         self.বৰ্তমান = আৰম্ভণি
         self.শেষ = শেষ
-        
+
     def __iter__(self):
         return self
-        
+
     def __next__(self):
         if self.বৰ্তমান >= self.শেষ:
             raise StopIteration
+
         মান = self.বৰ্তমান
         self.বৰ্তমান += 1
         return মান
 
-for সংখ্যা in গণনা_ইটাৰেটৰ(5, 10):
-    print(সংখ্যা, end=" ")  # 5 6 7 8 9
-\`\`\`
 
----
+সংখ্যা = গণনা_ইটাৰেটৰ(5, 10)
 
-## ৬.২ জেনেৰেটৰ (Generators)
+for মান in সংখ্যা:
+    print(মান)
+~~~
 
-জেনেৰেটৰ ফাংচনে \`yield\` ব্যৱহাৰ কৰে। ই মেম'ৰি সঞ্চয় কৰে কাৰণ ই একেবাৰে সকলো মান সৃষ্টি নকৰে।
+আউটপুট:
 
-\`\`\`python
-def অসীম_ফিবোনাচি():
+~~~text
+5
+6
+7
+8
+9
+~~~
+
+**মন কৰিব:** এই class-ৰ iterator-টো একেটা অৱস্থা ব্যৱহাৰ কৰে। এবাৰ শেষ হোৱাৰ পিছত একেটা object-ৰ পৰা পুনৰ আৰম্ভ নহয়। নতুন গণনা পাবলৈ নতুন object তৈয়াৰ কৰিব লাগে। \`__next__()\`-এ শেষ অৱস্থাত \`StopIteration\` তুলিবই লাগিব; নহ'লে \`for\` লুপ সঠিকভাৱে বন্ধ নহ'ব পাৰে।
+
+## ৬.৫ Generator: কম ক'ডেৰে Iterator
+
+Generator হৈছে iterator তৈয়াৰ কৰাৰ সহজ উপায়। সাধাৰণ function-ত \`return\`-এ function-ৰ কাম শেষ কৰে। Generator function-ত \`yield\`-এ এটা মান দিয়ে আৰু function-ৰ অৱস্থা স্থগিত ৰাখে। পিছৰবাৰ \`next()\` কৰিলে সেই স্থানৰ পৰাই পুনৰ চলিবলৈ আৰম্ভ কৰে।
+
+~~~python
+def একৰ_পৰা_পাঁচলৈ():
+    yield 1
+    yield 2
+    yield 3
+    yield 4
+    yield 5
+
+
+ইটাৰেটৰ = একৰ_পৰা_পাঁচলৈ()
+
+print(next(ইটাৰেটৰ))  # 1
+print(next(ইটাৰেটৰ))  # 2
+print(next(ইটাৰেটৰ))  # 3
+~~~
+
+Generator function-টো কল কৰিলেই ইয়াৰ ভিতৰৰ সকলো ক'ড চলি নাযায়; ই এটা generator object ঘূৰাই দিয়ে। মান বিচৰাৰ সময়তহে প্ৰয়োজনীয় অংশ চলে। সকলো মান একেলগে list-ত জমা নকৰাৰ বাবে ডাঙৰ ডেটাৰ ক্ষেত্ৰত মেম'ৰি ৰাহি হ'ব পাৰে।
+
+## ৬.৬ Generator-ৰ অৱস্থা আৰু \`yield\`
+
+তলৰ উদাহৰণটো লক্ষ্য কৰক—
+
+~~~python
+def গণনা():
+    print("প্ৰথম ধাপ")
+    yield 10
+
+    print("দ্বিতীয় ধাপ")
+    yield 20
+
+    print("শেষ ধাপ")
+
+
+g = গণনা()
+print("Generator তৈয়াৰ হ'ল")
+print(next(g))
+print(next(g))
+~~~
+
+আউটপুটৰ ক্ৰম—
+
+~~~text
+Generator তৈয়াৰ হ'ল
+প্ৰথম ধাপ
+10
+দ্বিতীয় ধাপ
+20
+~~~
+
+শেষৰ \`next(g)\`-টোও কল কৰিলে "শেষ ধাপ" ছপা হ'ব আৰু তাৰ পিছত \`StopIteration\` উঠিব। Generator-এ \`yield\`-ৰ পিছৰ অৱস্থা সংৰক্ষণ কৰে; স্থানীয় variable-সমূহো পৰৱৰ্তী ধাপলৈ থাকি যায়।
+
+## ৬.৭ অসীম ধাৰা আৰু Fibonacci Generator
+
+Generator-এ অসীম ধাৰাও সৃষ্টি কৰিব পাৰে। কিন্তু অসীম generator-ৰ ওপৰত সীমাহীন \`for\` লুপ চলালে প্ৰগ্ৰাম বন্ধ নহ'বও পাৰে। সেয়ে কিমানটা মান লাগিব, সেই সীমা নিৰ্ধাৰণ কৰা উচিত।
+
+~~~python
+def fibonacci():
     a, b = 0, 1
     while True:
         yield a
         a, b = b, a + b
 
-ফিবো = অসীম_ফিবোনাচি()
-for _ in range(10):
-    print(next(ফিবো), end=" ")  # 0 1 1 2 3 5 8 13 21 34
 
-# জেনেৰেটৰ এক্সপ্ৰেচন (মেম'ৰি ফ্ৰেণ্ডলী)
-বৰ্গ = (x**2 for x in range(1000000))
-print(next(বৰ্গ))  # 0
-print(next(বৰ্গ))  # 1
-\`\`\`
+for সংখ্যা in fibonacci():
+    if সংখ্যা > 100:
+        break
+    print(সংখ্য, end=" ")
+~~~
 
----
+আউটপুট:
 
-## ৬.৩ কন্টেক্সট মেনেজাৰ (Context Manager)
+~~~text
+0 1 1 2 3 5 8 13 21 34 55 89
+~~~
 
-\`\`\`python
-class নিৰাপদ_ফাইল:
-    def __init__(self, নাম, মোড):
-        self.নাম = নাম
-        self.মোড = মোড
-        
+ইয়াত \`yield\`-এ এটা Fibonacci সংখ্যা দিয়ে আৰু পৰৱৰ্তী সংখ্যাৰ বাবে অৱস্থা ৰাখে। \`break\`-এ 100-তকৈ ডাঙৰ মান পোৱাৰ আগতেই লুপ বন্ধ কৰে।
+
+## ৬.৮ Generator Expression
+
+List comprehension-এ সকলো ফলাফলৰ list তৈয়াৰ কৰে; Generator Expression-এ প্ৰয়োজন অনুসৰি এটাকৈ মান দিয়ে।
+
+~~~python
+# List comprehension
+বৰ্গৰ_তালিকা = [x * x for x in range(5)]
+print(বৰ্গৰ_তালিকা)
+
+# Generator Expression
+বৰ্গৰ_জেনেৰেটৰ = (x * x for x in range(5))
+print(next(বৰ্গৰ_জেনেৰেটৰ))  # 0
+print(next(বৰ্গৰ_জেনেৰেটৰ))  # 1
+~~~
+
+দুয়োটাৰ ফলাফলৰ ধৰণ একে নহয়। প্ৰথমটোৱে list দিয়ে, দ্বিতীয়টোৱে generator object দিয়ে। Generator-টো এবাৰ সম্পূৰ্ণ ব্যৱহাৰ কৰিলে সেই একেটা object-ৰ পৰা পুনৰ আৰম্ভ কৰিব নোৱাৰি।
+
+## ৬.৯ \`yield from\`: আন Iterable-ৰ মান আগবঢ়োৱা
+
+এটা generator-ৰ ভিতৰত আন iterable-ৰ মান এটাৰ পিছত এটা আগবঢ়াবলৈ \`yield from\` ব্যৱহাৰ কৰিব পাৰি।
+
+~~~python
+def সকলো_সংখ্যা():
+    yield from [1, 2, 3]
+    yield from (4, 5)
+
+for মান in সকলো_সংখ্যা():
+    print(মান, end=" ")
+~~~
+
+আউটপুট:
+
+~~~text
+1 2 3 4 5
+~~~
+
+ইয়াৰ অৰ্থ হৈছে list আৰু tuple-ৰ প্ৰতিটো মান generator-ৰ পৰা এটাকৈ yield কৰা। ডাঙৰ generator-সমূহ সৰু সৰু generator-ত ভাগ কৰি লিখিবলৈ ই সহায়ক।
+
+## ৬.১০ Lazy Evaluation: প্ৰয়োজনৰ সময়তহে গণনা
+
+Lazy Evaluation-ৰ অৰ্থ হৈছে ফলাফল আগতীয়াকৈ সকলো গণনা নকৰি, প্ৰয়োজন হ'লেহে গণনা কৰা। Generator ইয়াৰ এটা উদাহৰণ।
+
+~~~python
+def ডাঙৰ_গণনা():
+    for সংখ্যা in range(1, 1000001):
+        yield সংখ্যা * 2
+
+g = ডাঙৰ_গণনা()
+print(next(g))  # 2
+print(next(g))  # 4
+~~~
+
+এই উদাহৰণত এক মিলিয়ন মানৰ list আগতেই তৈয়াৰ কৰা হোৱা নাই। কিন্তু মনত ৰাখিব—Generator সদায় list-তকৈ দ্ৰুত হ'ব বুলি ক'ব নোৱাৰি। বাৰে বাৰে একে ফলাফল লাগে আৰু ডেটা সৰু হয়, তেতিয়া list সুবিধাজনক হ'ব পাৰে। Generator-ৰ মান এবাৰ পাৰ হৈ গ'লে সাধাৰণতে পিছলৈ ঘূৰি যাব নোৱাৰি।
+
+## ৬.১১ Generator বন্ধ কৰা আৰু ব্যতিক্ৰম
+
+Generator স্বাভাৱিকভাৱে শেষ হ'লে বা \`close()\` কল কৰিলে বন্ধ হয়। Generator-ৰ ভিতৰত \`finally\` ব্যৱহাৰ কৰি পৰিষ্কাৰ-পৰিচ্ছন্নতাৰ কাম কৰিব পাৰি।
+
+~~~python
+def তথ্য_উৎপাদক():
+    try:
+        yield "প্ৰথম তথ্য"
+        yield "দ্বিতীয় তথ্য"
+    finally:
+        print("Generator-ৰ পৰিষ্কাৰ কাম সম্পূৰ্ণ")
+
+g = তথ্য_উৎপাদক()
+print(next(g))
+g.close()
+~~~
+
+\`close()\`-এ generator-ত \`GeneratorExit\` সংকেত প্ৰেৰণ কৰে। সাধাৰণতে ইয়াক ধৰি generator-ৰ পৰিষ্কাৰ কাম কৰা হয়; \`finally\` block-টো চলিব পাৰে।
+
+## ৬.১২ Context Manager: সম্পদ সুৰক্ষিতভাৱে ব্যৱহাৰ
+
+ফাইল, নেটৱৰ্ক সংযোগ বা আন সম্পদ ব্যৱহাৰ কৰাৰ পিছত সেইবোৰ বন্ধ কৰা প্ৰয়োজন। \`with\` statement-এ কাম শেষ হ'লে—সাধাৰণভাৱে বা exception ঘটিলেও—সম্পদ পৰিষ্কাৰ কৰাৰ ব্যৱস্থা কৰে।
+
+~~~python
+with open("অসমীয়া.txt", "w", encoding="utf-8") as ফাইল:
+    ফাইল.write("নমস্কাৰ, অসম!")
+
+# with block শেষ হোৱাৰ পিছত ফাইল বন্ধ হয়
+~~~
+
+ইয়াত \`encoding="utf-8"\` ব্যৱহাৰ কৰা হৈছে যাতে অসমীয়া আখৰ সঠিকভাৱে লিখিব আৰু পঢ়িব পাৰি। ফাইল খোলাৰ কাম সফল নহ'লে exception হ'ব পাৰে; সেই ক্ষেত্ৰতো আগতে খোলা সম্পদ সঠিকভাৱে বন্ধ কৰাত context manager সহায় কৰে।
+
+## ৬.১৩ নিজে Context Manager তৈয়াৰ কৰা
+
+নিজৰ class-ত context manager সমৰ্থন কৰিবলৈ \`__enter__()\` আৰু \`__exit__()\` পদ্ধতি লিখিব পাৰি।
+
+~~~python
+class সৰল_সম্পদ:
     def __enter__(self):
-        self.ফাইল = open(self.নাম, self.মোড)
-        print(f"'{self.নাম}' খোলা হ'ল।")
-        return self.ফাইল
-        
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.ফাইল.close()
-        print(f"'{self.নাম}' বন্ধ কৰা হ'ল।")
-        return True
+        print("সম্পদ আৰম্ভ হ'ল")
+        return self
 
-with নিৰাপদ_ফাইল("টেষ্ট.txt", "w") as ফ:
-    ফ.write("অসমীয়া পাইথন মাষ্টাৰক্লাছ!")
-\`\`\``,
+    def __exit__(self, exc_type, exc_value, traceback):
+        print("সম্পদ বন্ধ কৰা হ'ল")
+        return False
+
+
+with সৰল_সম্পদ() as বস্তু:
+    print("সম্পদ ব্যৱহাৰ কৰা হৈছে")
+~~~
+
+- \`__enter__()\`-এ \`with\` block আৰম্ভ হোৱাৰ সময়ত চলে আৰু \`as\`-ত যি মান দিয়া হয় সেয়া ঘূৰাই দিয়ে।
+- \`__exit__()\`-এ block শেষ হ'লে চলে; exception ঘটিলেও ইয়াক কল কৰা হয়।
+- \`exc_type\`, \`exc_value\` আৰু \`traceback\`-এ exception-ৰ তথ্য দিয়ে; exception নহ'লে এইবোৰ \`None\` হয়।
+- \`__exit__()\`-এ \`True\` ঘূৰাই দিলে exception দমন কৰা হয়। \`False\` বা \`None\` ঘূৰাই দিলে exception সাধাৰণ নিয়মেৰে বাহিৰলৈ যায়।
+
+সাধাৰণতে exception লুকুৱাই নাৰাখিবলৈ \`False\` ঘূৰাই দিয়াই ভাল, যদিহে বিশেষ কাৰণত তাক সামলোৱাৰ উদ্দেশ্য নাথাকে।
+
+## ৬.১৪ Generator-ৰ সহায়ত Context Manager
+
+সৰু context manager লিখিবলৈ \`contextlib.contextmanager\` ব্যৱহাৰ কৰিব পাৰি। Generator-ৰ \`yield\`-ৰ আগৰ অংশটো resource setup আৰু পিছৰ অংশটো cleanup-ৰ কামত ব্যৱহাৰ হয়।
+
+~~~python
+from contextlib import contextmanager
+
+@contextmanager
+def বাৰ্তা_সম্পদ():
+    print("আৰম্ভ")
+    try:
+        yield "ব্যৱহাৰৰ বাবে মান"
+    finally:
+        print("শেষ: পৰিষ্কাৰ কৰা হ'ল")
+
+
+with বাৰ্তা_সম্পদ() as মান:
+    print(মান)
+~~~
+
+আউটপুট:
+
+~~~text
+আৰম্ভ
+ব্যৱহাৰৰ বাবে মান
+শেষ: পৰিষ্কাৰ কৰা হ'ল
+~~~
+
+\`yield\`-ৰ আগত exception ঘটিলে block-ৰ ভিতৰৰ কাম আৰম্ভ নহ'বও পাৰে; \`with\` block-ৰ ভিতৰত exception ঘটিলে সেই exception-টো generator-ৰ \`yield\`-ৰ স্থানত পুনৰ উত্থাপিত হয়। সেয়ে cleanup-ৰ বাবে \`try/finally\` ব্যৱহাৰ কৰা হৈছে।
+
+## ৬.১৫ সাধাৰণ ভুল আৰু সাৱধানতা
+
+1. **Iterable আৰু Iterator একে বুলি ধৰা:** list iterable; \`iter(list)\`-এ iterator দিয়ে।
+2. **Generator-ৰ পৰা পুনৰ আৰম্ভ হ'ব বুলি ধৰা:** শেষ হোৱা generator পুনৰ ব্যৱহাৰ কৰিব নোৱাৰি; নতুন generator তৈয়াৰ কৰক।
+3. **অসীম generator-ত সীমাহীন লুপ:** \`break\`, \`islice()\` বা অন্য সীমা ব্যৱহাৰ কৰক।
+4. **\`yield\` আৰু \`return\` একে বুলি ধৰা:** \`yield\`-এ স্থগিত অৱস্থা ৰাখে; \`return\`-এ function শেষ কৰে।
+5. **\`__exit__()\`-এ সদায় exception দমন কৰে বুলি ধৰা:** কেৱল সত্য মান \`True\` ঘূৰালে exception দমন হয়।
+6. **ফাইলৰ encoding উপেক্ষা কৰা:** অসমীয়া পাঠৰ বাবে স্পষ্টকৈ \`encoding="utf-8"\` দিয়ক।
+7. **Generator-এ সদায় কম মেম'ৰি লয় বুলি ধৰা:** Generator-এ নিজে yield কৰা সকলো মান একেলগে জমা নকৰে, কিন্তু ইয়াৰ ভিতৰত যদি ডাঙৰ list বা cache ৰাখে তেন্তে মেম'ৰি ব্যৱহাৰ হ'ব পাৰে।
+
+## ৬.১৬ অনুশীলনী
+
+**প্ৰশ্ন ১:** Iterable আৰু Iterator-ৰ মাজত দুটা পাৰ্থক্য লিখক।
+
+**প্ৰশ্ন ২:** \`iter([4, 5, 6])\`-ৰ ফলাফল কি ধৰণৰ বস্তু?
+
+**প্ৰশ্ন ৩:** \`next()\`-এ iterator-ৰ সকলো মান শেষ হোৱাৰ পিছত কোনটো exception তোলে?
+
+**প্ৰশ্ন ৪:** তলৰ Generator-টোৰ পৰা প্ৰথম তিনিটা মান কি পাব?
+
+~~~python
+def সংখ্যা():
+    for x in range(2, 10, 2):
+        yield x
+~~~
+
+**প্ৰশ্ন ৫:** Generator Function-ত \`yield\`-ৰ কাম কি?
+
+**প্ৰশ্ন ৬:** List Comprehension আৰু Generator Expression-ৰ মাজত পাৰ্থক্য লিখক।
+
+**প্ৰশ্ন ৭:** \`yield from [7, 8, 9]\`-এ কি কৰে?
+
+**প্ৰশ্ন ৮:** \`with open(...)\` ব্যৱহাৰ কৰাৰ এটা সুবিধা লিখক।
+
+**প্ৰশ্ন ৯:** Context Manager-ৰ \`__enter__()\` আৰু \`__exit__()\`-ৰ কাম কি?
+
+**প্ৰশ্ন ১০:** \`__exit__()\`-এ \`True\` ঘূৰাই দিলে কি হয়?
+
+**প্ৰশ্ন ১১:** ১ৰ পৰা ১০লৈ যুগ্ম সংখ্যা yield কৰা এটা Generator লিখক।
+
+**প্ৰশ্ন ১২:** Fibonacci Generator-ৰ পৰা প্ৰথম ৮টা মান ছপা কৰা প্ৰগ্ৰাম লিখক।
+
+## ৬.১৭ উত্তৰ আৰু ইংগিত
+
+1. Iterable-ৰ পৰা iterator পোৱা যায়; Iterator-এ \`next()\`-এৰে পৰৱৰ্তী মান দিয়ে আৰু শেষত \`StopIteration\` তোলে।
+2. এটা Iterator object।
+3. \`StopIteration\`।
+4. 2, 4, 6।
+5. এটা মান দিয়ে আৰু function-ৰ অৱস্থা স্থগিত ৰাখে।
+6. List Comprehension-এ list তৈয়াৰ কৰে; Generator Expression-এ প্ৰয়োজন অনুসৰি মান দিয়ে।
+7. Iterable-ৰ প্ৰতিটো মান এটাকৈ yield কৰে।
+8. Block শেষ হ'লে ফাইল বন্ধ কৰাত সহায় কৰে, exception ঘটিলেও।
+9. \`__enter__()\`-এ resource আৰম্ভ কৰি মান দিয়ে; \`__exit__()\`-এ block শেষ হ'লে cleanup কৰে।
+10. Block-ৰ exception দমন হয়।
+11. এটা সম্ভৱ উত্তৰ:
+
+~~~python
+def যুগ্ম_সংখ্যা():
+    for x in range(2, 11, 2):
+        yield x
+
+for x in যুগ্ম_সংখ্যা():
+    print(x)
+~~~
+
+12. এটা সম্ভৱ উত্তৰ:
+
+~~~python
+def fibonacci():
+    a, b = 0, 1
+    for _ in range(8):
+        yield a
+        a, b = b, a + b
+
+print(list(fibonacci()))
+~~~
+
+## ৬.১৮ সাৰাংশ
+
+এই অধ্যায়ত Python-ৰ Iterator Protocol, Iterable আৰু Iterator-ৰ পাৰ্থক্য, নিজৰ Iterator Class, Generator Function, \`yield\`, Generator Expression, \`yield from\`, Lazy Evaluation আৰু Context Manager শিকিলোঁ। ডাঙৰ বা ক্ৰমাগত তথ্যৰ সৈতে কাম কৰোঁতে Generator উপযোগী; আৰু ফাইলৰ দৰে সম্পদ সুৰক্ষিতভাৱে ব্যৱহাৰ কৰিবলৈ Context Manager অতি গুৰুত্বপূৰ্ণ।
+
+## ৬.১৯ অধিক অধ্যয়নৰ বাবে নিৰ্ভৰযোগ্য উৎস
+
+- Python Documentation — Iterator Types: https://docs.python.org/3/library/stdtypes.html#iterator-types
+- Python Documentation — Functional Programming HOWTO: https://docs.python.org/3/howto/functional.html
+- Python Documentation — Expressions (Yield): https://docs.python.org/3/reference/expressions.html#yield-expressions
+- Python Documentation — Generator Expressions: https://docs.python.org/3/reference/expressions.html#generator-expressions
+- Python Documentation — The \`with\` statement: https://docs.python.org/3/reference/compound_stmts.html#the-with-statement
+- Python Documentation — contextlib: https://docs.python.org/3/library/contextlib.html
+`,
     },
     {
       id: 'ch-7',
