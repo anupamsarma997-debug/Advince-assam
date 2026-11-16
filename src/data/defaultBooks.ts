@@ -3124,67 +3124,387 @@ print(সংখ্যা)       # [9, 6, 5, 5, 2, 1]
     id: 'ch-11',
       volume: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
       title: 'অধ্যায় ১১: OOP-ৰ স্তম্ভ আৰু ডেটা মডেলিং',
-      subtitle: 'Abstract Base Classes, Encapsulation, Properties & Banking Architecture',
-      estimatedReadTime: '9 min',
-      topics: ['Encapsulation & Private Members', 'ABC & Abstract Methods', 'Inheritance', 'Polymorphism'],
-      content: `## ১১.১ এবষ্ট্ৰাক্ট ক্লাছ আৰু ইনহেৰিটেঞ্চ
+      subtitle: 'Class, Object, Encapsulation, Inheritance, Polymorphism আৰু Abstract Base Class',
+      estimatedReadTime: '25 min',
+      topics: ['Class and Object', 'Constructor and Instance Attributes', 'Encapsulation', 'Properties', 'Inheritance and super()', 'Abstraction and ABC', 'Polymorphism', 'Bank Account Model', 'Testing and Common Errors'],
+      content: \`## ১১.১ Object-Oriented Programming (OOP) কি?
+
+Object-Oriented Programming বা OOP হৈছে program-ৰ data আৰু সেই data-ৰ ওপৰত কাম কৰা method-সমূহক object-ৰ ৰূপত সংগঠিত কৰাৰ এটা পদ্ধতি। Python-ত প্ৰায় সকলো data-ই object; নিজৰ class-ও সৃষ্টি কৰিব পাৰি।
+
+OOP-ৰ মূল শব্দসমূহ:
+
+- **Class:** object সৃষ্টি কৰাৰ নক্সা বা blueprint।
+- **Object:** class-ৰ পৰা সৃষ্টি হোৱা বাস্তৱ instance।
+- **Attribute:** object বা class-ৰ সৈতে জড়িত data।
+- **Method:** class-ৰ ভিতৰত সংজ্ঞায়িত function।
+- **Constructor:** object সৃষ্টি হওঁতে চলা initialization পদ্ধতি; Python-ত সাধাৰণতে \`__init__()\` ব্যৱহাৰ কৰা হয়।
+
+### প্ৰথম Class আৰু Object
+
+\`\`\`python
+class ছাত্ৰ:
+    def __init__(self, নাম, শ্ৰেণী):
+        self.নাম = নাম
+        self.শ্ৰেণী = শ্ৰেণী
+
+    def পৰিচয়(self):
+        return f"মোৰ নাম {self.নাম}; মই {self.শ্ৰেণী} শ্ৰেণীত পঢ়োঁ।"
+
+
+ছাত্ৰ১ = ছাত্ৰ("ৰিমা", 10)
+ছাত্ৰ২ = ছাত্ৰ("জয়", 9)
+
+print(ছাত্ৰ১.পৰিচয়())
+print(ছাত্ৰ২.পৰিচয়())
+\`\`\`
+
+ইয়াত \`ছাত্ৰ\` হৈছে class আৰু \`ছাত্ৰ১\`, \`ছাত্ৰ২\` হৈছে পৃথক object। \`self\`-এ method-টো যি object-ৰ বাবে চলিছে তাক বুজায়। Object method কল কৰোঁতে Python-এ \`self\` স্বয়ংক্ৰিয়ভাৱে পঠিয়ায়।
+
+## ১১.২ Instance Attribute আৰু Class Attribute
+
+Instance attribute প্ৰতিটো object-ৰ নিজা হয়। Class attribute class-ৰ সৈতে জড়িত আৰু সাধাৰণতে সকলো instance-এ share কৰে।
+
+\`\`\`python
+class কৰ্মচাৰী:
+    প্ৰতিষ্ঠান = "অসম টেক"
+
+    def __init__(self, নাম):
+        self.নাম = নাম
+
+
+ক১ = কৰ্মচাৰী("মীনা")
+ক২ = কৰ্মচাৰী("ৰাহুল")
+
+print(ক১.নাম, ক২.নাম)
+print(ক১.প্ৰতিষ্ঠান, ক২.প্ৰতিষ্ঠান)
+\`\`\`
+
+Mutable class attribute যেনে list-ত সাৱধান হ’ব লাগে। প্ৰতিটো object-ৰ নিজা list লাগিলে সেই list \`__init__()\`-ৰ ভিতৰত সৃষ্টি কৰক।
+
+## ১১.৩ Encapsulation (এনকেপচুলেচন)
+
+Encapsulation-ৰ অৰ্থ হৈছে object-ৰ internal state আৰু সেই state সলনি কৰাৰ নিয়ম একেলগে সংগঠিত কৰা। ইয়াৰ ফলত ভুল বা অবৈধ মান set হোৱাৰ সম্ভাৱনা কমে।
+
+Python-ত নামৰ convention:
+- \`name\`: সাধাৰণ public attribute।
+- \`_name\`: internal/protected বুলি convention-এ সূচায়; ই কঠোৰ access restriction নহয়।
+- \`__name\`: name mangling কৰে; ইও সম্পূৰ্ণ security বা private access control নহয়।
+
+### Property-ৰ সহায়ত নিয়ন্ত্ৰিত Access
+
+\`\`\`python
+class তাপমাত্ৰা:
+    def __init__(self, celsius):
+        self.celsius = celsius
+
+    @property
+    def celsius(self):
+        return self._celsius
+
+    @celsius.setter
+    def celsius(self, মান):
+        if not isinstance(মান, (int, float)):
+            raise TypeError("তাপমাত্ৰা সংখ্যা হ'ব লাগিব")
+        self._celsius = float(মান)
+
+    @property
+    def fahrenheit(self):
+        return self._celsius * 9 / 5 + 32
+
+
+t = তাপমাত্ৰা(25)
+print(t.celsius)
+print(t.fahrenheit)
+t.celsius = 30
+\`\`\`
+
+Property-এ attribute-ৰ দৰে syntax ৰাখি getter/setter-ৰ ভিতৰত validation বা calculation কৰিব দিয়ে। ওপৰৰ উদাহৰণত Celsius value-ৰ বাবে type check আছে; বাস্তৱ scientific application-ত NaN আৰু infinity-ৰ দৰে মানো পৃথকভাৱে reject কৰিব লাগিব।
+
+## ১১.৪ Inheritance (ইনহেৰিটেঞ্চ)
+
+Inheritance-এ এটা class-এ আন এটা class-ৰ বৈশিষ্ট্য আৰু method পুনৰ ব্যৱহাৰ কৰিব দিয়ে।
+
+- **Parent/Base class:** যাৰ পৰা বৈশিষ্ট্য লোৱা হয়।
+- **Child/Derived class:** যিয়ে parent class-ৰ পৰা inherit কৰে।
+- **super():** parent class-ৰ implementation-লৈ access কৰাৰ সুবিধাজনক উপায়।
+
+\`\`\`python
+class ব্যক্তি:
+    def __init__(self, নাম):
+        self.নাম = নাম
+
+    def পৰিচয়(self):
+        return f"মোৰ নাম {self.নাম}"
+
+
+class শিক্ষক(ব্যক্তি):
+    def __init__(self, নাম, বিষয়):
+        super().__init__(নাম)
+        self.বিষয় = বিষয়
+
+    def পাঠদান(self):
+        return f"{self.বিষয়} বিষয় পঢ়াওঁ"
+
+
+t = শিক্ষক("অনিতা", "গণিত")
+print(t.পৰিচয়())
+print(t.পাঠদান())
+\`\`\`
+
+Inheritance কেৱল code reuse-ৰ বাবে ব্যৱহাৰ নকৰিব। Child class-টো conceptually parent class-ৰ বিশেষ ৰূপ হ’লেহে inheritance উপযুক্ত। অন্যথা composition ব্যৱহাৰ কৰাটো অধিক সহজ হ’ব পাৰে।
+
+## ১১.৫ Polymorphism (পলিমৰ্ফিজম)
+
+Polymorphism-ৰ অৰ্থ হৈছে একে interface বা method name-ৰ জৰিয়তে বিভিন্ন object-ৰ নিজস্ব আচৰণ পোৱা।
+
+\`\`\`python
+class কুকুৰ:
+    def শব্দ(self):
+        return "ভৌ ভৌ"
+
+
+class মেকুৰী:
+    def শব্দ(self):
+        return "মিউ মিউ"
+
+
+def শব্দ_শুনা(প্ৰাণী):
+    print(প্ৰাণী.শব্দ())
+
+
+শব্দ_শুনা(কুকুৰ())
+শব্দ_শুনা(মেকুৰী())
+\`\`\`
+
+\`শব্দ_শুনা()\` function-এ object-টো কুকুৰ নে মেকুৰী সেয়া জানিব নালাগে; কেৱল object-টোৰ \`শব্দ()\` method থাকিলেই হয়। Python-ৰ এই আচৰণ duck typing-ৰ এটা উদাহৰণ।
+
+## ১১.৬ Abstraction আৰু Abstract Base Class (ABC)
+
+Abstraction-এ ব্যৱহাৰকাৰীক প্ৰয়োজনীয় interface দেখুৱায় আৰু implementation-ৰ detail আঁৰত ৰাখে। Python-ৰ \`abc\` module-এ Abstract Base Class সৃষ্টি কৰিবলৈ দিয়ে।
+
+- Abstract class-ৰ object পোনপটীয়াকৈ সৃষ্টি কৰিব নোৱাৰি।
+- Abstract method-ৰ implementation concrete child class-এ দিব লাগে।
+- ABC-এ class-সমূহে নিৰ্দিষ্ট interface মানি চলিছে নে নাই পৰীক্ষাত সহায় কৰে।
 
 \`\`\`python
 from abc import ABC, abstractmethod
-from datetime import datetime
 
-class একাউণ্ট(ABC):
-    """বেংক একাউণ্টৰ এবষ্ট্ৰাক্ট বেচ ক্লাছ"""
-    def __init__(self, নাম: str, ধন: float, একাউণ্ট_নম্বৰ: str):
-        self.নাম = নাম
-        self._বেলেঞ্চ = ধন                # প্ৰটেক্টেড
-        self.__একাউণ্ট_নম্বৰ = একাউণ্ট_নম্বৰ  # প্ৰাইভেট
-        self._ট্ৰাঞ্জেকচন = []
-        
-    @property
-    def বেলেঞ্চ(self) -> float:
-        return self._বেলেঞ্চ
-        
-    @বেলেঞ্চ.setter
-    def বেলেঞ্চ(self, মান: float):
-        if মান < 0:
-            raise ValueError("বেলেঞ্চ ঋণাত্মক হ'ব নোৱাৰে!")
-        self._বেলেঞ্চ = মান
-        
-    def জমা(self, পৰিমাণ: float):
-        if পৰিমাণ <= 0:
-            raise ValueError("জমাৰ পৰিমাণ ধনাত্মক হ'ব লাগে!")
-        self._বেলেঞ্চ += পৰিমাণ
-        self._ট্ৰাঞ্জেকচন.append((datetime.now(), "জমা", পৰিমাণ))
-        
-    def উলিওৱা(self, পৰিমাণ: float):
-        if পৰিমাণ > self._বেলেঞ্চ:
-            raise ValueError("অপৰ্যাপ্ত বেলেঞ্চ!")
-        self._বেলেঞ্চ -= পৰিমাণ
-        self._ট্ৰাঞ্জেকচন.append((datetime.now(), "উলিওৱা", -পৰিমাণ))
-        
+
+class আকৃতি(ABC):
     @abstractmethod
-    def সুত_গণনা(self) -> float:
-        """প্ৰতিটো একাউণ্টৰ নিজা সুতৰ হাৰ"""
+    def ক্ষেত্ৰফল(self):
         pass
 
-class সঞ্চয়(একাউণ্ট):
-    def __init__(self, নাম, ধন, একাউণ্ট_নম্বৰ):
-        super().__init__(নাম, ধন, একাউণ্ট_নম্বৰ)
-        self.সুত_হাৰ = 0.05
-        
-    def সুত_গণনা(self) -> float:
-        return self._বেলেঞ্চ * self.সুত_হাৰ
 
-# ব্যৱহাৰ
-acc = সঞ্চয়("ৰিকু", 50000.0, "SB-001")
-acc.জমা(15000)
-print(f"গ্ৰাহক: {acc.নাম}, বৰ্তমান বেলেঞ্চ: ₹{acc.বেলেঞ্চ:,.2f}")
-print(f"বাৰ্ষিক সুত: ₹{acc.সুত_গণনা():,.2f}")
-\`\`\``,
+class আয়তক্ষেত্ৰ(আকৃতি):
+    def __init__(self, দৈৰ্ঘ্য, প্ৰস্থ):
+        if দৈৰ্ঘ্য <= 0 or প্ৰস্থ <= 0:
+            raise ValueError("দৈৰ্ঘ্য আৰু প্ৰস্থ ধনাত্মক হ'ব লাগে")
+        self.দৈৰ্ঘ্য = দৈৰ্ঘ্য
+        self.প্ৰস্থ = প্ৰস্থ
+
+    def ক্ষেত্ৰফল(self):
+        return self.দৈৰ্ঘ্য * self.প্ৰস্থ
+
+
+a = আয়তক্ষেত্ৰ(8, 5)
+print(a.ক্ষেত্ৰফল())  # 40
+\`\`\`
+
+যদি child class-এ \`ক্ষেত্ৰফল()\` implement নকৰে, তেন্তে সেই child class-ৰ object সৃষ্টি কৰোঁতে Python-এ \`TypeError\` দিব।
+
+## ১১.৭ বাস্তৱ উদাহৰণ: সৰল Bank Account Model
+
+এই উদাহৰণটো OOP-ৰ শিক্ষামূলক model। ই বাস্তৱ বেংকিং system নহয়। বাস্তৱ financial system-ত authentication, authorization, database transaction, audit log, concurrency, regulatory control আৰু security review প্ৰয়োজন।
+
+টকাৰ হিচাপত binary floating-point-ৰ rounding সমস্যা হ’ব পাৰে। সেয়ে তলৰ উদাহৰণত \`Decimal\` ব্যৱহাৰ কৰা হৈছে।
+
+\`\`\`python
+from abc import ABC, abstractmethod
+from decimal import Decimal
+from datetime import datetime, timezone
+
+
+class একাউণ্ট(ABC):
+    def __init__(self, নাম: str, প্ৰাৰম্ভিক_ধন, একাউণ্ট_নম্বৰ: str):
+        if not নাম.strip():
+            raise ValueError("নাম খালী হ'ব নোৱাৰে")
+        if not একাউণ্ট_নম্বৰ.strip():
+            raise ValueError("একাউণ্ট নম্বৰ খালী হ'ব নোৱাৰে")
+
+        self.নাম = নাম
+        self.__একাউণ্ট_নম্বৰ = একাউণ্ট_নম্বৰ
+        self._বেলেঞ্চ = self._ধনলৈ(প্ৰাৰম্ভিক_ধন)
+
+        if self._বেলেঞ্চ < 0:
+            raise ValueError("প্ৰাৰম্ভিক বেলেঞ্চ ঋণাত্মক হ'ব নোৱাৰে")
+
+        self._লেনদেন = []
+
+    @staticmethod
+    def _ধনলৈ(মান):
+        try:
+            ধন = Decimal(str(মান))
+        except Exception as exc:
+            raise ValueError("সঠিক ধনৰাশি দিয়ক") from exc
+
+        if not ধন.is_finite():
+            raise ValueError("ধনৰাশি finite হ'ব লাগিব")
+        return ধন.quantize(Decimal("0.01"))
+
+    @property
+    def বেলেঞ্চ(self) -> Decimal:
+        return self._বেলেঞ্চ
+
+    @property
+    def একাউণ্ট_নম্বৰ(self) -> str:
+        return self.__একাউণ্ট_নম্বৰ
+
+    def জমা(self, পৰিমাণ):
+        ধন = self._ধনলৈ(পৰিমাণ)
+        if ধন <= 0:
+            raise ValueError("জমাৰ পৰিমাণ শূন্যতকৈ ডাঙৰ হ'ব লাগে")
+
+        self._বেলেঞ্চ += ধন
+        self._ৰেকৰ্ড("জমা", ধন)
+        return self._বেলেঞ্চ
+
+    def উলিওৱা(self, পৰিমাণ):
+        ধন = self._ধনলৈ(পৰিমাণ)
+        if ধন <= 0:
+            raise ValueError("উলিওৱাৰ পৰিমাণ শূন্যতকৈ ডাঙৰ হ'ব লাগে")
+        if ধন > self._বেলেঞ্চ:
+            raise ValueError("অপৰ্যাপ্ত বেলেঞ্চ")
+
+        self._বেলেঞ্চ -= ধন
+        self._ৰেকৰ্ড("উলিওৱা", -ধন)
+        return self._বেলেঞ্চ
+
+    def _ৰেকৰ্ড(self, ধৰণ, পৰিমাণ):
+        self._লেনদেন.append({
+            "সময়": datetime.now(timezone.utc),
+            "ধৰণ": ধৰণ,
+            "পৰিমাণ": পৰিমাণ,
+            "বেলেঞ্চ": self._বেলেঞ্চ,
+        })
+
+    @abstractmethod
+    def সুত_গণনা(self) -> Decimal:
+        pass
+
+
+class সঞ্চয়_একাউণ্ট(একাউণ্ট):
+    def __init__(self, নাম, প্ৰাৰম্ভিক_ধন, একাউণ্ট_নম্বৰ, সুত_হাৰ="0.05"):
+        super().__init__(নাম, প্ৰাৰম্ভিক_ধন, একাউণ্ট_নম্বৰ)
+        self.সুত_হাৰ = Decimal(str(সুত_হাৰ))
+
+        if not self.সুত_হাৰ.is_finite() or self.সুত_হাৰ < 0:
+            raise ValueError("সুতৰ হাৰ বৈধ হ'ব লাগিব")
+
+    def সুত_গণনা(self) -> Decimal:
+        return (self.বেলেঞ্চ * self.সুত_হাৰ).quantize(
+            Decimal("0.01")
+        )
+
+
+class চলিত_একাউণ্ট(একাউণ্ট):
+    def সুত_গণনা(self) -> Decimal:
+        return Decimal("0.00")
+
+
+a1 = সঞ্চয়_একাউণ্ট("ৰিমা", "50000.00", "SB-001")
+a2 = চলিত_একাউণ্ট("জয়", "20000.00", "CA-002")
+
+a1.জমা("1500.50")
+a2.উলিওৱা("500")
+
+for a in (a1, a2):
+    print(a.নাম, a.বেলেঞ্চ, a.সুত_গণনা())
+\`\`\`
+
+### উদাহৰণটোৰ ব্যাখ্যা
+
+1. \`একাউণ্ট\` হৈছে abstract base class।
+2. \`সঞ্চয়_একাউণ্ট\` আৰু \`চলিত_একাউণ্ট\` হৈছে child class।
+3. \`__একাউণ্ট_নম্বৰ\` name mangling-সহ internal attribute; ই security boundary নহয়।
+4. \`বেলেঞ্চ\` property-ত কেৱল getter আছে, সেয়ে বাহিৰৰ code-এ \`a1.বেলেঞ্চ = ...\` কৰি সহজে balance সলনি কৰিব নোৱাৰে।
+5. জমা আৰু উলিওৱাৰ আগতে ধনৰাশি validate কৰা হয়।
+6. দুয়োটা child class-এ \`সুত_গণনা()\` নিজস্বভাৱে implement কৰিছে—এইটো polymorphism।
+7. সময় UTC-ত record কৰা হৈছে। এই সৰু উদাহৰণত transaction list memory-ত থাকে; program বন্ধ হ’লে স্থায়ীভাৱে সংৰক্ষিত নাথাকে।
+
+ইয়াত সুতৰ গণনা কেৱল সৰল বাৰ্ষিক হাৰৰ উদাহৰণ; বাস্তৱ বেংকৰ সুত গণনাৰ নিয়ম, সময়কাল, rounding আৰু কৰৰ নিয়ম ইয়াত অন্তৰ্ভুক্ত নহয়।
+
+## ১১.৮ OOP-ৰ চাৰিটা বহুল আলোচিত স্তম্ভ
+
+| স্তম্ভ | অৰ্থ | এই অধ্যায়ৰ উদাহৰণ |
+|---|---|---|
+| Encapsulation | State আৰু নিয়ম একেলগে ৰখা | Property আৰু balance validation |
+| Abstraction | প্ৰয়োজনীয় interface দেখুওৱা | Abstract Account class |
+| Inheritance | Parent class-ৰ বৈশিষ্ট্য পুনৰ ব্যৱহাৰ | Savings Account |
+| Polymorphism | একে interface-ত বিভিন্ন আচৰণ | সুত_গণনা() |
+
+এই চাৰিটা শব্দ OOP শিকিবলৈ সহায়ক mental model; সকলো programming language-এ একে ধৰণে implement নকৰে।
+
+## ১১.৯ সাধাৰণ ভুল আৰু সাৱধানতা
+
+1. \`self\` বাদ দিলে instance method-ৰ parameter সমস্যা হ’ব পাৰে।
+2. Class attribute আৰু instance attribute একে বুলি নাভাবিব।
+3. \`_name\` Python-ত কঠোৰ private access control নহয়।
+4. \`__name\`-ৰ name mangling-কে encryption বা security বুলি নাভাবিব।
+5. Mutable class attribute-ত সকলো object-এ একে list share কৰিব পাৰে।
+6. Child class-ৰ constructor-ত parent initialization লাগিলে \`super().__init__()\` ব্যৱহাৰ কৰক।
+7. Abstract method implement নকৰাকৈ concrete object সৃষ্টি কৰিব নোৱাৰি।
+8. Inheritance-ৰ সলনি composition অধিক উপযুক্ত হ’ব পাৰে।
+9. টকাৰ হিচাপত সাধাৰণ float-ৰ rounding আচৰণৰ বিষয়ে সচেতন থাকক।
+10. শিক্ষামূলক bank model-ক বাস্তৱ financial software বুলি ব্যৱহাৰ নকৰিব।
+
+## ১১.১০ অনুশীলনী
+
+1. Class আৰু Object-ৰ মাজত পাৰ্থক্য কি?
+2. \`self\`-এ কি বুজায়?
+3. \`__init__()\` কেতিয়া চলে?
+4. Instance attribute আৰু class attribute-ৰ পাৰ্থক্য লিখক।
+5. Encapsulation-ৰ এটা সুবিধা লিখক।
+6. Python-ত \`_name\` আৰু \`__name\`-ৰ পাৰ্থক্য কি?
+7. Property-ৰ ব্যৱহাৰ কিয় কৰা হয়?
+8. Inheritance আৰু \`super()\`-ৰ কাম কি?
+9. Polymorphism বুজাবলৈ এটা উদাহৰণ দিয়ক।
+10. Abstract Base Class-ৰ object পোনপটীয়াকৈ সৃষ্টি কৰিব পাৰিনে?
+11. Abstract method implement নকৰা child class-ৰ object সৃষ্টি কৰিলে কি হ’ব?
+12. Bank Account উদাহৰণত float-ৰ সলনি Decimal কিয় ব্যৱহাৰ কৰা হৈছে?
+13. Inheritance-ৰ সলনি composition কেতিয়া ভাল হ’ব পাৰে?
+14. \`সঞ্চয়_একাউণ্ট\` আৰু \`চলিত_একাউণ্ট\`-এ একে \`সুত_গণনা()\` method কেনেকৈ বেলেগ ফল দিয়ে?
+
+### উত্তৰ-সূচী
+
+1. Class হৈছে blueprint; object হৈছে তাৰ instance।
+2. বৰ্তমান method-টো যি instance-ৰ বাবে চলিছে তাক বুজায়।
+3. নতুন object initialize কৰোঁতে।
+4. Instance attribute প্ৰতিটো object-ৰ নিজা; class attribute class-ৰ সৈতে share হয়।
+5. Internal state সলনি কৰাৰ নিয়ম নিয়ন্ত্ৰণ কৰিব পাৰে।
+6. Single underscore convention; double underscore name mangling কৰে।
+7. Attribute-ৰ দৰে access ৰাখি validation বা computed value দিবলৈ।
+8. Inheritance-এ parent-ৰ বৈশিষ্ট্য দিয়ে; \`super()\`-এ parent implementation কল কৰাত সহায় কৰে।
+9. একে method name-এ বিভিন্ন object-ত বিভিন্ন আচৰণ কৰা।
+10. নোৱাৰে।
+11. Abstract method অসম্পূৰ্ণ থাকিলে object সৃষ্টি কৰোঁতে TypeError হয়।
+12. Decimal-এ দশমিক ধনৰাশিৰ বাবে অধিক উপযুক্ত decimal arithmetic দিয়ে।
+13. যেতিয়া এটা class-ৰ ভিতৰত আন object-ৰ সুবিধা ব্যৱহাৰ কৰিলেই হয়, কিন্তু parent-child সম্পৰ্ক স্বাভাৱিক নহয়।
+14. প্ৰতিটো child class-এ নিজৰ implementation দিছে।
+
+## ১১.১১ সাৰাংশ
+
+এই অধ্যায়ত Class, Object, Attribute, Method, Encapsulation, Property, Inheritance, Abstraction আৰু Polymorphism শিকিলোঁ। OOP-এ ডাঙৰ program-ৰ data আৰু আচৰণ সংগঠিত কৰাত সহায় কৰে। ভাল design-ৰ বাবে class-ৰ দায়িত্ব স্পষ্ট, validation সঠিক আৰু inheritance-ৰ ব্যৱহাৰ যুক্তিসংগত হোৱা উচিত।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python Classes Tutorial: https://docs.python.org/3/tutorial/classes.html
+- Python Data Model: https://docs.python.org/3/reference/datamodel.html
+- Python abc — Abstract Base Classes: https://docs.python.org/3/library/abc.html
+- Python decimal — Decimal arithmetic: https://docs.python.org/3/library/decimal.html
+\`,
     },
-    {
-      id: 'ch-12',
+    id: 'ch-12',
       volume: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
       title: 'অধ্যায় ১২: SOLID নীতি আৰু ডিজাইন পেটাৰ্ণ',
       subtitle: 'Single Responsibility, Open-Closed, Liskov, Strategy & Factory Pattern',
