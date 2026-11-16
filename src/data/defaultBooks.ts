@@ -2570,56 +2570,57 @@ Traversal মানে Tree-ৰ node-সমূহ নিৰ্দিষ্ট �
 3. **Post-order:** Left → Right → Root। Child-ৰ কাম শেষ কৰি parent process কৰাৰ ক্ষেত্ৰত উপযোগী।
 
 \`\`\`python
-class BST(BST):
-    def in_order(self, নোড=None):
-        ফল = []
+def in_order(মূল):
+    ফল = []
 
-        def visit(বৰ্তমান):
-            if বৰ্তমান is None:
-                return
-            visit(বৰ্তমান.বাওঁ)
-            ফল.append(বৰ্তমান.মান)
-            visit(বৰ্তমান.সোঁ)
+    def visit(বৰ্তমান):
+        if বৰ্তমান is None:
+            return
+        visit(বৰ্তমান.বাওঁ)
+        ফল.append(বৰ্তমান.মান)
+        visit(বৰ্তমান.সোঁ)
 
-        visit(self.মূল if নোড is None else নোড)
-        return ফল
+    visit(মূল)
+    return ফল
 
-    def pre_order(self):
-        ফল = []
 
-        def visit(বৰ্তমান):
-            if বৰ্তমান is None:
-                return
-            ফল.append(বৰ্তমান.মান)
-            visit(বৰ্তমান.বাওঁ)
-            visit(বৰ্তমান.সোঁ)
+def pre_order(মূল):
+    ফল = []
 
-        visit(self.মূল)
-        return ফল
+    def visit(বৰ্তমান):
+        if বৰ্তমান is None:
+            return
+        ফল.append(বৰ্তমান.মান)
+        visit(বৰ্তমান.বাওঁ)
+        visit(বৰ্তমান.সোঁ)
 
-    def post_order(self):
-        ফল = []
+    visit(মূল)
+    return ফল
 
-        def visit(বৰ্তমান):
-            if বৰ্তমান is None:
-                return
-            visit(বৰ্তমান.বাওঁ)
-            visit(বৰ্তমান.সোঁ)
-            ফল.append(বৰ্তমান.মান)
 
-        visit(self.মূল)
-        return ফল
+def post_order(মূল):
+    ফল = []
+
+    def visit(বৰ্তমান):
+        if বৰ্তমান is None:
+            return
+        visit(বৰ্তমান.বাওঁ)
+        visit(বৰ্তমান.সোঁ)
+        ফল.append(বৰ্তমান.মান)
+
+    visit(মূল)
+    return ফল
 
 
 bst = BST()
 for x in [50, 30, 70, 20, 40, 60, 80]:
     bst.যোগ(x)
 
-print(bst.in_order())   # [20, 30, 40, 50, 60, 70, 80]
-print(bst.pre_order())  # [50, 30, 20, 40, 70, 60, 80]
-print(bst.post_order()) # [20, 40, 30, 60, 80, 70, 50]
-print(bst.বিচৰা(60))    # True
-print(bst.বিচৰা(99))    # False
+print(in_order(bst.মূল))   # [20, 30, 40, 50, 60, 70, 80]
+print(pre_order(bst.মূল))  # [50, 30, 20, 40, 70, 60, 80]
+print(post_order(bst.মূল)) # [20, 40, 30, 60, 80, 70, 50]
+print(bst.বিচৰা(60))       # True
+print(bst.বিচৰা(99))       # False
 \`\`\`
 
 ইয়াত \`class BST(BST)\`-ৰ দৰে একে নাম পুনৰ সংজ্ঞায়িত কৰাৰ সলনি বাস্তৱ project-ত আগৰ class-তেই traversal method-সমূহ যোগ কৰাটো অধিক পৰিষ্কাৰ। তলৰ সম্পূৰ্ণ উদাহৰণত সেই পদ্ধতি দেখুওৱা হৈছে; আগৰ দুটা code block-ৰ class সংজ্ঞা একেটা class-ত একত্ৰিত কৰিব লাগে।
