@@ -6799,68 +6799,358 @@ Pytest-এ Python program-ৰ স্বয়ংক্ৰিয় test লি�
     },
     id: 'ch-21',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
-      title: 'অধ্যায় ২৪: ডকাৰ আৰু কন্টেইনাৰাইজেশন',
-      subtitle: 'Multi-stage Dockerfile, Non-root User Security & Docker Compose Full-Stack',
-      estimatedReadTime: '9 min',
-      topics: ['Multi-stage Dockerfile', 'Non-root Security', 'Docker Compose Multi-service', 'Docker BuildKit'],
-      content: `## ২৪.১ Multi-stage Dockerfile (২০২৬ বেষ্ট প্ৰেক্টিছ)
+      title: 'অধ্যায় ২১: ডকাৰ আৰু কন্টেইনাৰাইজেশন',
+      subtitle: 'Dockerfile, Multi-stage Build, Compose, Volumes, Networking আৰু Container Security',
+      estimatedReadTime: '17 min',
+      topics: ['Docker Images আৰু Containers', 'Dockerfile আৰু Multi-stage Build', 'Docker Compose', 'Volumes আৰু Networking', 'BuildKit আৰু Security Best Practices'],
+      content: `## ২১.১ Docker আৰু Containerization-ৰ পৰিচয়
 
-\`\`\`dockerfile
-# Builder Stage
-FROM python:3.13-slim as builder
-WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+Docker হৈছে application আৰু ইয়াৰ প্ৰয়োজনীয় dependency-সমূহক container-ত পেকেজ কৰি চলোৱাৰ এটা platform। Container-এ application-ৰ code, library আৰু runtime-ৰ পৰিৱেশ একে ধৰণে ৰাখিবলৈ সহায় কৰে।
 
-# Final Production Stage
-FROM python:3.13-slim
-WORKDIR /app
+**Image** হৈছে container তৈয়াৰ কৰাৰ read-only template। **Container** হৈছে সেই image-ৰ পৰা চলোৱা instance। **Dockerfile**-ত image কেনেকৈ build হ'ব তাৰ নিৰ্দেশ থাকে।
 
-# Non-root user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-COPY --from=builder /root/.local /home/appuser/.local
-COPY . .
+Virtual Machine-এ সাধাৰণতে পৃথক guest operating system চলায়; container-এ host operating system-ৰ kernel share কৰে। সেয়ে container সাধাৰণতে তুলনামূলকভাৱে lightweight, কিন্তু ই নিজে সম্পূৰ্ণ security boundary বুলি ধৰি ল'ব নালাগে।
 
-ENV PATH=/home/appuser/.local/bin:$PATH
-USER appuser
-EXPOSE 8000
+### মূল শব্দ
 
-HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:8000/health || exit 1
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-\`\`\`
+- **Image:** container তৈয়াৰ কৰাৰ template।
+- **Container:** চলি থকা বা বন্ধ অৱস্থাত থকা image instance।
+- **Dockerfile:** image build-ৰ instructions।
+- **Registry:** image সংৰক্ষণ আৰু বিতৰণৰ স্থান, যেনে Docker Hub।
+- **Volume:** container-ৰ lifecycle-ৰ পৰা পৃথকভাৱে data সংৰক্ষণ।
+- **Network:** container-সমূহৰ মাজত যোগাযোগৰ ব্যৱস্থা।
 
 ---
 
-## ২৪.২ Docker Compose (পূৰ্ণাংগ ফুলষ্টেক ষ্টেক)
+## ২১.২ Docker স্থাপন আৰু প্ৰথম Container
+
+Docker Engine বা Docker Desktop-ৰ installation পদ্ধতি operating system অনুসৰি বেলেগ। আপোনাৰ OS-ৰ বাবে Docker-ৰ official installation guide অনুসৰণ কৰক।
+
+Docker চলি আছে নে চাবলৈ:
+
+\`\`\`bash
+docker --version
+docker info
+\`\`\`
+
+প্ৰথম container:
+
+\`\`\`bash
+docker run --rm hello-world
+\`\`\`
+
+ইমেজ download কৰি container চলাব। \`--rm\`-এ container বন্ধ হোৱাৰ পিছত container instance আঁতৰায়।
+
+কিছুমান উপযোগী command:
+
+\`\`\`bash
+docker image ls
+docker ps
+docker ps -a
+docker logs <container-name-or-id>
+docker stop <container-name-or-id>
+docker rm <container-name-or-id>
+\`\`\`
+
+\`docker ps\`-এ চলি থকা container দেখুৱায়; \`docker ps -a\`-এ বন্ধ container-ও দেখুৱায়।
+
+---
+
+## ২১.৩ Dockerfile লিখা
+
+তলৰ উদাহৰণ এটা সাধাৰণ FastAPI application-ৰ বাবে। ধৰা হৈছে project-ত \`main.py\` আৰু \`requirements.txt\` আছে।
+
+\`\`\`python
+# main.py
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+\`\`\`
+
+\`\`\`text
+# requirements.txt
+fastapi
+uvicorn[standard]
+\`\`\`
+
+Production project-ত dependency-ৰ version lock বা pin কৰি reproducible build বজাই ৰাখক।
+
+এটা multi-stage Dockerfile:
+
+\`\`\`dockerfile
+# syntax=docker/dockerfile:1
+
+# Builder stage: Python dependencies install
+FROM python:3.12-slim AS builder
+WORKDIR /build
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Runtime stage: কেৱল প্ৰয়োজনীয় বস্তু ৰাখক
+FROM python:3.12-slim AS runtime
+WORKDIR /app
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+COPY --from=builder /opt/venv /opt/venv
+COPY main.py .
+
+# Root নহয়, পৃথক user-এ application চলাব
+RUN groupadd --system app && useradd --system --gid app app
+USER app
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)" || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+\`\`\`
+
+ইয়াত builder stage-ত dependency install হয় আৰু runtime stage-ত virtual environment কপি কৰা হয়। Healthcheck-ত Python-ৰ standard library ব্যৱহাৰ কৰা হৈছে; সেয়ে final image-ত পৃথক \`curl\` install কৰাৰ প্ৰয়োজন নাই।
+
+**মন কৰিব:** যদি dependency install কৰিবলৈ native system library লাগে, builder আৰু runtime stage দুয়োটাতে প্ৰয়োজনীয় runtime library সঠিকভাৱে যোগ কৰিব লাগিব। সকলো project-ৰ বাবে একেটা Dockerfile যথেষ্ট নহয়।
+
+---
+
+## ২১.৪ .dockerignore আৰু Image Build
+
+Docker build context-ত অপ্রয়োজনীয় file পঠিওৱা কমাবলৈ \`.dockerignore\` ব্যৱহাৰ কৰক।
+
+\`\`\`text
+.git
+.github
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.env
+.env.*
+!.env.example
+dist
+build
+\`\`\`
+
+ইয়াৰ ফলত local virtual environment, Git history আৰু secret-যুক্ত environment file image build context-ত নাযায়। \`.env.example\`-ত কেৱল fake বা placeholder value ৰাখিব।
+
+Image build আৰু run:
+
+\`\`\`bash
+docker build -t sample-api:1.0 .
+docker image ls
+docker run --rm -p 8000:8000 sample-api:1.0
+\`\`\`
+
+Browser বা HTTP client-ত \`http://localhost:8000/health\` খুলি health response চাব পাৰি।
+
+Container background-ত চলাবলৈ:
+
+\`\`\`bash
+docker run -d --name sample-api -p 8000:8000 sample-api:1.0
+docker logs sample-api
+docker stop sample-api
+docker rm sample-api
+\`\`\`
+
+\`-p 8000:8000\`-ত প্ৰথমটো host port আৰু দ্বিতীয়টো container port।
+
+---
+
+## ২১.৫ Docker Compose: একাধিক Service একেলগে চলোৱা
+
+বাস্তৱ application-ত API, database আৰু cache পৃথক service হ'ব পাৰে। Docker Compose-এ YAML configuration-ৰ জৰিয়তে বহু container একেলগে manage কৰে।
+
+উদাহৰণৰ directory:
+
+\`\`\`text
+project/
+├── main.py
+├── requirements.txt
+├── Dockerfile
+├── compose.yaml
+└── .dockerignore
+\`\`\`
+
+\`compose.yaml\`:
 
 \`\`\`yaml
-# docker-compose.yml
-version: '3.9'
 services:
   api:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://user:pass@db:5432/codeyatra
+      DATABASE_URL: postgresql://appuser:\${DB_PASSWORD}@db:5432/appdb
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
   db:
-    image: postgres:16-alpine
+    image: postgres:16
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: codeyatra
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: \${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      POSTGRES_DB: appdb
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
 
 volumes:
-  pgdata:
-\`\`\``,
+  postgres_data:
+\`\`\`
+
+Local development-ৰ বাবে \`.env\` ফাইলত password ৰাখিব পাৰি:
+
+\`\`\`text
+DB_PASSWORD=replace-with-a-long-random-local-password
+\`\`\`
+
+\`.env\` Git-ত commit নকৰিব। Production-ত hosting platform বা secret manager-ৰ secret ব্যৱস্থা ব্যৱহাৰ কৰক। উদাহৰণৰ password-টো বাস্তৱ production password হিচাপে ব্যৱহাৰ নকৰিব।
+
+Compose command:
+
+\`\`\`bash
+docker compose config
+docker compose up --build -d
+docker compose ps
+docker compose logs -f api
+docker compose down
+\`\`\`
+
+\`docker compose down\`-এ container আৰু network আঁতৰায়; named volume সাধাৰণতে ৰাখে। \`docker compose down -v\`-এ volume-ও মচি পেলাব পাৰে—database data হেৰুৱাৰ আশংকা আছে, সেয়ে সাৱধানে ব্যৱহাৰ কৰক।
+
+\`depends_on\`-ৰ সাধাৰণ ৰূপে service আৰম্ভ হোৱাৰ ক্ৰম নিৰ্ধাৰণ কৰে; application-ৰ বাবে database প্ৰস্তুত নোহোৱালৈ অপেক্ষা কৰাটো নিশ্চিত নকৰে। \`condition: service_healthy\`-এ healthcheck সফল হোৱালৈ অপেক্ষা কৰাত সহায় কৰে।
+
+---
+
+## ২১.৬ Volume আৰু Persistent Data
+
+Container মচি পেলালেও database data ৰাখিবলৈ volume ব্যৱহাৰ কৰা হয়। Compose-ৰ \`postgres_data\` হৈছে named volume-ৰ উদাহৰণ।
+
+- **Named volume:** Docker-এ manage কৰে; database data-ৰ বাবে উপযোগী।
+- **Bind mount:** host-ৰ নিৰ্দিষ্ট directory container-ত mount কৰে; development-ত code edit কৰিবলৈ সুবিধাজনক।
+- **tmpfs mount:** memory-ত অস্থায়ী data ৰাখে; container বন্ধ হ'লে data থাকে নাথাকে।
+
+উদাহৰণ bind mount:
+
+\`\`\`bash
+docker run --rm -p 8000:8000 \
+  -v "$(pwd)/app:/app/app" sample-api:1.0
+\`\`\`
+
+Bind mount-এ host-ৰ file container-ৰ file-ৰ সৈতে সংযোগ কৰে। ভুল directory mount কৰিলে image-ৰ ভিতৰৰ file ঢাকি যাব পাৰে। Production database-ৰ বাবে backup আৰু restore plan অত্যাৱশ্যক; volume থাকিলেই backup হৈ নাযায়।
+
+---
+
+## ২১.৭ Docker Network
+
+Compose-এ একেটা project-ৰ service-সমূহৰ বাবে network সৃষ্টি কৰে। ওপৰৰ উদাহৰণত API-এ database-ৰ সৈতে \`db\` hostname ব্যৱহাৰ কৰি যোগাযোগ কৰে।
+
+- Container-ৰ ভিতৰত API-এ database-ৰ port 5432-লৈ সংযোগ কৰে।
+- Host machine-ৰ পৰা database access লাগিলে পৃথক port publish কৰিব লাগিব।
+- Database-ৰ port বাহিৰৰ internet-লৈ অকাৰণে publish নকৰিব।
+- Service name DNS hostname হিচাপে ব্যৱহাৰ কৰিব পাৰি।
+
+\`localhost\`-ৰ অৰ্থ container-ৰ নিজৰ network namespace; API container-ৰ ভিতৰত \`localhost\` ব্যৱহাৰ কৰিলে database container পোৱা নাযায়।
+
+---
+
+## ২১.৮ Docker Security আৰু Best Practices
+
+1. সম্ভৱ হ'লে non-root user-এ application চলাওক।
+2. সৰু আৰু বিশ্বাসযোগ্য base image ব্যৱহাৰ কৰক।
+3. Dependency version pin কৰক আৰু image নিয়মিত update কৰক।
+4. Secret Dockerfile বা image layer-ত নাৰাখিব।
+5. \`.dockerignore\`-ত secret আৰু অপ্রয়োজনীয় file বাদ দিয়ক।
+6. Container-ত প্ৰয়োজনতকৈ অধিক Linux capability নিদিব।
+7. Production-ত image-ৰ tag স্পষ্ট ৰাখক; কেৱল \`latest\`-ৰ ওপৰত নিৰ্ভৰ নকৰিব।
+8. Image vulnerability scan আৰু dependency review কৰক।
+9. Database volume-ৰ backup আৰু restore পৰীক্ষা কৰক।
+10. Container log-ত password বা ব্যক্তিগত তথ্য নথকাটো নিশ্চিত কৰক।
+
+Dockerfile-ত \`USER\` নিৰ্ধাৰণ কৰিলেও container-ৰ সকলো security risk দূৰ নহয়। Host, kernel, Docker daemon, image আৰু runtime configuration-ও সুৰক্ষিত ৰাখিব লাগিব।
+
+---
+
+## ২১.৯ BuildKit আৰু Image Optimization
+
+আধুনিক Docker BuildKit-এ build cache, secret mount আৰু অধিক দক্ষ build workflow সমৰ্থন কৰে। Multi-stage build-এ final image-ত compiler আৰু অপ্রয়োজনীয় build file নৰখাত সহায় কৰে।
+
+উদাহৰণ:
+
+\`\`\`dockerfile
+# syntax=docker/dockerfile:1
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
+COPY main.py .
+CMD ["python", "main.py"]
+\`\`\`
+
+BuildKit cache mount-এ dependency download cache কৰিব পাৰে; ই image-ৰ ভিতৰত secret সংৰক্ষণ কৰাৰ উপায় নহয়। Secret-ৰ বাবে BuildKit secret mount-ৰ official documentation অনুসৰণ কৰক।
+
+---
+
+## ২১.১০ অনুশীলনী
+
+1. Docker image আৰু container-ৰ পাৰ্থক্য লিখক।
+2. Container আৰু Virtual Machine-ৰ মূল পাৰ্থক্য কি?
+3. Dockerfile-ত multi-stage build কিয় ব্যৱহাৰ কৰা হয়?
+4. \`.dockerignore\`-ৰ কাম কি?
+5. Docker Compose-এ কেনেকৈ একাধিক service manage কৰে?
+6. Named volume আৰু bind mount-ৰ পাৰ্থক্য লিখক।
+7. Container-ৰ ভিতৰত \`localhost\`-এ database container কিয় নুবুজায়?
+8. \`depends_on: condition: service_healthy\`-ৰ কাম কি?
+9. Database container মচিলেও data ৰাখিবলৈ কি ব্যৱস্থা লাগে?
+10. Docker image-ত secret কিয় ৰখা উচিত নহয়?
+
+### উত্তৰ-সংকেত
+
+1. Image হৈছে template; container হৈছে সেই image-ৰ instance।
+2. VM-এ পৃথক guest OS চলায়; container-এ host kernel share কৰে।
+3. Build dependency আৰু runtime file পৃথক কৰি final image সৰু আৰু পৰিষ্কাৰ ৰাখিবলৈ।
+4. Build context-ৰ পৰা অপ্রয়োজনীয় আৰু secret file বাদ দিবলৈ।
+5. YAML-ত service, network, volume আৰু dependency সংজ্ঞায়িত কৰি।
+6. Named volume Docker-এ manage কৰে; bind mount host directory-ৰ সৈতে সংযোগ কৰে।
+7. প্ৰতিটো container-ৰ নিজস্ব network namespace থাকে; service name ব্যৱহাৰ কৰিব লাগে।
+8. Dependency service-ৰ healthcheck সফল নোহোৱালৈ অপেক্ষা কৰে।
+9. Named volume আৰু পৃথক backup/restore plan ব্যৱহাৰ কৰিব লাগে।
+10. Image layer বা registry-ৰ পৰা secret উন্মুক্ত হ'ব পাৰে।
+
+---
+
+## ২১.১১ সাৰাংশ
+
+Docker-এ application আৰু dependency-সমূহক container-ত পেকেজ কৰি বিভিন্ন পৰিৱেশত একে ধৰণে চলোৱাত সহায় কৰে। Dockerfile-এ image build কৰে, multi-stage build-এ অপ্রয়োজনীয় build tool বাদ দিয়ে, আৰু Docker Compose-এ বহু service একেলগে manage কৰে। Volume-এ container-ৰ বাহিৰত data ৰাখে; network-এ service-সমূহৰ যোগাযোগ সহজ কৰে। Production-ত non-root user, secret management, image update, healthcheck, backup আৰু security review অত্যন্ত গুৰুত্বপূৰ্ণ।
+
+### চৰকাৰী নথি
+
+- Docker Get Started: https://docs.docker.com/get-started/
+- Dockerfile reference: https://docs.docker.com/reference/dockerfile/
+- Docker Compose: https://docs.docker.com/compose/
+- Docker Build: https://docs.docker.com/build/
+- Docker security: https://docs.docker.com/engine/security/
+`,
     },
-    {
-      id: 'ch-22',
+    id: 'ch-22',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২৫: এজ এআই, এনোমালি ডিটেকচন আৰু আধুনিক ট্ৰেণ্ড',
       subtitle: 'Z-Score Anomaly Detection, Scikit-Learn, SLMs, MCP & RAG Systems',
