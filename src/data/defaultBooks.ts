@@ -2144,138 +2144,347 @@ print("ফলাফল:", ফল)
       volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
       title: 'অধ্যায় ৮: লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ',
       subtitle: 'Dynamic Array, Stack (LIFO), Queue (FIFO) আৰু Linked List',
-      estimatedReadTime: '11 min',
-      topics: ['Dynamic Array', 'Stack & Valid Parentheses', 'Queue (deque)', 'Singly Linked List'],
-      content: `## ৮.১ তালিকা (Dynamic Array Implementation)
+      estimatedReadTime: '24 min',
+      topics: ['Dynamic Array', 'Amortized Complexity', 'Stack & Valid Parentheses', 'Queue আৰু deque', 'Singly Linked List', 'Complexity Analysis'],
+      content: \`## ৮.১ লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ কি?
 
-\`\`\`python
+যি ডেটা ষ্ট্ৰাকচাৰত উপাদানসমূহ এটা ক্ৰমত সজোৱা থাকে আৰু সাধাৰণতে প্ৰতিটো উপাদানৰ আগৰ আৰু পিছৰ উপাদানৰ সৈতে স্পষ্ট সম্পৰ্ক থাকে, তাক লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ বোলা হয়। Array, Stack, Queue আৰু Linked List ইয়াৰ উদাহৰণ।
+
+ডেটা ষ্ট্ৰাকচাৰ বাছনি কৰোঁতে কেৱল কোড চুটি হোৱাটো নাচাব। কোনটো operation বেছি কৰিব লাগিব—index-ৰে পঢ়া, মাজত insert কৰা, শেষৰ পৰা delete কৰা, নে FIFO order-ত process কৰা—সেইটো বিবেচনা কৰিব লাগে।
+
+## ৮.২ Dynamic Array (ডাইনামিক এৰে)
+
+Array-ত উপাদানসমূহ index-ৰ সহায়ত পোৱা যায়। Python-ৰ \\\`list\\\` হৈছে dynamic array-ৰ দৰে ব্যৱহাৰযোগ্য sequence: ইয়াৰ আকাৰ বৃদ্ধি বা হ্ৰাস কৰিব পাৰি। Python list-ৰ ভিতৰৰ implementation ভাষাটোৰ implementation অনুসৰি পৃথক হ’ব পাৰে; তলৰ class-টো dynamic array-ৰ ধাৰণা শিকাবলৈ নিজে লিখা সৰল উদাহৰণ, Python list-ৰ আভ্যন্তৰীণ code নহয়।
+
+### নিজে লিখা Dynamic Array
+
+\\\`\\\`\\\`python
 class ডাইনামিক_এৰে:
     def __init__(self):
         self.ধাৰক = [None] * 2
         self.গণনা = 0
         self.ক্ষমতা = 2
-        
+
     def যোগ(self, মান):
         if self.গণনা == self.ক্ষমতা:
             self._বৃদ্ধি()
         self.ধাৰক[self.গণনা] = মান
         self.গণনা += 1
-        
+
     def _বৃদ্ধি(self):
         নতুন_ধাৰক = [None] * (self.ক্ষমতা * 2)
         for i in range(self.গণনা):
             নতুন_ধাৰক[i] = self.ধাৰক[i]
         self.ধাৰক = নতুন_ধাৰক
         self.ক্ষমতা *= 2
-        
+
     def __getitem__(self, সূচী):
+        if not isinstance(সূচী, int):
+            raise TypeError("সূচী পূৰ্ণসংখ্যা হ'ব লাগিব")
         if not 0 <= সূচী < self.গণনা:
-            raise IndexError("সূচী বাহিৰত!")
+            raise IndexError("সূচী বাহিৰত")
         return self.ধাৰক[সূচী]
-        
+
     def __len__(self):
         return self.গণনা
 
-# ব্যৱহাৰ
+    def __repr__(self):
+        return repr([self[i] for i in range(len(self))])
+
+
 arr = ডাইনামিক_এৰে()
 for i in range(5):
     arr.যোগ(i * 10)
-print([arr[i] for i in range(len(arr))])  # [0, 10, 20, 30, 40]
-\`\`\`
 
----
+print(arr)       # [0, 10, 20, 30, 40]
+print(arr[2])    # 20
+print(len(arr))  # 5
+\\\`\\\`\\\`
 
-## ৮.২ ষ্টেক (Stack) - LIFO
+ইয়াত capacity শেষ হ’লে নতুন container-ৰ আকাৰ দুগুণ কৰা হয় আৰু পুৰণি উপাদানসমূহ কপি কৰা হয়। এই বৃদ্ধি operation-টো এটা নিৰ্দিষ্ট সময়ত O(n) হ’ব পাৰে, কিন্তু বহু append operation একেলগে বিবেচনা কৰিলে প্ৰতিটো append-ৰ amortized সময় O(1) হয়। এই উদাহৰণত negative index, slice, iteration আৰু deletion যোগ কৰা হোৱা নাই; সেয়ে ই সম্পূৰ্ণ Python list-ৰ বিকল্প নহয়।
 
-\`\`\`python
+### Array-ৰ সাধাৰণ Time Complexity
+
+| Operation | সাধাৰণ জটিলতা |
+|---|---:|
+| Index-ৰে element পঢ়া | O(1) |
+| শেষত append | Amortized O(1) |
+| মাজত insert/delete | O(n) |
+| Linear search | O(n) |
+
+এইবোৰ dynamic array-ৰ সাধাৰণ বিশ্লেষণ; বাস্তৱ সময় hardware, data size আৰু implementation-ৰ ওপৰত নিৰ্ভৰ কৰে।
+
+## ৮.৩ Stack (ষ্টেক) — LIFO
+
+Stack-ত শেষত সোমোৱা উপাদানটো প্ৰথমে বাহিৰ হয়। ইয়াক LIFO (Last In, First Out) বোলা হয়। প্লেটৰ স্তূপৰ কথা ভাবিব পাৰি: ওপৰত থোৱা প্লেটখনেই প্ৰথমে উঠোৱা হয়।
+
+প্ৰধান operation:
+- \\\`push\\\`: উপাদান stack-ত যোগ কৰা।
+- \\\`pop\\\`: ওপৰৰ উপাদান আঁতৰাই ঘূৰাই দিয়া।
+- \\\`peek\\\`: ওপৰৰ উপাদান নুঠোৱাকৈ চোৱা।
+- \\\`is_empty\\\`: stack খালী নে নহয় পৰীক্ষা কৰা।
+
+\\\`\\\`\\\`python
 class ষ্টেক:
     def __init__(self):
         self.তালিকা = []
-    def ঠিলা(self, মান):
+
+    def push(self, মান):
         self.তালিকা.append(মান)
-    def উলিওৱা(self):
-        if self.খালী():
-            raise IndexError("ষ্টেক খালী!")
+
+    def pop(self):
+        if self.is_empty():
+            raise IndexError("ষ্টেক খালী")
         return self.তালিকা.pop()
-    def শীৰ্ষ(self):
-        return self.তালিকা[-1] if not self.খালী() else None
-    def খালী(self):
+
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("ষ্টেক খালী")
+        return self.তালিকা[-1]
+
+    def is_empty(self):
         return len(self.তালিকা) == 0
 
-# সমস্যা সমাধান: বন্ধনী মিলোৱা (Valid Parentheses)
+    def __len__(self):
+        return len(self.তালিকা)
+
+
+s = ষ্টেক()
+s.push("A")
+s.push("B")
+print(s.peek())  # B
+print(s.pop())   # B
+print(s.pop())   # A
+\\\`\\\`\\\`
+
+Python list-ৰ শেষত \\\`append()\\\` আৰু \\\`pop()\\\` ব্যৱহাৰ কৰিলে সাধাৰণতে stack-ৰ বাবে উপযোগী দক্ষতা পোৱা যায়।
+
+### সমস্যা: Valid Parentheses
+
+এটা string-ত \\\`()\\\`, \\\`{}\\\`, \\\`[]\\\` বন্ধনীসমূহ সঠিক ক্ৰমত বন্ধ হৈছে নে নাই পৰীক্ষা কৰিব লাগে। Stack এই সমস্যাৰ স্বাভাৱিক সমাধান।
+
+\\\`\\\`\\\`python
 def বন্ধনী_মিল_কিনা(বাক্য: str) -> bool:
     জোড়া = {')': '(', '}': '{', ']': '['}
-    স্তূপ = ষ্টেক()
+    স্তূপ = []
+
     for অক্ষৰ in বাক্য:
         if অক্ষৰ in "({[":
-            স্তূপ.ঠিলা(অক্ষৰ)
+            স্তূপ.append(অক্ষৰ)
         elif অক্ষৰ in ")}]":
-            if স্তূপ.খালী() or স্তূপ.উলিওৱা() != জোড়া[অক্ষৰ]:
+            if not স্তূপ:
                 return False
-    return স্তূপ.খালী()
+            if স্তূপ.pop() != জোড়া[অক্ষৰ]:
+                return False
+
+    return len(স্তূপ) == 0
+
 
 print(বন্ধনী_মিল_কিনা("({[]})"))  # True
 print(বন্ধনী_মিল_কিনা("({[})"))   # False
-\`\`\`
+print(বন্ধনী_মিল_কিনা("((()))"))  # True
+print(বন্ধনী_মিল_কিনা("(()"))     # False
+\\\`\\\`\\\`
 
----
+প্ৰতিটো character-ৰ ওপৰত এবাৰকৈ loop চলে; সেয়ে সময় জটিলতা O(n), আৰু আটাইতকৈ বেয়া ক্ষেত্ৰত stack-ত O(n) উপাদান থাকিব পাৰে।
 
-## ৮.৩ কিউ (Queue) - FIFO
+## ৮.৪ Queue (কিউ) — FIFO
 
-\`\`\`python
+Queue-ত প্ৰথমে সোমোৱা উপাদানটো প্ৰথমে বাহিৰ হয়। ইয়াক FIFO (First In, First Out) বোলা হয়। বেংকৰ শাৰীৰ দৰে: আগতে অহা ব্যক্তিজনক আগতে সেৱা দিয়া হয়।
+
+Python-ত queue-ৰ বাবে \\\`collections.deque\\\` উপযোগী। List-ৰ \\\`pop(0)\\\`-এ বাকী উপাদানসমূহ সৰাবলগীয়া হ’ব পাৰে, সেয়ে ডাঙৰ queue-ত ইয়াক বাৰে বাৰে ব্যৱহাৰ কৰাটো অদক্ষ।
+
+\\\`\\\`\\\`python
 from collections import deque
 
 class কিউ:
     def __init__(self):
         self.ধাৰক = deque()
+
     def যোগ(self, মান):
         self.ধাৰক.append(মান)
+
     def আঁতৰাও(self):
         if self.খালী():
-            raise IndexError("কিউ খালী!")
+            raise IndexError("কিউ খালী")
         return self.ধাৰক.popleft()
+
+    def আগৰটো(self):
+        if self.খালী():
+            raise IndexError("কিউ খালী")
+        return self.ধাৰক[0]
+
     def খালী(self):
         return len(self.ধাৰক) == 0
-\`\`\`
 
----
+    def __len__(self):
+        return len(self.ধাৰক)
 
-## ৮.৪ লিংকড লিষ্ট (Linked List)
 
-\`\`\`python
+q = কিউ()
+q.যোগ("প্ৰথম")
+q.যোগ("দ্বিতীয়")
+q.যোগ("তৃতীয়")
+print(q.আঁতৰাও())  # প্ৰথম
+print(q.আঁতৰাও())  # দ্বিতীয়
+\\\`\\\`\\\`
+
+Queue-ৰ end-ত \\\`append()\\\` আৰু front-ৰ পৰা \\\`popleft()\\\` সাধাৰণতে O(1) operation।
+
+### Queue ক’ত ব্যৱহাৰ হয়?
+
+- Printer-ত print job-ৰ শাৰী।
+- Server-ত অপেক্ষা কৰি থকা request।
+- BFS graph traversal।
+- Producer-consumer ধৰণৰ system।
+
+## ৮.৫ Singly Linked List (একদিশীয় লিংকড লিষ্ট)
+
+Linked List-ত প্ৰতিটো node-এ data আৰু পৰৱৰ্তী node-লৈ reference সংৰক্ষণ কৰে। Array-ৰ দৰে সকলো element একেলগে index-ৰে পোৱা নাযায়। প্ৰথম node-ক head বোলা হয় আৰু শেষ node-ৰ next সাধাৰণতে \\\`None\\\` হয়।
+
+\\\`\\\`\\\`text
+Head
+ |
+ v
+[10 | next] -> [20 | next] -> [30 | None]
+\\\`\\\`\\\`
+
+### Node আৰু Linked List-ৰ উদাহৰণ
+
+\\\`\\\`\\\`python
 class নোড:
     def __init__(self, মান):
         self.মান = মান
         self.পৰৱৰ্তী = None
 
+
 class লিংকড_লিষ্ট:
     def __init__(self):
         self.মুৰব্বী = None
         self.আকাৰ = 0
-        
-    def যোগ_কৰা(self, মান):
+
+    def আৰম্ভণিত_যোগ(self, মান):
         নতুন = নোড(মান)
         নতুন.পৰৱৰ্তী = self.মুৰব্বী
         self.মুৰব্বী = নতুন
         self.আকাৰ += 1
-        
+
+    def শেষত_যোগ(self, মান):
+        নতুন = নোড(মান)
+        if self.মুৰব্বী is None:
+            self.মুৰব্বী = নতুন
+        else:
+            বৰ্তমান = self.মুৰব্বী
+            while বৰ্তমান.পৰৱৰ্তী is not None:
+                বৰ্তমান = বৰ্তমান.পৰৱৰ্তী
+            বৰ্তমান.পৰৱৰ্তী = নতুন
+        self.আকাৰ += 1
+
+    def বিচৰা(self, মান):
+        বৰ্তমান = self.মুৰব্বী
+        while বৰ্তমান is not None:
+            if বৰ্তমান.মান == মান:
+                return True
+            বৰ্তমান = বৰ্তমান.পৰৱৰ্তী
+        return False
+
     def দেখুওৱা(self):
         বৰ্তমান = self.মুৰব্বী
         মানসমূহ = []
-        while বৰ্তমান:
+        while বৰ্তমান is not None:
             মানসমূহ.append(str(বৰ্তমান.মান))
             বৰ্তমান = বৰ্তমান.পৰৱৰ্তী
         print(" -> ".join(মানসমূহ) + " -> None")
 
+    def __len__(self):
+        return self.আকাৰ
+
+
 ll = লিংকড_লিষ্ট()
-ll.যোগ_কৰা(30)
-ll.যোগ_কৰা(20)
-ll.যোগ_কৰা(10)
-ll.দেখুওৱা()  # 10 -> 20 -> 30 -> None
-\`\`\``,
+ll.শেষত_যোগ(20)
+ll.শেষত_যোগ(30)
+ll.আৰম্ভণিত_যোগ(10)
+ll.দেখুওৱা()              # 10 -> 20 -> 30 -> None
+print(ll.বিচৰা(20))       # True
+print(ll.বিচৰা(99))       # False
+print(len(ll))            # 3
+\\\`\\\`\\\`
+
+এই implementation-ত tail pointer নাই। সেয়ে শেষত যোগ কৰিবলৈ list-ৰ শেষলৈ যাব লাগে আৰু সময় O(n)। Head-ত যোগ O(1), search O(n)। Tail pointer সংৰক্ষণ কৰিলে শেষত যোগ O(1) কৰিব পাৰি, কিন্তু তেতিয়া empty list আৰু tail update সঠিককৈ সামলাব লাগিব।
+
+## ৮.৬ চাৰিটা Data Structure-ৰ তুলনা
+
+| গঠন | নিয়ম | সাধাৰণ ব্যৱহাৰ |
+|---|---|---|
+| Dynamic Array | Index-ভিত্তিক sequence | Random access, তালিকা |
+| Stack | LIFO | Undo, function call, bracket matching |
+| Queue | FIFO | Waiting line, BFS, task scheduling |
+| Linked List | Node আৰু next reference | Sequential traversal, node insertion |
+
+### সাধাৰণ Time Complexity
+
+| Operation | Dynamic Array | Stack (list) | Queue (deque) | Singly Linked List |
+|---|---:|---:|---:|---:|
+| Index access | O(1) | — | — | O(n) |
+| Search | O(n) | O(n) | O(n) | O(n) |
+| Add at front | O(n) | — | O(1) with deque | O(1) |
+| Add at end | Amortized O(1) | Amortized O(1) | O(1) | O(n) in this example |
+| Remove next item | — | O(1) from end | O(1) from front | O(1) if head is removed |
+
+জটিলতাৰ তালিকাখন সাধাৰণ operation-ৰ বিশ্লেষণ। নিৰ্দিষ্ট implementation আৰু operation-ৰ সংজ্ঞা অনুসৰি ফল পৃথক হ’ব পাৰে।
+
+## ৮.৭ সাধাৰণ ভুল আৰু সাৱধানতা
+
+1. Stack খালী অৱস্থাত \\\`pop()\\\` কৰিলে exception হ’ব পাৰে; আগতে empty check কৰক।
+2. Queue-ত \\\`list.pop(0)\\\` ব্যৱহাৰ কৰিলে ডাঙৰ list-ত অদক্ষ হ’ব পাৰে; \\\`deque.popleft()\\\` ব্যৱহাৰ কৰক।
+3. Linked List-ত traversal কৰাৰ সময়ত next reference আগবঢ়াবলৈ পাহৰিলে infinite loop হ’ব পাৰে।
+4. Node যোগ কৰাৰ আগতে আৰু পিছত head/next reference সঠিককৈ update কৰক।
+5. Dynamic array-ৰ resize-ত পুৰণি element কপি নকৰিলে data হেৰাব।
+6. Amortized O(1) মানে প্ৰতিটো operation-এ সদায় O(1) সময় লয় বুলি নহয়; resize-ৰ সময়ত এটা append O(n) হ’ব পাৰে।
+
+## ৮.৮ অনুশীলনী
+
+1. LIFO আৰু FIFO-ৰ সম্পূৰ্ণ ৰূপ লিখক।
+2. Dynamic Array-ত index access সাধাৰণতে O(1) কিয়?
+3. Dynamic Array-ৰ capacity শেষ হ’লে কি কৰিব লাগে?
+4. Stack-ৰ \\\`push\\\`, \\\`pop\\\` আৰু \\\`peek\\\` operation-ৰ কাম লিখক।
+5. \\\`([{}])\\\` বন্ধনী string-টো valid নে? কাৰণ লিখক।
+6. \\\`([)]\\\` কিয় invalid?
+7. Queue-ত \\\`append()\\\` আৰু \\\`popleft()\\\`-ৰ ভূমিকা কি?
+8. Python list-ৰ \\\`pop(0)\\\`-ৰ পৰিৱৰ্তে deque কিয় ব্যৱহাৰ কৰা হয়?
+9. Linked List-ৰ node-ত কি দুটা মূল তথ্য থাকে?
+10. এই Linked List-ত 5, 10, 15 ক্ৰমে যোগ কৰিলে head-ত 2 যোগ কৰাৰ পিছত ক্ৰম কি হ’ব?
+11. এই অধ্যায়ৰ Linked List উদাহৰণত শেষত যোগ কৰাৰ সময় জটিলতা O(n) কিয়?
+12. Stack আৰু Queue-ৰ বাস্তৱ জীৱনৰ এটাকৈ উদাহৰণ লিখক।
+
+### উত্তৰ-সূচী
+
+1. LIFO = Last In, First Out; FIFO = First In, First Out।
+2. Index-ৰ সহায়ত element-ৰ স্থান পোনপটীয়াকৈ নিৰ্ধাৰণ কৰিব পাৰি।
+3. ডাঙৰ container সৃষ্টি কৰি পুৰণি উপাদান কপি কৰি নতুন উপাদান যোগ কৰিব লাগে।
+4. Push যোগ কৰে, pop ওপৰৰটো আঁতৰায়, peek ওপৰৰটো চায়।
+5. Valid; প্ৰতিটো opening bracket-ৰ closing bracket সঠিক উলটি ক্ৰমত আছে।
+6. Closing bracket-ৰ ক্ৰম stack-ৰ শীৰ্ষ opening bracket-ৰ সৈতে মিলা নাই।
+7. \\\`append()\\\` queue-ৰ শেষত যোগ কৰে; \\\`popleft()\\\` আগৰ উপাদান আঁতৰায়।
+8. \\\`pop(0)\\\`-এ বাকী element shift কৰিব পাৰে; deque-ৰ front removal দক্ষ।
+9. Data আৰু next node-লৈ reference।
+10. 2 -> 5 -> 10 -> 15।
+11. Tail pointer নথকাৰ বাবে শেষ node বিচাৰি সম্পূৰ্ণ list traverse কৰিব লাগে।
+12. Stack: browser-ৰ undo history; Queue: printer-ৰ job line।
+
+## ৮.৯ সাৰাংশ
+
+এই অধ্যায়ত Dynamic Array-ৰ resize আৰু amortized complexity, Stack-ৰ LIFO নিয়ম, Queue-ৰ FIFO নিয়ম আৰু Linked List-ৰ node/reference-ভিত্তিক গঠন শিকিলোঁ। কোনটো data structure বাছনি কৰিব লাগে সেয়া operation-ৰ প্ৰয়োজন আৰু complexity-ৰ ওপৰত নিৰ্ভৰ কৰে।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python Tutorial — Data Structures: https://docs.python.org/3/tutorial/datastructures.html
+- Python Standard Library — collections.deque: https://docs.python.org/3/library/collections.html#collections.deque
+- Python Wiki — Time Complexity: https://wiki.python.org/moin/TimeComplexity
+- Python Data Model — Special Method Names: https://docs.python.org/3/reference/datamodel.html#special-method-names
+\`,
     },
-    {
-      id: 'ch-9',
+    id: 'ch-9',
       volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
       title: 'অধ্যায় ৯: নন-লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ (BST & Graphs)',
       subtitle: 'Binary Search Tree, In-order Traversal, BFS & DFS Graph Algorithms',
