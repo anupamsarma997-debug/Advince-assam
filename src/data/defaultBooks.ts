@@ -1101,62 +1101,331 @@ Python-ত variable name-এ object-ৰ সৈতে bind হয়। Object-�
       id: 'ch-5',
       volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
       title: 'অধ্যায় ৫: আধুনিক নিয়ন্ত্ৰণ প্ৰৱাহ আৰু পেটাৰ্ণ মেচিং',
-      subtitle: 'Structural Pattern Matching (Python 3.10+), Enumerate & Itertools',
-      estimatedReadTime: '8 min',
-      topics: ['Pattern Matching', 'Destructuring in Match', 'Enumerate & Zip', 'Itertools'],
-      content: `## ৫.১ Structural Pattern Matching (Python 3.10+)
+      subtitle: 'Structural Pattern Matching (Python 3.10+), Enumerate, Zip আৰু Itertools',
+      estimatedReadTime: '25–35 min',
+      topics: ['Structural Pattern Matching', 'Sequence and Mapping Patterns', 'OR Patterns and Guards', 'Enumerate', 'Zip and Strict Zip', 'Itertools'],
+      content: `## এই অধ্যায়ৰ শিক্ষণ-লক্ষ্য
 
-আধুনিক পাইথনত \`match-case\` ব্যৱহাৰ কৰি জটিল ডেটা সহজে মেচ কৰা সম্ভৱ:
+এই অধ্যায় শেষ কৰিলে আপুনি:
+- Python 3.10-ৰ `match-case` syntax বুজিব পাৰিব।
+- Sequence pattern, mapping pattern আৰু OR pattern চিনিব পাৰিব।
+- Pattern guard-ৰ সহায়ত অতিৰিক্ত চৰ্ত পৰীক্ষা কৰিব পাৰিব।
+- `enumerate()` আৰু `zip()`-ৰে loop অধিক স্পষ্ট কৰিব পাৰিব।
+- `itertools`-ৰ কেইটামান উপযোগী function ব্যৱহাৰ কৰিব পাৰিব।
+- Pattern matching-ৰ সীমা আৰু সাধাৰণ ভুল বুজিব পাৰিব।
 
-\`\`\`python
-def আদেশ_প্ৰচেছ_কৰা(কমাণ্ড: dict):
+## ৫.১ Structural Pattern Matching কি?
+
+Python 3.10-ৰ পৰা `match` আৰু `case` ব্যৱহাৰ কৰি এটা value-ৰ গঠন অনুসৰি বিভিন্ন code চলাব পাৰি। ইয়াক Structural Pattern Matching বোলা হয়।
+
+ই কেৱল C বা Java-ৰ সাধাৰণ switch statement-ৰ দৰে নহয়। ইয়াত sequence, mapping আৰু class-ৰ গঠনো pattern হিচাপে পৰীক্ষা কৰিব পাৰি।
+
+```python
+দিন = 3
+
+match দিন:
+    case 1:
+        নাম = "সোমবাৰ"
+    case 2:
+        নাম = "মঙলবাৰ"
+    case 3:
+        নাম = "বুধবাৰ"
+    case _:
+        নাম = "অন্য দিন"
+
+print(নাম)
+```
+
+`case _` হৈছে wildcard pattern। ই যিকোনো value-ৰ সৈতে match কৰে আৰু value-টো কোনো variable-ত bind নকৰে। সাধাৰণতে ইয়াক শেষৰ default case হিচাপে ৰখা হয়।
+
+## ৫.২ Mapping Pattern: Dictionary অনুসৰি Match
+
+Mapping pattern-এ dictionary-ৰ নিৰ্দিষ্ট key আৰু value পৰীক্ষা কৰিব পাৰে।
+
+```python
+def আদেশ_প্ৰচেছ_কৰা(কমাণ্ড):
     match কমাণ্ড:
-        # কেচ ১: গতি সংক্ৰান্ত আদেশ
-        case {"action": "move", "direction": ("north" | "south" | "east" | "west") as d, "steps": int(s)}:
-            return f"ৰব'ট {s} খোজ {d} দিশত আগবাঢ়িল।"
-        
-        # কেচ ২: বিশ্ৰামৰ আদেশ
-        case {"action": "sleep", "duration": int(secs)}:
-            return f"ৰব'ট {secs} ছেকেণ্ডৰ বাবে জিৰণি লৈছে।"
-            
-        # কেচ ৩: আক্ৰমণৰ আদেশ
-        case {"action": "attack", "target": str(t), "weapon": str(w)}:
-            return f"{t}ক {w}ৰে আক্ৰমণ কৰা হ'ল!"
-            
-        # কেচ ৪: তালিকাৰ পেটাৰ্ণ
-        case [x, y, *বাকী]:
-            return f"প্ৰথম দুটা: {x}, {y}; বাকী: {বাকী}"
-            
-        # ডিফল্ট কেচ
+        case {
+            "action": "move",
+            "direction": ("north" | "south" | "east" | "west") as দিশ,
+            "steps": int() as খোজ
+        } if type(খোজ) is int and খোজ > 0:
+            return f"ৰব'ট {খোজ} খোজ {দিশ} দিশত আগবাঢ়িব।"
+
+        case {
+            "action": "sleep",
+            "duration": int() as ছেকেণ্ড
+        } if type(ছেকেণ্ড) is int and ছেকেণ্ড >= 0:
+            return f"ৰব'ট {ছেকেণ্ড} ছেকেণ্ড জিৰণি ল'ব।"
+
+        case {
+            "action": "message",
+            "text": str() as বাৰ্তা
+        }:
+            return f"বাৰ্তা: {বাৰ্তা}"
+
         case _:
-            return "অজ্ঞাত আদেশ!"
+            return "অজ্ঞাত বা ভুল format-ৰ আদেশ।"
 
-# টেষ্ট
-print(আদেশ_প্ৰচেছ_কৰা({"action": "move", "direction": "north", "steps": 5}))
-print(আদেশ_প্ৰচেছ_কৰা([10, 20, 30, 40]))
+
+print(আদেশ_প্ৰচেছ_কৰা({
+    "action": "move",
+    "direction": "north",
+    "steps": 5
+}))
+print(আদেশ_প্ৰচেছ_কৰা({
+    "action": "sleep",
+    "duration": 10
+}))
 print(আদেশ_প্ৰচেছ_কৰা({"action": "dance"}))
-\`\`\`
+```
 
----
+ইয়াত:
+- `"action": "move"`-এ key-ৰ value পৰীক্ষা কৰে।
+- `("north" | "south" | "east" | "west")` হৈছে OR pattern; চাৰিটাৰ যিকোনো এটা value match কৰিব।
+- `as দিশ`-এ matched value-টো `দিশ` নামত bind কৰে।
+- `int() as খোজ`-এ integer instance-ৰ pattern পৰীক্ষা কৰি value bind কৰে।
+- `if`-ৰ পিছৰ অংশটো pattern guard। ই অতিৰিক্ত চৰ্ত পৰীক্ষা কৰে।
 
-## ৫.২ এডভান্সড লুপিং (Advanced Looping)
+**বিশেষ সাৱধানতা:** Python-ত `bool` হৈছে `int`-ৰ subclass। সেয়ে কেৱল `int()` pattern-এ `True` আৰু `False`-কো integer হিচাপে match কৰিব পাৰে। উদাহৰণত `type(খোজ) is int` ব্যৱহাৰ কৰি boolean-ৰ দৰে value বাদ দিয়া হৈছে।
 
-\`\`\`python
-# enumerate ব্যৱহাৰ
+Mapping pattern-এ dictionary-ত উল্লেখ কৰা key-সমূহ থাকিলেই match কৰিব পাৰে; অতিৰিক্ত key থাকিলেও সাধাৰণতে সমস্যা নহয়। সকলো key-হে থাকিব লাগিব বুলি ধৰা উচিত নহয়।
+
+## ৫.৩ Sequence Pattern আৰু Unpacking
+
+Sequence pattern-এ list বা tuple-ৰ দৰে sequence-ৰ গঠন পৰীক্ষা কৰিব পাৰে।
+
+```python
+বিন্দু = (10, 20)
+
+match বিন্দু:
+    case (0, 0):
+        print("মূলবিন্দু")
+    case (x, 0):
+        print(f"X অক্ষত অৱস্থান: {x}")
+    case (0, y):
+        print(f"Y অক্ষত অৱস্থান: {y}")
+    case (x, y):
+        print(f"বিন্দুৰ অৱস্থান: ({x}, {y})")
+```
+
+### Star Pattern
+
+```python
+সংখ্যাসমূহ = [10, 20, 30, 40]
+
+match সংখ্যাসমূহ:
+    case [প্ৰথম, দ্বিতীয়, *বাকী]:
+        print("প্ৰথম দুটা:", প্ৰথম, দ্বিতীয়)
+        print("বাকী:", বাকী)
+    case _:
+        print("অন্তত দুটা element নাই")
+```
+
+`*বাকী`-এ বাকী element-সমূহক এখন list হিচাপে bind কৰে। এই pattern-এ অন্তত দুটা element থকা sequence-ৰ সৈতে match কৰে।
+
+## ৫.৪ Pattern Matching-ত Capture আৰু Literal-ৰ পাৰ্থক্য
+
+এটা সাধাৰণ ভুল হ'ল `case নাম:` লিখি `নাম`-ক আগতে নিৰ্ধাৰিত variable-ৰ value বুলি ভবা। Python-ত bare name pattern সাধাৰণতে capture pattern; ই যিকোনো matched value-টো সেই নামত bind কৰে।
+
+```python
+কোড = 404
+
+match কোড:
+    case 200:
+        print("সফল")
+    case 404:
+        print("পৃষ্ঠা পোৱা নগ'ল")
+    case _:
+        print("অন্য ফলাফল")
+```
+
+নিৰ্দিষ্ট integer বা string value match কৰিবলৈ literal pattern ব্যৱহাৰ কৰক। Constant-ৰ ক্ষেত্ৰত dotted name ব্যৱহাৰ কৰিব পাৰি, যেনে `HTTP.OK`। Bare variable name-ক constant pattern বুলি ধৰি নল'ব।
+
+## ৫.৫ Guard ব্যৱহাৰ
+
+Pattern match হোৱাৰ পিছত অতিৰিক্ত চৰ্ত পৰীক্ষা কৰিবলৈ `if` guard ব্যৱহাৰ কৰা হয়।
+
+```python
+সংখ্যা = 18
+
+match সংখ্যা:
+    case int() as n if n < 0:
+        print("ঋণাত্মক")
+    case int() as n if n == 0:
+        print("শূন্য")
+    case int() as n if n > 0:
+        print("ধনাত্মক")
+    case _:
+        print("Integer নহয়")
+```
+
+Pattern-এ গঠন পৰীক্ষা কৰে; guard-এ matched value-ৰ ওপৰত অতিৰিক্ত logical condition পৰীক্ষা কৰে।
+
+## ৫.৬ enumerate(): Index আৰু Value একেলগে
+
+List বা আন iterable-ৰ প্ৰতিটো item-ৰ লগতে index পাবলৈ `enumerate()` ব্যৱহাৰ কৰা হয়।
+
+```python
 ফলসমূহ = ["আপেল", "কলা", "আঙুৰ"]
-for সূচী, ফল in enumerate(ফলসমূহ, 1):
+
+for সূচী, ফল in enumerate(ফলসমূহ, start=1):
     print(f"{সূচী}. {ফল}")
+```
 
-# zip ব্যৱহাৰ
-নাম = ["ৰিকু", "জয়ন্ত", "প্ৰিয়া"]
-বয়স = [25, 30, 22]
-for ন, ব in zip(নাম, বয়স):
-    print(f"{ন}: {ব} বছৰ")
+সম্ভাৱ্য output:
 
-# itertools সংমিশ্ৰণ
+```text
+1. আপেল
+2. কলা
+3. আঙুৰ
+```
+
+`start=1` দিলে গণনা 1-ৰ পৰা আৰম্ভ হয়। Default-ভাৱে index 0-ৰ পৰা আৰম্ভ হয়। `enumerate()`-এ iterable-ৰ item-সমূহৰ সৈতে index-ৰ জোৰা দিয়ে; ই নিজে সম্পূৰ্ণ list সৃষ্টি নকৰে।
+
+## ৫.৭ zip(): একাধিক Iterable একেলগে চলোৱা
+
+`zip()`-এ কেইবাটাও iterable-ৰ item-সমূহক অৱস্থান অনুসৰি জোৰা লগায়।
+
+```python
+নামসমূহ = ["ৰিকু", "জয়ন্ত", "প্ৰিয়া"]
+বয়সসমূহ = [25, 30, 22]
+
+for নাম, বয়স in zip(নামসমূহ, বয়সসমূহ):
+    print(f"{নাম}: {বয়স} বছৰ")
+```
+
+সাধাৰণ `zip()`-এ আটাইতকৈ চুটি iterable শেষ হ'লে থামে। সেয়ে দৈৰ্ঘ্য বেলেগ হ'লে কিছুমান item বাদ পৰিব পাৰে।
+
+Python 3.10+ ত `strict=True` ব্যৱহাৰ কৰি দৈৰ্ঘ্য বেলেগ হ'লে error উলিয়াব পাৰি:
+
+```python
+নামসমূহ = ["ৰিকু", "জয়ন্ত"]
+বয়সসমূহ = [25, 30]
+
+for নাম, বয়স in zip(নামসমূহ, বয়সসমূহ, strict=True):
+    print(নাম, বয়স)
+```
+
+ইয়াত দুয়োটা iterable-ৰ দৈৰ্ঘ্য একে। দৈৰ্ঘ্য বেলেগ হ'লে `ValueError` হ'ব। যেতিয়া সকলো data pair মিলিব লাগিব, তেতিয়া `strict=True` উপযোগী।
+
+## ৫.৮ itertools: Iterator-ৰ বাবে উপযোগী সঁজুলি
+
+`itertools` Python-ৰ standard library-ৰ module। ই iterable-ৰ ওপৰত memory-দক্ষভাৱে কাম কৰাৰ function প্ৰদান কৰে। ইয়াৰ বহু function-এ iterator ঘূৰাই দিয়ে; প্ৰয়োজন হ'লেহে `list()`-ৰে সকলো ফলাফল একেলগে materialize কৰক।
+
+### combinations(): ক্ৰম গুৰুত্ব নোপোৱা জোৰা
+
+```python
 from itertools import combinations
-print(list(combinations([1, 2, 3], 2)))  # [(1, 2), (1, 3), (2, 3)]
-\`\`\``,
+
+ফলাফল = combinations([1, 2, 3], 2)
+print(list(ফলাফল))
+# [(1, 2), (1, 3), (2, 3)]
+```
+
+ইয়াত একে item পুনৰ ব্যৱহাৰ নকৰাকৈ 2টা item-ৰ combination পোৱা যায়। `(1, 2)` আৰু `(2, 1)` পৃথক ফলাফল নহয়।
+
+### permutations(): ক্ৰম গুৰুত্বপূৰ্ণ
+
+```python
+from itertools import permutations
+
+print(list(permutations(["A", "B"], 2)))
+# [('A', 'B'), ('B', 'A')]
+```
+
+Permutation-ত ক্ৰম বেলেগ হ'লে ফলাফল বেলেগ হয়।
+
+### product(): Cartesian Product
+
+```python
+from itertools import product
+
+ৰং = ["ৰঙা", "নীলা"]
+আকাৰ = ["সৰু", "ডাঙৰ"]
+
+for ৰ, আ in product(ৰং, আকাৰ):
+    print(ৰ, আ)
+```
+
+ই সকলো সম্ভৱ জোৰা সৃষ্টি কৰে। Input set-ৰ আকাৰ বাঢ়িলে ফলাফলৰ সংখ্যাও দ্ৰুতগতিত বাঢ়িব পাৰে।
+
+### islice(): Iterator-ৰ নিৰ্দিষ্ট অংশ
+
+```python
+from itertools import islice
+
+সংখ্যা = range(1000000)
+
+for n in islice(সংখ্যা, 5):
+    print(n)
+```
+
+ইয়াত প্ৰথম পাঁচটা item-হে পঢ়া হৈছে। সম্পূৰ্ণ এক million item-ৰ list সৃষ্টি কৰা হোৱা নাই।
+
+## ৫.৯ কোনটো কেতিয়া ব্যৱহাৰ কৰিব?
+
+| সঁজুলি | উপযোগী পৰিস্থিতি |
+|---|---|
+| `match-case` | value-ৰ গঠন অনুসৰি বিভিন্ন পথ বাছনি |
+| `enumerate()` | item-ৰ লগতে index লাগে |
+| `zip()` | একাধিক iterable-ৰ item একেলগে লাগে |
+| `zip(strict=True)` | সকলো iterable-ৰ দৈৰ্ঘ্য মিলিবই লাগিব |
+| `combinations()` | ক্ৰম নধৰি বাছনিৰ গোট |
+| `permutations()` | ক্ৰম অনুসৰি বিন্যাস |
+| `product()` | সকলো সম্ভৱ জোৰা বা combination |
+| `islice()` | iterator-ৰ নিৰ্দিষ্ট অংশ লোৱা |
+
+## ৫.১০ সাধাৰণ ভুল আৰু সাৱধানতা
+
+1. **Python version:** `match-case` আৰু `zip(strict=True)`-ৰ বাবে Python 3.10 বা তাৰ পিছৰ version লাগে।
+2. **Bare name pattern:** `case x:`-এ সাধাৰণতে value-টো `x`-ত capture কৰে; আগৰ `x`-ৰ value match নকৰে।
+3. **Wildcard:** `case _:` যিকোনো value match কৰে; সাধাৰণতে শেষত ৰাখক।
+4. **Mapping pattern:** উল্লেখ কৰা key-সমূহ match হ'লেই অতিৰিক্ত key থাকিব পাৰে।
+5. **zip truncation:** সাধাৰণ `zip()`-এ চুটি iterable শেষ হ'লে থামে।
+6. **Iterator এবাৰ ব্যৱহাৰ:** বহু iterator consume কৰিলে আগৰ item পুনৰ নাপাবও পাৰে।
+7. **অতি ডাঙৰ list:** `list(combinations(...))` বা `list(product(...))`-এ বিপুল memory ল'ব পাৰে।
+
+## ৫.১১ অনুশীলনী
+
+1. Structural Pattern Matching কোন Python version-ৰ পৰা আহিছে?
+2. `case _:`-ৰ কাম কি?
+3. Mapping pattern-এ dictionary-ৰ অতিৰিক্ত key থাকিলে match কৰিব পাৰেনে?
+4. `case x:`-ত `x` capture pattern নে আগৰ variable-ৰ value?
+5. Pattern guard কি?
+6. `enumerate(["ক", "খ"], start=1)`-এ কি ধৰণৰ জোৰা দিয়ে?
+7. সাধাৰণ `zip()`-এ iterable-ৰ দৈৰ্ঘ্য বেলেগ হ'লে কি কৰে?
+8. `zip(strict=True)`-এ দৈৰ্ঘ্য বেলেগ হ'লে কি কৰে?
+9. `combinations([1, 2, 3], 2)`-ৰ ফলাফল লিখক।
+10. `permutations(["A", "B"], 2)`-ত কিমানটা ফলাফল থাকে?
+11. `islice(range(100), 3)`-এ কিমানটা item দিয়ে?
+12. Iterator-ৰ সকলো item একেলগে list-ত সলনি কৰিলে কি অসুবিধা হ'ব পাৰে?
+
+### অনুশীলনীৰ উত্তৰ
+
+1. Python 3.10।
+2. যিকোনো value match কৰা wildcard/default pattern।
+3. হয়; pattern-ত উল্লেখ কৰা key-সমূহ match হ'লে অতিৰিক্ত key থাকিব পাৰে।
+4. Capture pattern; matched value-টো `x`-ত bind হয়।
+5. Pattern match হোৱাৰ পিছত `if`-ৰে অতিৰিক্ত চৰ্ত পৰীক্ষা কৰা।
+6. `(1, "ক")` আৰু `(2, "খ")`-ৰ দৰে index-value pair।
+7. আটাইতকৈ চুটি iterable শেষ হ'লে থামে।
+8. দৈৰ্ঘ্য বেলেগ হ'লে `ValueError` দিয়ে।
+9. `(1, 2)`, `(1, 3)`, `(2, 3))।
+10. দুটা: `("A", "B")` আৰু `("B", "A")`।
+11. তিনিটা item: 0, 1, 2।
+12. ডাঙৰ iterator সম্পূৰ্ণ materialize কৰিলে অধিক memory লাগিব পাৰে।
+
+## ৫.১২ অধিক পঢ়াৰ উৎস
+
+- Python Tutorial — Structural Pattern Matching: https://docs.python.org/3/tutorial/controlflow.html#match-statements
+- Python Language Reference — Patterns: https://docs.python.org/3/reference/compound_stmts.html#the-match-statement
+- Built-in Functions — `enumerate()` আৰু `zip()`: https://docs.python.org/3/library/functions.html
+- Python `itertools` documentation: https://docs.python.org/3/library/itertools.html
+
+## অধ্যায়ৰ সাৰাংশ
+
+Structural Pattern Matching-এ value-ৰ গঠন অনুসৰি program-ৰ পথ বাছনি কৰিবলৈ সহায় কৰে। Mapping আৰু sequence pattern-এ dictionary, list আৰু tuple-ৰ গঠন পৰীক্ষা কৰিব পাৰে; guard-এ অতিৰিক্ত চৰ্ত যোগ কৰে। `enumerate()`-এ index আৰু item একেলগে দিয়ে, `zip()`-এ একাধিক iterable-ৰ item জোৰা লগায়। `itertools`-এ combinations, permutations, Cartesian product আৰু iterator-ৰ অংশ লোৱাৰ দৰে কাম সহজ কৰে। সঠিক Python version, pattern capture-ৰ নিয়ম, zip-ৰ দৈৰ্ঘ্য আৰু iterator-ৰ memory ব্যৱহাৰ মনত ৰাখিব লাগে।`,
     },
     {
       id: 'ch-6',
