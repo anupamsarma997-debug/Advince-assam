@@ -1432,7 +1432,7 @@ Structural Pattern Matching-এ value-ৰ গঠন অনুসৰি program-�
       volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
       title: 'অধ্যায় ৬: লুপ, ইটাৰেটৰ প্ৰট’কল আৰু জেনেৰেটৰ',
       subtitle: 'Iterator Protocol, Generators, Yield আৰু Context Managers',
-      estimatedReadTime: '8 min',
+      estimatedReadTime: '20 min',
       topics: ['__iter__ and __next__', 'Generators & Yield', 'Generator Expressions', 'Context Managers'],
       content: `## ৬.১ অধ্যায়টোৰ লক্ষ্য
 
