@@ -2855,72 +2855,273 @@ def গ্ৰাফ_DFS_ইটাৰেটিভ(গ্ৰাফ, আৰম্�
     id: 'ch-10',
       volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
       title: 'অধ্যায় ১০: টাইম-স্পেচ কমপেক্সিটি আৰু ছৰ্টিং এলগৰিদম',
-      subtitle: 'Big-O Notation, Merge Sort (O(n log n)) আৰু Quick Sort',
-      estimatedReadTime: '9 min',
-      topics: ['Big-O Cheat Sheet', 'Merge Sort', 'Quick Sort', 'Binary Search'],
-      content: `## ১০.১ Big-O নোটেশন
+      subtitle: 'Big-O, Merge Sort, Quick Sort আৰু Binary Search',
+      estimatedReadTime: '25 min',
+      topics: ['Time Complexity', 'Space Complexity', 'Big-O and Growth Rates', 'Merge Sort', 'Quick Sort', 'Binary Search', 'Algorithm Comparison'],
+      content: \`## ১০.১ এলগৰিদমৰ দক্ষতা কিয় জোখা হয়?
 
-| নোটেশন | নাম | বাস্তৱ উদাহৰণ |
-| :--- | :--- | :--- |
-| **O(1)** | কনষ্টেণ্ট | এৰেত ইনডেক্সিং, Hash Map Lookup |
-| **O(log n)** | লগাৰিদমিক | বাইনাৰী চাৰ্চ |
-| **O(n)** | লিনিয়াৰ | লিনিয়াৰ চাৰ্চ, সাধাৰণ ফৰ-লুপ |
-| **O(n log n)** | লিন-লগ | মাৰ্জ ছৰ্ট, হিপ ছৰ্ট |
-| **O(n²)** | কোৱাড্ৰেটিক | বাবল ছৰ্ট, নেষ্টেড লুপ |
-| **O(2ⁿ)** | এক্সপোনেন্সিয়েল | ৰিকাৰচিভ ফিবোনাচি |
-| **O(n!)** | ফেক্টৰিয়েল | ট্ৰাভেলিং চেলছমেন সমস্যা |
+এটা সমস্যা সমাধান কৰিবলৈ বহুতো algorithm থাকিব পাৰে। সৰু input-ত সকলো algorithm দ্ৰুত যেন লাগিব পাৰে, কিন্তু input ডাঙৰ হ’লে কিছুমান algorithm বহুত বেছি সময় বা memory ব্যৱহাৰ কৰে। সেইবাবে algorithm বিশ্লেষণত সাধাৰণতে দুটা দিশ চোৱা হয়:
 
----
+- **Time Complexity:** input-ৰ আকাৰ বৃদ্ধি হ’লে operation-ৰ সংখ্যা কেনেকৈ বৃদ্ধি পায়।
+- **Space Complexity:** algorithm চলাবলৈ কিমান অতিৰিক্ত memory লাগে।
 
-## ১০.২ মাৰ্জ ছৰ্ট (Merge Sort - O(n log n))
+Time complexity মানে ঘড়ীৰে মাপা নিৰ্দিষ্ট ছেকেণ্ড নহয়। ই input size-ৰ সৈতে operation-ৰ বৃদ্ধিৰ ধৰণ বুজায়। বাস্তৱ সময় processor, programming language, implementation, input data আৰু system load-ৰ ওপৰত নিৰ্ভৰ কৰে।
+
+## ১০.২ Big-O Notation
+
+Big-O notation-এ input size \(n\) বৃদ্ধি হ’লে algorithm-ৰ upper-bound growth rate বৰ্ণনা কৰে। সাধাৰণতে constant factor আৰু নিম্ন-স্তৰৰ term বাদ দি মুখ্য বৃদ্ধি ধৰণটো লক্ষ্য কৰা হয়।
+
+উদাহৰণ: \(3n^2 + 5n + 10\) ৰ Big-O হৈছে \(O(n^2)\), কাৰণ ডাঙৰ \(n\)-ত \(n^2\) term-টোৱে মুখ্য প্ৰভাৱ পেলায়।
+
+| নোটেশন | নাম | সাধাৰণ উদাহৰণ |
+|---|---|---|
+| O(1) | Constant | Array index access |
+| O(log n) | Logarithmic | Sorted data-ত Binary Search |
+| O(n) | Linear | Linear Search |
+| O(n log n) | Linearithmic | Merge Sort, average-case Heap Sort |
+| O(n²) | Quadratic | Nested loop, Bubble Sort worst case |
+| O(2ⁿ) | Exponential | সাধাৰণ recursive Fibonacci-ৰ naive implementation |
+| O(n!) | Factorial | সকলো permutation পৰীক্ষা কৰা brute-force search |
+
+এই তালিকাৰ উদাহৰণসমূহ সাধাৰণ ক্ষেত্ৰৰ বাবে; সঠিক জটিলতা algorithm আৰু implementation অনুসৰি নিৰ্ধাৰিত হয়।
+
+### Growth Rate-ৰ সহজ তুলনা
+
+ধৰি লওক \(n\) হৈছে input-ত থকা element-ৰ সংখ্যা। O(n) algorithm-ত input দুগুণ হ’লে কাম প্ৰায় দুগুণ হ’ব পাৰে। O(n²)-ত input দুগুণ হ’লে মুখ্য term প্ৰায় চাৰিগুণ হয়। এইটো asymptotic তুলনা; বাস্তৱ সময় একে অনুপাতত সলনি হ’বই বুলি নহয়।
+
+## ১০.৩ Best, Average আৰু Worst Case
+
+একেটা algorithm-ৰ input অনুসৰি চলাৰ ধৰণ বেলেগ হ’ব পাৰে।
+
+- **Best Case:** algorithm-ৰ বাবে আটাইতকৈ সুবিধাজনক input।
+- **Average Case:** নিৰ্দিষ্ট input distribution-ৰ অধীনত গড় আচৰণ।
+- **Worst Case:** আটাইতকৈ বেয়া input-ত সৰ্বাধিক কাম।
+
+উদাহৰণস্বৰূপে, Linear Search-ত প্ৰথম element-তেই মান পালে best case O(1), শেষত পালে বা নাপালে worst case O(n)। Big-O আলোচনা কৰোঁতে কোন case-ৰ কথা কৈছোঁ সেয়া স্পষ্ট কৰা ভাল।
+
+## ১০.৪ Space Complexity
+
+Space complexity-এ algorithm-ৰ memory ব্যৱহাৰ বুজায়। কিছুমান আলোচনাত input store কৰিবলৈ লাগা memory-ও ধৰা হয়; আন কিছুমানত কেৱল **auxiliary space** অৰ্থাৎ input-ৰ বাহিৰে algorithm-এ অতিৰিক্তভাৱে ব্যৱহাৰ কৰা memory গণনা কৰা হয়। সেয়ে কোনটো space measure কৰা হৈছে সেয়া উল্লেখ কৰা উচিত।
+
+উদাহৰণ:
+- কিছুমান iterative algorithm-এ কেৱল কেইটামান variable ব্যৱহাৰ কৰে: auxiliary space O(1)।
+- নতুন list বনাই প্ৰতিটো input element তাত ৰাখিলে auxiliary space O(n) হ’ব পাৰে।
+- Recursive function-ত call stack-ৰ memory-ও space complexity-ত গণনা কৰিব লাগে।
+
+## ১০.৫ Merge Sort (মাৰ্জ ছৰ্ট)
+
+Merge Sort হৈছে Divide and Conquer algorithm। ই তালিকাখন সৰু সৰু ভাগত ভাগ কৰে, প্ৰতিটো ভাগ sort কৰে আৰু শেষত sorted ভাগসমূহ merge কৰে।
+
+ধাপসমূহ:
+1. তালিকাখন প্ৰায় সমান দুটা ভাগত বিভক্ত কৰা।
+2. প্ৰতিটো ভাগ recursive ভাৱে sort কৰা।
+3. দুটা sorted ভাগ একেলগ কৰি এটা sorted তালিকা বনোৱা।
+
+### Python Implementation
 
 \`\`\`python
+def মাৰ্জ(বাওঁ, সোঁ):
+    ফল = []
+    i = j = 0
+
+    while i < len(বাওঁ) and j < len(সোঁ):
+        if বাওঁ[i] <= সোঁ[j]:
+            ফল.append(বাওঁ[i])
+            i += 1
+        else:
+            ফল.append(সোঁ[j])
+            j += 1
+
+    ফল.extend(বাওঁ[i:])
+    ফল.extend(সোঁ[j:])
+    return ফল
+
+
 def মাৰ্জ_ছৰ্ট(তালিকা):
     if len(তালিকা) <= 1:
-        return তালিকা
+        return তালিকা.copy()
+
     মধ্য = len(তালিকা) // 2
     বাওঁ = মাৰ্জ_ছৰ্ট(তালিকা[:মধ্য])
     সোঁ = মাৰ্জ_ছৰ্ট(তালিকা[মধ্য:])
+
     return মাৰ্জ(বাওঁ, সোঁ)
 
-def মাৰ্জ(বা, সো):
-    ফল = []
-    i = j = 0
-    while i < len(বা) and j < len(সো):
-        if বা[i] <= সো[j]:
-            ফল.append(বা[i])
-            i += 1
-        else:
-            ফল.append(সো[j])
-            j += 1
-    ফল.extend(বা[i:])
-    ফল.extend(সো[j:])
-    return ফল
 
-print("মাৰ্জ ছৰ্ট:", মাৰ্জ_ছৰ্ট([38, 27, 43, 3, 9, 82, 10, 55, 19]))
+সংখ্যা = [38, 27, 43, 3, 9, 82, 10, 55, 19]
+print(মাৰ্জ_ছৰ্ট(সংখ্যা))
+print(সংখ্যা)  # মূল তালিকা অপৰিৱৰ্তিত
 \`\`\`
 
----
+এই implementation-এ নতুন list ঘূৰাই দিয়ে আৰু মূল তালিকা সলনি নকৰে। \`<=\` ব্যৱহাৰ কৰাৰ বাবে সমান মান থকা element-ৰ আপেক্ষিক ক্ৰম অক্ষুণ্ণ থাকে; অৰ্থাৎ এই Merge Sort stable।
 
-## ১০.৩ কুইক ছৰ্ট (Quick Sort)
+### Merge Sort-ৰ Complexity
+
+- Best, Average আৰু Worst Time: O(n log n)।
+- Auxiliary Space: সাধাৰণ array/list implementation-ত O(n)।
+- Recursive call stack: O(log n) গভীৰতা।
+
+Python-ৰ slice-এ নতুন list সৃষ্টি কৰে। সেইবাবে এই শিক্ষামূলক implementation-ত অতিৰিক্ত allocation হয়। তথাপিও সামগ্ৰিক auxiliary space O(n)-ৰ ভিতৰত থাকে।
+
+## ১০.৬ Quick Sort (কুইক ছৰ্ট)
+
+Quick Sort-ও Divide and Conquer algorithm। ই এটা pivot বাছি element-সমূহক pivot-তকৈ সৰু, সমান আৰু ডাঙৰ ভাগত বিভক্ত কৰে আৰু ভাগসমূহ sort কৰে।
+
+Quick Sort-ৰ performance pivot বাছনি আৰু input-ৰ ওপৰত নিৰ্ভৰ কৰে:
+- Average Time: O(n log n)।
+- Worst Time: O(n²)।
+- Recursive stack: average-ত O(log n), worst case-ত O(n) হ’ব পাৰে।
+
+### সহজ শিক্ষামূলক Python Implementation
 
 \`\`\`python
-import random
-
 def কুইক_ছৰ্ট(তালিকা):
     if len(তালিকা) <= 1:
-        return তালিকা
-    পিভট = random.choice(তালিকা)
+        return তালিকা.copy()
+
+    পিভট = তালিকা[len(তালিকা) // 2]
     কম = [x for x in তালিকা if x < পিভট]
     সমান = [x for x in তালিকা if x == পিভট]
     বেছি = [x for x in তালিকা if x > পিভট]
-    return কুইক_ছৰ্ট(কম) + সমান + কুইক_ছৰ্ট(বেছি)
 
-print("কুইক ছৰ্ট:", কুইক_ছৰ্ট([64, 34, 25, 12, 22, 11, 90]))
-\`\`\``,
+    return (
+        কুইক_ছৰ্ট(কম)
+        + সমান
+        + কুইক_ছৰ্ট(বেছি)
+    )
+
+
+সংখ্যা = [64, 34, 25, 12, 22, 11, 90, 25]
+print(কুইক_ছৰ্ট(সংখ্যা))
+print(সংখ্যা)  # মূল তালিকা অপৰিৱৰ্তিত
+\`\`\`
+
+এইটো সহজে বুজিব পৰা functional-style উদাহৰণ; ই প্ৰতিটো recursion-ত নতুন list সৃষ্টি কৰে। ইয়াক in-place Quick Sort বুলি ক’ব নোৱাৰি। ইয়াত pivot-ৰ সমান সকলো element \`সমান\` ভাগত ৰখা হৈছে, যাৰ ফলত duplicate value সঠিকভাৱে handle হয়।
+
+**গুৰুত্বপূৰ্ণ:** এই implementation-ত pivot সদায় মধ্যৰ index-ৰ element। কিছুমান input-ত ভাগসমূহ অসমান হ’ব পাৰে আৰু worst-case O(n²) হ’ব পাৰে। Random pivot বা median-of-three pivot-এ বহু ক্ষেত্ৰত ভাল আচৰণ দিব পাৰে, কিন্তু worst-case guarantee নিজে নিজে আঁতৰাই নিদিয়ে।
+
+## ১০.৭ Binary Search (বাইনাৰী ছাৰ্চ)
+
+Binary Search-এ প্ৰতিটো ধাপত search space প্ৰায় আধা কৰি দিয়ে। কিন্তু ইয়াৰ বাবে data আগতেই sorted হ’ব লাগিব। Unsorted তালিকাত এই algorithm পোনপটীয়াকৈ ব্যৱহাৰ কৰিব নোৱাৰি।
+
+### Iterative Binary Search
+
+\`\`\`python
+def বাইনাৰী_ছাৰ্চ(তালিকা, লক্ষ্য):
+    বাওঁ = 0
+    সোঁ = len(তালিকা) - 1
+
+    while বাওঁ <= সোঁ:
+        মধ্য = (বাওঁ + সোঁ) // 2
+
+        if তালিকা[মধ্য] == লক্ষ্য:
+            return মধ্য
+        elif তালিকা[মধ্য] < লক্ষ্য:
+            বাওঁ = মধ্য + 1
+        else:
+            সোঁ = মধ্য - 1
+
+    return -1
+
+
+সংখ্যা = [3, 9, 10, 19, 27, 38, 43, 55, 82]
+print(বাইনাৰী_ছাৰ্চ(সংখ্যা, 38))  # 5
+print(বাইনাৰী_ছাৰ্চ(সংখ্যা, 7))   # -1
+\`\`\`
+
+এই function-এ মান পালে index ঘূৰাই দিয়ে, নাপালে -1 দিয়ে। Duplicate value থাকিলে কোনটো matching index ঘূৰাই দিব তাৰ নিশ্চয়তা এই implementation-এ নিদিয়ে; প্ৰথম বা শেষ occurrence বিচাৰিবলৈ পৃথক variant লাগে।
+
+### Binary Search-ৰ Complexity
+
+- Time: O(log n)।
+- Auxiliary Space: O(1)।
+- প্ৰয়োজনীয় চৰ্ত: input sorted আৰু index-ৰে access কৰিব পৰা sequence।
+
+## ১০.৮ তিনিটা Algorithm-ৰ তুলনা
+
+| Algorithm | Best Time | Average Time | Worst Time | Auxiliary Space (সাধাৰণ implementation) |
+|---|---:|---:|---:|---:|
+| Merge Sort | O(n log n) | O(n log n) | O(n log n) | O(n) |
+| Quick Sort | O(n log n) | O(n log n) | O(n²) | Average O(log n), worst O(n) stack; এই সহজ version-ত list allocation-ও হয় |
+| Binary Search | O(1) | O(log n) | O(log n) | O(1) iterative |
+
+এই তুলনাত Binary Search হৈছে search algorithm, sorting algorithm নহয়। ইয়াৰ input sorted হ’ব লাগিব।
+
+## ১০.৯ Python-ত বাস্তৱিক Sorting
+
+শিক্ষাৰ বাবে Merge Sort আৰু Quick Sort বুজা উপযোগী। কিন্তু বাস্তৱ Python program-ত সাধাৰণতে built-in \`sorted()\` বা list-ৰ \`sort()\` ব্যৱহাৰ কৰাই ভাল। Python-ৰ sorting Timsort algorithm-ৰ ওপৰত ভিত্তি কৰি নিৰ্মিত আৰু ই stable।
+
+\`\`\`python
+সংখ্যা = [5, 2, 9, 1, 5, 6]
+
+নতুন_তালিকা = sorted(সংখ্যা)
+print(নতুন_তালিকা)  # [1, 2, 5, 5, 6, 9]
+print(সংখ্যা)       # [5, 2, 9, 1, 5, 6]
+
+সংখ্যা.sort(reverse=True)
+print(সংখ্যা)       # [9, 6, 5, 5, 2, 1]
+\`\`\`
+
+\`sorted()\`-এ নতুন list ঘূৰাই দিয়ে; \`list.sort()\`-এ একেটা list in-place সজায় আৰু \`None\` ঘূৰাই দিয়ে।
+
+## ১০.১০ সাধাৰণ ভুল আৰু সাৱধানতা
+
+1. Binary Search-ত sorted নহোৱা data ব্যৱহাৰ নকৰিব।
+2. Binary Search-ত \`বাওঁ <= সোঁ\` চৰ্তটো ভুলকৈ লিখিলে শেষৰ candidate বাদ পৰিব পাৰে।
+3. Merge Sort-ত merge কৰাৰ সময় দুয়োটা ভাগৰ বাকী element যোগ কৰিবলৈ নাপাহৰিব।
+4. Quick Sort-ত duplicate value সঠিকভাৱে handle নকৰিলে ভুল ফলাফল হ’ব পাৰে।
+5. Quick Sort-ৰ average O(n log n), কিন্তু worst-case O(n²)—দুয়োটা তথ্য মনত ৰাখিব।
+6. Big-O মানে নিৰ্দিষ্ট runtime নহয়; ই বৃদ্ধিৰ ধৰণ।
+7. Space complexity আলোচনা কৰোঁতে auxiliary space আৰু recursion stack উল্লেখ কৰক।
+8. Python-ত list slicing-এ নতুন list সৃষ্টি কৰে; ইয়াৰ memory খৰচ আছে।
+
+## ১০.১১ অনুশীলনী
+
+1. Big-O notation-এ কি বুজায়?
+2. \(4n^2 + 3n + 8\)-ৰ Big-O কি?
+3. O(1) আৰু O(n)-ৰ মাজত পাৰ্থক্য লিখক।
+4. Time complexity আৰু space complexity কি?
+5. Best case, average case আৰু worst case বুজাওক।
+6. Merge Sort কোন algorithmic technique ব্যৱহাৰ কৰে?
+7. Merge Sort-ৰ worst-case time complexity কিমান?
+8. Merge Sort-ৰ auxiliary space সাধাৰণতে O(n) কিয়?
+9. Quick Sort-ৰ worst-case time complexity কিমান?
+10. Quick Sort-ত pivot-ৰ কাম কি?
+11. Binary Search ব্যৱহাৰ কৰাৰ আগতে data কেনে হ’ব লাগে?
+12. Binary Search-ৰ iterative version-ৰ auxiliary space কিমান?
+13. \`sorted()\` আৰু \`list.sort()\`-ৰ পাৰ্থক্য কি?
+14. Duplicate value থকা Quick Sort-ত equal partition কিয় সহায়ক?
+
+### উত্তৰ-সূচী
+
+1. Input size বৃদ্ধি হ’লে algorithm-ৰ growth rate-ৰ upper-bound বৰ্ণনা।
+2. O(n²)।
+3. O(1)-ৰ কাম input size-ৰ ওপৰত নিৰ্ভৰ নকৰে; O(n)-ৰ কাম প্ৰায় linear ভাৱে বৃদ্ধি পায়।
+4. Time complexity operation-ৰ বৃদ্ধি; space complexity memory-ৰ বৃদ্ধি।
+5. আটাইতকৈ সুবিধাজনক, গড়, আৰু আটাইতকৈ বেয়া input-ৰ আচৰণ।
+6. Divide and Conquer।
+7. O(n log n)।
+8. Merge কৰিবলৈ element-সমূহ অতিৰিক্ত list-ত ৰখা হয়।
+9. O(n²)।
+10. তালিকাখন সৰু/সমান/ডাঙৰ ভাগত বিভক্ত কৰাৰ reference value।
+11. Sorted।
+12. O(1)।
+13. \`sorted()\` নতুন list ঘূৰাই দিয়ে; \`list.sort()\` একেটা list সজায় আৰু \`None\` ঘূৰাই দিয়ে।
+14. একে মানৰ element-সমূহ একে ভাগত ৰাখি অপ্রয়োজনীয় recursive partition কমাব পাৰে।
+
+## ১০.১২ সাৰাংশ
+
+এই অধ্যায়ত Time আৰু Space Complexity, Big-O, best/average/worst case, Merge Sort, Quick Sort আৰু Binary Search শিকিলোঁ। Merge Sort-ৰ worst-case O(n log n), Quick Sort-ৰ average O(n log n) কিন্তু worst O(n²), আৰু Binary Search-ৰ বাবে sorted data প্ৰয়োজন। বাস্তৱ Python program-ত built-in sorting function ব্যৱহাৰ কৰাটো সাধাৰণতে উত্তম।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python Built-in Functions — sorted(): https://docs.python.org/3/library/functions.html#sorted
+- Python List Methods — sort(): https://docs.python.org/3/tutorial/datastructures.html
+- Python bisect — Array bisection algorithm: https://docs.python.org/3/library/bisect.html
+- Python Wiki — Time Complexity: https://wiki.python.org/moin/TimeComplexity
+\`,
     },
-    {
-      id: 'ch-11',
+    id: 'ch-11',
       volume: 'খণ্ড ৪: অবজেক্ট অৰিয়েণ্টেড ডিজাইন, SOLID আৰু আৰ্কিটেকচাৰ',
       title: 'অধ্যায় ১১: OOP-ৰ স্তম্ভ আৰু ডেটা মডেলিং',
       subtitle: 'Abstract Base Classes, Encapsulation, Properties & Banking Architecture',
