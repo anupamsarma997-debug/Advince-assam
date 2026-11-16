@@ -2623,7 +2623,7 @@ print(bst.বিচৰা(60))       # True
 print(bst.বিচৰা(99))       # False
 \`\`\`
 
-ইয়াত \`class BST(BST)\`-ৰ দৰে একে নাম পুনৰ সংজ্ঞায়িত কৰাৰ সলনি বাস্তৱ project-ত আগৰ class-তেই traversal method-সমূহ যোগ কৰাটো অধিক পৰিষ্কাৰ। তলৰ সম্পূৰ্ণ উদাহৰণত সেই পদ্ধতি দেখুওৱা হৈছে; আগৰ দুটা code block-ৰ class সংজ্ঞা একেটা class-ত একত্ৰিত কৰিব লাগে।
+তলৰ traversal function-সমূহে আগৰ BST class-ৰ root node argument হিচাপে গ্ৰহণ কৰে। প্ৰথম code block-ত BST তৈয়াৰ কৰাৰ পিছত এই function-সমূহ ব্যৱহাৰ কৰিব পাৰি।
 
 ### BST-ৰ সময় জটিলতা
 
