@@ -554,44 +554,291 @@ print(find_maximum([]))               # None
       id: 'ch-3',
       volume: 'খণ্ড ১: কম্পিউটাৰ বিজ্ঞানৰ মৌলিক ভেটি আৰু লজিক',
       title: 'অধ্যায় ৩: ইনপুট-আউটপুট চাইকেল, বাফাৰ আৰু ষ্ট্ৰীম',
-      subtitle: 'I/O Streams, Fast I/O in Python আৰু File Buffering',
-      estimatedReadTime: '6 min',
-      topics: ['I/O Cycle', 'Standard Streams', 'Competitive Programming Fast I/O', 'Memory Buffers'],
-      content: `## ৩.১ আই/অ' চাইকেল (I/O Cycle)
+      subtitle: 'Python Standard Streams, File Handling, Buffering আৰু Error Handling',
+      estimatedReadTime: '25–35 min',
+      topics: ['Input-Process-Output Cycle', 'stdin stdout stderr', 'Python Input Parsing', 'File Streams', 'Buffering and Flush', 'Safe File Handling'],
+      content: `## এই অধ্যায়ৰ শিক্ষণ-লক্ষ্য
 
-কম্পিউটাৰৰ মৌলিক কাৰ্য—ইনপুট গ্ৰহণ, প্ৰচেছিং আৰু আউটপুট প্ৰদান।
+এই অধ্যায় শেষ কৰিলে আপুনি:
+- Input, Processing আৰু Output-ৰ সম্পৰ্ক বুজাব পাৰিব।
+- Python-ৰ `stdin`, `stdout` আৰু `stderr` চিনাক্ত কৰিব পাৰিব।
+- `input()`, `print()` আৰু `sys.stdin.readline()` ব্যৱহাৰ কৰিব পাৰিব।
+- ফাইলক stream হিচাপে পঢ়া আৰু লিখাৰ পদ্ধতি বুজিব পাৰিব।
+- Buffer আৰু `flush()`-ৰ কামৰ পাৰ্থক্য বুজাব পাৰিব।
+- ফাইল খোলাৰ সময়ত encoding আৰু error handling কিয় প্ৰয়োজন বুজিব পাৰিব।
 
-\`\`\`python
+## ৩.১ Input–Process–Output (IPO) Cycle
+
+কম্পিউটাৰে সাধাৰণতে তিনিটা মৌলিক কাম কৰে:
+
+1. **Input (ইনপুট):** ব্যৱহাৰকাৰী, ফাইল, sensor বা আন এটা program-ৰ পৰা তথ্য গ্ৰহণ কৰা।
+2. **Processing (প্ৰচেছিং):** CPU-এ নিৰ্দেশনা অনুসৰি তথ্যৰ ওপৰত কাম কৰা।
+3. **Output (আউটপুট):** ফলাফল screen, file, printer বা আন system-লৈ পঠিওৱা।
+
+উদাহৰণ: দুটা সংখ্যাৰ যোগফল উলিওৱা।
+
+- Input: 12 আৰু 8
+- Processing: 12 + 8
+- Output: 20
+
+```python
+প্ৰথম_সংখ্যা = int(input("প্ৰথম সংখ্যা লিখক: "))
+দ্বিতীয়_সংখ্যা = int(input("দ্বিতীয় সংখ্যা লিখক: "))
+
+যোগফল = প্ৰথম_সংখ্যা + দ্বিতীয়_সংখ্যা
+
+print("যোগফল:", যোগফল)
+```
+
+ইয়াত `input()`-এ text (string) ঘূৰাই দিয়ে। সেয়ে পূৰ্ণসংখ্যাৰ গণনাৰ বাবে `int()`-ৰে ৰূপান্তৰ কৰা হৈছে। ব্যৱহাৰকাৰীয়ে সংখ্যা নিলিখিলে `ValueError` হ'ব পাৰে; বাস্তৱ program-ত ভুল ইনপুটৰ ব্যৱস্থাও কৰিব লাগে।
+
+## ৩.২ Python-ৰ Standard Streams
+
+Python-এ সাধাৰণতে তিনিটা standard stream প্ৰদান কৰে। এইবোৰ `sys` module-ৰ জৰিয়তে পোৱা যায়।
+
+| Stream | কাম | সাধাৰণ ব্যৱহাৰ |
+|---|---|---|
+| `sys.stdin` | Input পঢ়া | Keyboard বা redirected input |
+| `sys.stdout` | সাধাৰণ output লিখা | Screen-ত ফলাফল দেখুওৱা |
+| `sys.stderr` | Error/diagnostic message লিখা | ত্ৰুটিৰ বাৰ্তা দেখুওৱা |
+
+```python
 import sys
 
-def দ্ৰুত_ইনপুট_আউটপুট():
-    # মানক ইনপুট পদ্ধতি
-    নাম = input("আপোনাৰ নাম লিখক: ")
-    বয়স = int(input("আপোনাৰ বয়স লিখক: "))
-    
-    # ফৰমেটেড আউটপুট
-    print(f"নমস্কাৰ {নাম}! আপুনি {বয়স} বছৰীয়া।")
-    
-    # দ্ৰুত আই/অ' (Competitive Programming ৰ বাবে)
-    ডেটা = sys.stdin.readline().strip()
-    sys.stdout.write(f"পঠিত ডেটা: {ডেটা}\\n")
-    sys.stdout.flush()  # বাফাৰ খালী কৰা
-\`\`\`
+নাম = sys.stdin.readline().strip()
 
----
+sys.stdout.write(f"নমস্কাৰ, {নাম}!\\n")
+sys.stderr.write("এইটো এটা উদাহৰণমূলক diagnostic message.\\n")
+```
 
-## ৩.২ বাফাৰ (Buffer) আৰু ষ্ট্ৰীম
+**মন কৰিব:** `stdin` সদায় keyboard-ৰ পৰা আহিবই লাগিব বুলি নহয়। File redirection বা আন program-ৰ output-ও input হিচাপে আহিব পাৰে। একেদৰে `stdout` screen-ৰ সলনি file বা আন program-লৈ redirect কৰিব পাৰি।
 
-**বাফাৰ** হ'ল এটা অস্থায়ী সঞ্চয়স্থল য'ত ডেটা আগবঢ়াৰ আগতে জমা ৰখা হয়। **ষ্ট্ৰীম** হ'ল ডেটাৰ একতাৰিক ক্ৰম।
+## ৩.৩ Python-ত Input পঢ়াৰ পদ্ধতি
 
-\`\`\`python
-# ফাইল ষ্ট্ৰীমিং (স্মাৰ্ট বাফাৰ ব্যৱহাৰ)
-with open("বিশাল_ফাইল.txt", "r", buffering=8192) as ফ:
-    # ৮KB বাফাৰ ব্যৱহাৰ কৰি এক এক লাইন পঢ়া
-    for লাইন_নং, লাইন in enumerate(ফ, 1):
-        if "মুখ্য_শব্দ" in লাইন:
-            print(f"লাইন {লাইন_নং}: {লাইন.strip()}")
-\`\`\``,
+### পদ্ধতি ১: input()
+
+`input()`-এ এটা line পঢ়ে আৰু শেষৰ newline আঁতৰাই string ঘূৰাই দিয়ে।
+
+```python
+নাম = input("আপোনাৰ নাম লিখক: ")
+বয়স = int(input("আপোনাৰ বয়স লিখক: "))
+
+print(f"নমস্কাৰ {নাম}! আপোনাৰ বয়স {বয়স} বছৰ।")
+```
+
+### পদ্ধতি ২: এটা line-ৰ পৰা একাধিক সংখ্যা
+
+```python
+# ইনপুট উদাহৰণ: 10 20 30
+সংখ্যাসমূহ = list(map(int, input().split()))
+
+print("সংখ্যাৰ যোগফল:", sum(সংখ্যাসমূহ))
+```
+
+- `split()`-এ whitespace অনুসৰি line-টো ভাগ কৰে।
+- `map(int, ...)`-এ প্ৰতিটো অংশক integer-লৈ ৰূপান্তৰ কৰে।
+- `list()`-এ ফলাফলক list-ত ৰাখে।
+
+যদি input-ত সংখ্যা নাথাকে বা ভুল format থাকে, `ValueError` হ'ব পাৰে।
+
+### পদ্ধতি ৩: sys.stdin.readline()
+
+বহু line বা প্ৰতিযোগিতামূলক প্ৰগ্ৰামিংৰ input পঢ়োঁতে `sys.stdin.readline()` ব্যৱহাৰ কৰিব পাৰি।
+
+```python
+import sys
+
+প্ৰথম_লাইন = sys.stdin.readline().strip()
+দ্বিতীয়_লাইন = sys.stdin.readline().strip()
+
+print("প্ৰথম:", প্ৰথম_লাইন)
+print("দ্বিতীয়:", দ্বিতীয়_লাইন)
+```
+
+এই উদাহৰণত দুটা line পঢ়া হৈছে। `readline()`-এ সাধাৰণতে line-ৰ শেষত থকা newline-সহ string ঘূৰাই দিয়ে; `strip()`-এ দুয়োফালৰ whitespace আঁতৰায়। যদি কেৱল newline আঁতৰাব লাগে, `rstrip("\\n")` ব্যৱহাৰ কৰিব পাৰি।
+
+**গুৰুত্বপূৰ্ণ:** একেটা input stream-ৰ পৰা `input()` আৰু `sys.stdin.readline()` মিহলাই ব্যৱহাৰ কৰিলে কোনটো function-এ কোন line পঢ়িলে সেয়া সহজে বিভ্ৰান্তিকৰ হ'ব পাৰে। এটা program-ত সাধাৰণতে এটা পদ্ধতি অনুসৰণ কৰক।
+
+## ৩.৪ Output লিখা আৰু Formatting
+
+`print()` সাধাৰণ output-ৰ বাবে সহজ পদ্ধতি।
+
+```python
+নাম = "ৰিমা"
+নম্বৰ = 85
+
+print("নাম:", নাম)
+print(f"{নাম}-ৰ নম্বৰ {নম্বৰ}")
+print("A", "B", "C", sep=" | ")
+print("একে লাইনত", end=" ")
+print("পৰৱৰ্তী শব্দ")
+```
+
+`sys.stdout.write()`-এ string লিখে, কিন্তু `print()`-ৰ দৰে নিজে newline যোগ নকৰে।
+
+```python
+import sys
+
+sys.stdout.write("প্ৰথম line\\n")
+sys.stdout.write("দ্বিতীয় line\\n")
+```
+
+## ৩.৫ Buffer (বাফাৰ) কি?
+
+**Buffer** হৈছে ডেটা সাময়িকভাৱে জমা ৰখা মেম’ৰি অঞ্চল। ডেটা সৰু সৰু অংশত বাৰে বাৰে পঠিওৱাৰ সলনি কিছু ডেটা একেলগে স্থানান্তৰ কৰিলে বহু পৰিস্থিতিত কাম অধিক কাৰ্যকৰী হ'ব পাৰে।
+
+উদাহৰণস্বৰূপে, program-এ প্ৰতিটো সৰু output-ৰ পিছতেই physical device-লৈ লিখাৰ সলনি output buffer-ত জমা ৰাখিব পাৰে। Buffer কেতিয়া খালী হ'ব সেয়া stream-ৰ ধৰণ, operating system, runtime আৰু program-ৰ আচৰণৰ ওপৰত নিৰ্ভৰ কৰে।
+
+### Buffering-ৰ সাধাৰণ ধৰণ
+
+- **Full buffering:** buffer পূৰ্ণ হ'লে বা stream বন্ধ হ'লে সাধাৰণতে ডেটা পঠিওৱা হয়।
+- **Line buffering:** newline পালে বা stream-ৰ নিয়ম অনুসৰি buffer flush হ'ব পাৰে।
+- **Unbuffered:** মধ্যৱৰ্তী user-space buffer নোহোৱাকৈ অধিক সোনকালে ডেটা পঠিওৱা হয়; তথাপি operating system-ৰ নিজা buffering থাকিব পাৰে।
+
+এইবোৰ সাধাৰণ ধাৰণা; সকলো device আৰু Python stream-ত একে আচৰণ হ'ব বুলি ধৰা উচিত নহয়।
+
+## ৩.৬ flush() কিয় ব্যৱহাৰ কৰা হয়?
+
+`flush()`-এ stream-ৰ user-space output buffer-ত জমা থকা ডেটা underlying stream-লৈ পঠিয়াবলৈ অনুৰোধ কৰে।
+
+```python
+import sys
+
+sys.stdout.write("প্ৰক্ৰিয়াটো চলি আছে...")
+sys.stdout.flush()
+
+# ইয়াৰ পিছত program-ৰ পৰৱৰ্তী কাম চলিব
+```
+
+`flush()`-এ buffer-ৰ ডেটা মচি নেপেলায়; ই ডেটা আগবঢ়ায়। ইয়াৰ অৰ্থ এইটোও নহয় যে ডেটা disk-ত স্থায়ীভাৱে লিখা সম্পূৰ্ণ হৈছে। Disk-ত durable write নিশ্চিত কৰিবলৈ file আৰু operating system-ৰ পৃথক নিয়ম আছে।
+
+সাধাৰণ `print()`-ত `flush=True` দিব পাৰি:
+
+```python
+print("অপেক্ষা কৰক...", flush=True)
+```
+
+প্ৰতিটো output-ৰ পিছত flush কৰিলে কিছুমান ক্ষেত্ৰত performance কমিব পাৰে। প্ৰয়োজন অনুসৰি ব্যৱহাৰ কৰক।
+
+## ৩.৭ File Stream: ফাইল পঢ়া
+
+ফাইলক stream হিচাপে পঢ়িলে সকলো content একেলগে memory-ত ল'ব নালাগে। ডাঙৰ text file-ৰ ক্ষেত্ৰত line by line পঢ়া সুবিধাজনক।
+
+```python
+ফাইলৰ_নাম = "উদাহৰণ.txt"
+
+with open(ফাইলৰ_নাম, "r", encoding="utf-8") as ফাইল:
+    for লাইন_নং, লাইন in enumerate(ফাইল, start=1):
+        print(f"{লাইন_নং}: {লাইন.rstrip()}")
+```
+
+- `open()`-এ ফাইল খোলে।
+- `"r"`-ৰ অৰ্থ read mode।
+- `encoding="utf-8"`-এ text decoding-ৰ encoding স্পষ্ট কৰে।
+- `with` block শেষ হ'লে ফাইলটো স্বয়ংক্ৰিয়ভাৱে বন্ধ হয়।
+- `enumerate()`-এ line number আৰু line দুয়ো দিয়ে।
+
+UTF-8 সাধাৰণতে বহু ভাষাৰ text-ৰ বাবে উপযোগী। কিন্তু ফাইলটো অন্য encoding-ত থাকিলে সঠিক encoding নিৰ্বাচন কৰিব লাগিব।
+
+## ৩.৮ File Stream: ফাইল লিখা
+
+```python
+বিষয়বস্তু = "এইটো প্ৰথম line.\\nএইটো দ্বিতীয় line.\\n"
+
+with open("ফলাফল.txt", "w", encoding="utf-8") as ফাইল:
+    ফাইল.write(বিষয়বস্তু)
+```
+
+সাধাৰণ mode:
+
+| Mode | অৰ্থ |
+|---|---|
+| `"r"` | পঢ়া; ফাইল নাথাকিলে error |
+| `"w"` | লিখা; আগৰ content মচি নতুনকৈ লিখে |
+| `"a"` | শেষত নতুন content যোগ কৰে |
+| `"x"` | নতুন ফাইল সৃষ্টি; আগতেই থাকিলে error |
+| `"rb"` / `"wb"` | Binary mode-ত পঢ়া / লিখা |
+
+**সাৱধান:** `"w"` mode-এ আগৰ ফাইলৰ content মচি পেলায়। গুৰুত্বপূৰ্ণ ফাইলত ব্যৱহাৰ কৰাৰ আগতে নিশ্চিত হওক।
+
+## ৩.৯ Buffering parameter আৰু File Reading
+
+Python-ৰ `open()`-ত `buffering` parameter ব্যৱহাৰ কৰিব পাৰি। উদাহৰণ:
+
+```python
+with open(
+    "ডাঙৰ_ফাইল.txt",
+    "r",
+    encoding="utf-8",
+    buffering=8192
+) as ফাইল:
+    for লাইন in ফাইল:
+        if "গুৰুত্বপূৰ্ণ" in লাইন:
+            print(লাইন.rstrip())
+```
+
+ইয়াত `8192` হৈছে buffering-ৰ আকাৰৰ parameter (সাধাৰণ byte-ভিত্তিক buffer size)। কিন্তু ইয়াৰ অৰ্থ এইটো নহয় যে program-এ প্ৰতিবাৰ ঠিক 8192 byte-হে পঢ়িব বা সকলো computer-ত একে performance পাব। Text stream-ত decoding আৰু আন buffer-ৰ স্তৰো থাকিব পাৰে।
+
+ফাইল line by line পঢ়িলে সাধাৰণতে সম্পূৰ্ণ ফাইলটো একেলগে memory-ত লোৱাৰ প্ৰয়োজন নাথাকে। তথাপি line-ৰ আকাৰ অতি ডাঙৰ হ'লে সেই line-টোৱে memory ল'ব পাৰে।
+
+## ৩.১০ Error Handling: ফাইল আৰু Input-ৰ ত্ৰুটি
+
+ফাইল নাথাকিলে, permission নাথাকিলে বা input ভুল হ'লে program-এ error দিব পাৰে। `try` আৰু `except` ব্যৱহাৰ কৰি তেনে অৱস্থা নিয়ন্ত্ৰণ কৰিব পাৰি।
+
+```python
+try:
+    with open("তথ্য.txt", "r", encoding="utf-8") as ফাইল:
+        বিষয়বস্তু = ফাইল.read()
+        print(বিষয়বস্তু)
+
+except FileNotFoundError:
+    print("ফাইলটো পোৱা নগ'ল।")
+
+except PermissionError:
+    print("ফাইল পঢ়াৰ অনুমতি নাই।")
+
+except UnicodeDecodeError:
+    print("ফাইলৰ encoding পঢ়িব পৰা নগ'ল।")
+```
+
+সকলো error-ৰ বাবে একেটা message দেখুওৱাতকৈ সম্ভৱ হ'লে নিৰ্দিষ্ট error চিনাক্ত কৰক। তেতিয়া সমস্যা সমাধান সহজ হয়।
+
+## ৩.১১ অনুশীলনী
+
+1. Input–Process–Output cycle-ৰ তিনিটা অংশৰ অৰ্থ লিখক।
+2. `sys.stdin`, `sys.stdout` আৰু `sys.stderr`-ৰ কাম কি?
+3. `input()`-এ সাধাৰণতে কোন ধৰণৰ value ঘূৰাই দিয়ে?
+4. `split()` আৰু `map(int, ...)`-ৰ কাম বুজাওক।
+5. `print()` আৰু `sys.stdout.write()`-ৰ এটা পাৰ্থক্য লিখক।
+6. Buffer কিয় ব্যৱহাৰ কৰা হয়?
+7. `flush()`-এ buffer-ৰ ডেটাৰ সৈতে কি কৰে?
+8. `open("file.txt", "w")` ব্যৱহাৰ কৰিলে কি সাৱধানতা ল'ব লাগে?
+9. ডাঙৰ text file line by line পঢ়াৰ এটা সুবিধা লিখক।
+10. `FileNotFoundError` কেতিয়া হ'ব পাৰে?
+
+### অনুশীলনীৰ উত্তৰ
+
+1. Input-এ তথ্য গ্ৰহণ কৰে, Processing-এ তথ্যৰ ওপৰত কাম কৰে, Output-এ ফলাফল দিয়ে।
+2. `stdin` input পঢ়ে, `stdout` সাধাৰণ output লিখে, `stderr` error বা diagnostic output লিখে।
+3. String।
+4. `split()`-এ string ভাগ কৰে; `map(int, ...)`-এ প্ৰতিটো অংশ integer-লৈ ৰূপান্তৰ কৰে।
+5. `print()`-এ default-ভাৱে শেষত newline দিয়ে; `sys.stdout.write()`-এ নিজে newline যোগ নকৰে।
+6. ডেটা সাময়িকভাৱে জমা কৰি স্থানান্তৰ অধিক কাৰ্যকৰী কৰিবলৈ।
+7. User-space output buffer-ৰ ডেটা underlying stream-লৈ পঠিয়ায়; ডেটা মচি নেপেলায়।
+8. `"w"` mode-এ আগৰ content মচি পেলাব পাৰে।
+9. সম্পূৰ্ণ ফাইল একেলগে memory-ত ল'ব নালাগে।
+10. নিৰ্দিষ্ট path-ত ফাইল নাথাকিলে।
+
+## ৩.১২ অধিক পঢ়াৰ উৎস
+
+- Python Official Tutorial — Input and Output: https://docs.python.org/3/tutorial/inputoutput.html
+- Python `sys` module: https://docs.python.org/3/library/sys.html
+- Python `open()` documentation: https://docs.python.org/3/library/functions.html#open
+- Python `io` module: https://docs.python.org/3/library/io.html
+
+## অধ্যায়ৰ সাৰাংশ
+
+Input–Process–Output cycle-এ program-ৰ মৌলিক কাম বুজায়। Python-ৰ `stdin`, `stdout` আৰু `stderr`-এ standard input আৰু output নিয়ন্ত্ৰণ কৰে। Buffer-এ ডেটা সাময়িকভাৱে জমা ৰাখে; `flush()`-এ output buffer-ৰ ডেটা আগবঢ়ায়, মচি নেপেলায়। File stream-ৰ সহায়ত text line by line পঢ়িব বা লিখিব পাৰি। `with`, সঠিক encoding আৰু নিৰ্দিষ্ট error handling ব্যৱহাৰ কৰিলে file operation অধিক নিৰাপদ আৰু বুজিবলৈ সহজ হয়।`,
     },
     {
       id: 'ch-4',
