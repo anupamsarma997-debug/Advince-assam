@@ -5728,55 +5728,446 @@ export default async function UsersPage() {
     },
     id: 'ch-18',
       volume: 'খণ্ড ৭: ফ্ৰণ্টএণ্ড আৰ্কিটেকচাৰ আৰু ফুলষ্টেক ইন্টিগ্ৰেচন',
-      title: 'অধ্যায় ২১: ফুলষ্টেক ইন্টিগ্ৰেচন — React + FastAPI',
-      subtitle: 'CORS Config, Centralized API Client, Token Auth & Form Handling',
-      estimatedReadTime: '9 min',
-      topics: ['CORS Middleware', 'Singleton API Client', 'Interactive User Form', 'Error Boundary'],
-      content: `## ২১.১ CORS আৰু API ক্লায়েণ্ট
+      title: 'অধ্যায় ১৮: ফুলষ্টেক ইন্টিগ্ৰেচন — React আৰু FastAPI',
+      subtitle: 'CORS, API Client, Authentication, Form Handling, Error States আৰু Deployment',
+      estimatedReadTime: '35 min',
+      topics: ['Frontend and Backend Architecture', 'HTTP and JSON Contract', 'FastAPI CORS Middleware', 'Environment Variables', 'Centralized API Client', 'Authentication Token Handling', 'React Form Submission', 'Loading and Error States', 'Backend Validation', 'Pagination', 'Testing Integration', 'Deployment and Security'],
+      content: \`## ১৮.১ Full Stack Application কি?
 
-\`\`\`python
-# FastAPI main.py ত CORS ছেটআপ
-from fastapi.middleware.cors import CORSMiddleware
+Full Stack application-ত frontend আৰু backend একেলগে কাম কৰে।
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://yourdomain.com"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+- **Frontend:** ব্যৱহাৰকাৰীয়ে দেখা আৰু ব্যৱহাৰ কৰা interface। এই অধ্যায়ত React।
+- **Backend:** API, validation, business logic আৰু data access। এই অধ্যায়ত FastAPI।
+- **Database:** স্থায়ীভাৱে তথ্য সংৰক্ষণ কৰে। উদাহৰণস্বৰূপে PostgreSQL বা SQLite।
+- **HTTP/JSON:** Frontend আৰু backend-ৰ মাজত তথ্য আদান-প্ৰদানৰ সাধাৰণ পদ্ধতি।
+
+সাধাৰণ request flow:
+
+1. User-এ React form পূৰণ কৰে।
+2. React-এ JSON request FastAPI-লৈ পঠিয়ায়।
+3. FastAPI-এ input validate কৰে।
+4. Backend-এ অনুমতি পৰীক্ষা কৰি business logic চলায়।
+5. Database-ৰ পৰা তথ্য পঢ়ে বা সংৰক্ষণ কৰে।
+6. Backend-এ HTTP status আৰু JSON response পঠিয়ায়।
+7. React-এ success বা error UI দেখুৱায়।
+
+Frontend-ত button লুকুৱাই ৰখা security নহয়। প্ৰতিটো sensitive operation backend-ত authenticate আৰু authorize কৰিব লাগে।
+
+## ১৮.২ Project Structure
+
+এটা সৰল project-ৰ folder structure এনেকুৱা হ'ব পাৰে:
+
+\`\`\`text
+fullstack-app/
+├── backend/
+│   ├── main.py
+│   └── requirements.txt
+└── frontend/
+    ├── src/
+    │   ├── api.js
+    │   ├── App.jsx
+    │   └── components/
+    ├── package.json
+    └── .env
 \`\`\`
 
-\`\`\`javascript
-// Centralized API Client (api.js)
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+Frontend আৰু backend পৃথক process বা server-ত চলিব পাৰে। Development-ত দুয়োটাৰ port পৃথক হোৱাটো সাধাৰণ কথা।
 
-class APIClient {
-  async request(endpoint, options = {}) {
-    const url = \`\${API_BASE}\${endpoint}\`;
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: \`Bearer \${token}\` } : {}),
-      ...options.headers,
-    };
-    const response = await fetch(url, { ...options, headers });
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.detail || \`HTTP \${response.status}\`);
+## ১৮.৩ FastAPI Backend সৃষ্টি
+
+প্ৰথমে backend-ত FastAPI আৰু Pydantic model সৃষ্টি কৰোঁ।
+
+\`\`\`python
+# backend/main.py
+from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, ConfigDict, Field, EmailStr
+
+app = FastAPI(title="Full Stack Learning API")
+
+# Development-ৰ frontend origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
+)
+
+
+class UserCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    name: str = Field(min_length=2, max_length=80)
+    email: EmailStr
+
+
+class UserPublic(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+
+
+users: dict[int, dict] = {}
+next_id = 1
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post(
+    "/api/users",
+    response_model=UserPublic,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_user(payload: UserCreate):
+    global next_id
+
+    email = str(payload.email).lower()
+    if any(user["email"] == email for user in users.values()):
+        raise HTTPException(
+            status_code=409,
+            detail="এই email ইতিমধ্যে আছে",
+        )
+
+    record = {
+        "id": next_id,
+        "name": payload.name,
+        "email": email,
     }
-    return response.json();
+    users[next_id] = record
+    next_id += 1
+    return record
+
+
+@app.get("/api/users", response_model=list[UserPublic])
+def list_users():
+    return list(users.values())
+\`\`\`
+
+এই backend-টো integration flow বুজাবলৈ in-memory dictionary ব্যৱহাৰ কৰিছে। Restart কৰিলে data হেৰাই যাব; ই production database নহয়। বাস্তৱ project-ত persistent database, transaction আৰু unique constraint ব্যৱহাৰ কৰিব লাগে।
+
+## ১৮.৪ CORS কিয় লাগে?
+
+Browser-এ এটা origin-ৰ webpage-ৰ পৰা বেলেগ origin-লৈ request পঠিয়ালে Cross-Origin Resource Sharing (CORS) policy প্ৰযোজ্য হয়।
+
+Origin মানে scheme, host আৰু port-ৰ সংমিশ্ৰণ। উদাহৰণ:
+
+- Frontend: \`http://localhost:5173\`
+- Backend: \`http://localhost:8000\`
+
+Port বেলেগ হোৱাৰ বাবে এই দুটা পৃথক origin।
+
+FastAPI-ত \`CORSMiddleware\` ব্যৱহাৰ কৰি অনুমোদিত origin নিৰ্ধাৰণ কৰা হয়। Production-ত নিজৰ সঠিক frontend domain-সমূহহে allowlist কৰক। \`allow_origins=["*"]\` আৰু credentials একেলগে ব্যৱহাৰ কৰাৰ ক্ষেত্ৰত browser-ৰ নিয়ম আৰু security limitation আছে; wildcard-ৰ ওপৰত নিৰ্ভৰ নকৰিব।
+
+CORS authentication নহয়। CORS-এ browser-ৰ cross-origin access নিয়ন্ত্ৰণ কৰে; API-ৰ permission backend-এ নিজে পৰীক্ষা কৰিব লাগিব।
+
+## ১৮.৫ Frontend Environment Variable
+
+Vite project-ত public frontend configuration \`.env\` file-ত ৰাখিব পাৰি:
+
+\`\`\`text
+VITE_API_BASE_URL=http://localhost:8000
+\`\`\`
+
+JavaScript-ত:
+
+\`\`\`javascript
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+\`\`\`
+
+**সাৱধান:** Vite-ৰ \`VITE_\` prefix থকা variable client bundle-ত প্ৰকাশ পায়। ইয়াত API base URL-ৰ দৰে public configuration ৰাখিব পাৰি, কিন্তু database password, JWT signing secret বা private API key কেতিয়াও নাৰাখিব।
+
+Production deployment-ত environment variable-ৰ value production API domain-লৈ সলনি কৰিব লাগে।
+
+## ১৮.৬ Centralized API Client
+
+প্ৰতিটো component-ত পৃথক fetch logic লিখিলে error handling আৰু header management অসুবিধাজনক হয়। এটা কেন্দ্ৰীয় API client-এ এই কাম একে ঠাইত কৰিব পাৰে।
+
+\`\`\`javascript
+// frontend/src/api.js
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
+export async function apiRequest(path, options = {}) {
+  const headers = new Headers(options.headers || {});
+
+  if (options.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
 
-  get(endpoint) { return this.request(endpoint); }
-  post(endpoint, body) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(body) }); }
+  const response = await fetch(
+    new URL(path, API_BASE_URL),
+    {
+      ...options,
+      headers,
+    }
+  );
+
+  const contentType = response.headers.get("content-type") || "";
+  const data = contentType.includes("application/json")
+    ? await response.json()
+    : await response.text();
+
+  if (!response.ok) {
+    const message =
+      typeof data === "object" && data !== null && "detail" in data
+        ? data.detail
+        : \`HTTP error: \${response.status}\`;
+
+    throw new Error(String(message));
+  }
+
+  return data;
 }
 
-export const api = new APIClient();
-\`\`\``,
+
+export function getUsers() {
+  return apiRequest("/api/users");
+}
+
+
+export function createUser(user) {
+  return apiRequest("/api/users", {
+    method: "POST",
+    body: JSON.stringify(user),
+  });
+}
+\`\`\`
+
+এই client-এ token সংৰক্ষণ বা login logic নাই। Authentication যোগ কৰিলে token কেনেকৈ সংৰক্ষণ আৰু refresh কৰিব সেই বিষয়ে threat model অনুসৰি সিদ্ধান্ত ল'ব লাগে।
+
+## ১৮.৭ React Form-ৰ সৈতে API সংযোগ
+
+React form-ৰ পৰা data backend-লৈ পঠিয়াবলৈ state, validation feedback আৰু loading status ব্যৱহাৰ কৰিব পাৰি।
+
+\`\`\`jsx
+// frontend/src/App.jsx
+import { useState } from "react";
+import { createUser } from "./api";
+
+export default function App() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+    setLoading(true);
+
+    try {
+      const user = await createUser({ name, email });
+      setMessage(\`ব্যৱহাৰকাৰী সৃষ্টি হ'ল: \${user.name}\`);
+      setName("");
+      setEmail("");
+    } catch (err) {
+      setError(err.message || "Request ব্যৰ্থ হ'ল");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main>
+      <h1>ব্যৱহাৰকাৰী সৃষ্টি</h1>
+
+      <form onSubmit={handleSubmit}>
+        <label>
+          নাম
+          <input
+            value={name}
+            onChange={event => setName(event.target.value)}
+            minLength={2}
+            maxLength={80}
+            required
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            value={email}
+            onChange={event => setEmail(event.target.value)}
+            required
+          />
+        </label>
+
+        <button type="submit" disabled={loading}>
+          {loading ? "জমা দি থকা হৈছে..." : "জমা দিয়ক"}
+        </button>
+      </form>
+
+      {message && <p role="status">{message}</p>}
+      {error && <p role="alert">{error}</p>}
+    </main>
+  );
+}
+\`\`\`
+
+Browser-ৰ validation ব্যৱহাৰকাৰীৰ সুবিধাৰ বাবে। Backend-ৰ Pydantic validation-ৰ বিকল্প নহয়। Client-এ যিকোনো data পঠিয়াব পাৰে বুলি ধৰি server-ত পুনৰ validate কৰিব লাগে।
+
+## ১৮.৮ Authentication আৰু Token Handling
+
+Protected API ব্যৱহাৰ কৰিবলৈ user-ৰ পৰিচয় যাচাই কৰিব লাগে। সাধাৰণ flow:
+
+1. User login form-ত credential পঠিয়ায়।
+2. Backend password hash verify কৰে।
+3. Backend সীমিত expiry-সহ access token বা secure session সৃষ্টি কৰে।
+4. Client-এ protected request-ত credential পঠিয়ায়।
+5. Backend token/session validate কৰি user আৰু permission পৰীক্ষা কৰে।
+
+Browser storage-ৰ বিষয়ে:
+
+- \`localStorage\`-ত token ৰাখিলে XSS-ৰ জৰিয়তে JavaScript-এ token পঢ়িব পাৰে।
+- \`sessionStorage\`-ও JavaScript-ৰ পৰা পঢ়িব পৰা যায়।
+- \`HttpOnly\`, \`Secure\`, \`SameSite\` cookie-এ JavaScript-ৰ পৰা cookie access সীমিত কৰে, কিন্তু cookie-ভিত্তিক authentication-ত CSRF protection আৰু সঠিক CORS/credentials configuration প্ৰয়োজন।
+- Token-ৰ expiry, refresh, logout আৰু revocation policy আগতীয়াকৈ design কৰিব লাগে।
+
+সেয়েহে সকলো project-ৰ বাবে একেটা token storage পদ্ধতি সঠিক বুলি ক'ব নোৱাৰি। Threat model আৰু deployment architecture অনুসৰি বাছনি কৰক।
+
+## ১৮.৯ Pagination আৰু ডাঙৰ Data Set
+
+সকলো record একেলগে পঠিয়ালে response ডাঙৰ হয় আৰু client ধীৰ হ'ব পাৰে। Pagination-এ data ভাগ কৰি পঠিয়ায়।
+
+\`\`\`python
+from fastapi import Query
+
+
+@app.get("/api/users/page")
+def paginated_users(
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    records = list(users.values())
+    return {
+        "items": records[offset:offset + limit],
+        "limit": limit,
+        "offset": offset,
+        "total": len(records),
+    }
+\`\`\`
+
+এই উদাহৰণটো in-memory data-ৰ বাবে। ডাঙৰ production database-ত indexed query আৰু প্ৰয়োজন অনুসৰি cursor pagination অধিক উপযুক্ত হ'ব পাৰে।
+
+## ১৮.১০ Integration Testing
+
+Frontend আৰু backend একেলগে সঠিকভাৱে কাম কৰিছে নে নাই পৰীক্ষা কৰিব লাগে। Backend-ৰ endpoint test কৰিবলৈ FastAPI TestClient ব্যৱহাৰ কৰিব পাৰি।
+
+\`\`\`python
+from fastapi.testclient import TestClient
+from main import app
+
+client = TestClient(app)
+
+
+def test_health():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+
+
+def test_create_user():
+    response = client.post(
+        "/api/users",
+        json={
+            "name": "Riku",
+            "email": "riku@example.com",
+        },
+    )
+
+    assert response.status_code == 201
+    assert response.json()["name"] == "Riku"
+\`\`\`
+
+এই test-সমূহে shared in-memory state ব্যৱহাৰ হ'ব পাৰে। বাস্তৱ test suite-ত প্ৰতিটো test-ৰ বাবে isolated database বা fixture ব্যৱহাৰ কৰক। Frontend-ত success, loading, validation error, network failure আৰু empty state পৰীক্ষা কৰিব লাগে।
+
+## ১৮.১১ Deployment-ৰ সময়ত
+
+Development আৰু production configuration পৃথক ৰাখক।
+
+1. Frontend build কৰি static hosting/CDN-ত deploy কৰক।
+2. FastAPI-এ production ASGI server-ত চলিব লাগে।
+3. Production CORS allowlist-ত সঠিক frontend origin ৰাখক।
+4. HTTPS ব্যৱহাৰ কৰক।
+5. Secret server-side environment বা secret manager-ত ৰাখক।
+6. Database migration আৰু backup strategy ৰাখক।
+7. Logging, monitoring আৰু error alert স্থাপন কৰক।
+8. API versioning আৰু backward compatibility বিবেচনা কৰক।
+9. Rate limiting আৰু request size limit যোগ কৰক।
+10. Production-ত debug mode আৰু development reload বন্ধ ৰাখক।
+
+## ১৮.১২ সাধাৰণ ভুল
+
+1. CORS-ক authentication বুলি ধৰা।
+2. Frontend-ত private secret ৰাখা।
+3. Backend validation নকৰা।
+4. HTTP error status পৰীক্ষা নকৰা।
+5. সকলো error-কে একে message-ত লুকুৱাই পেলোৱা।
+6. Production-ত wildcard CORS ব্যৱহাৰ কৰা।
+7. Token localStorage-ত ৰখাৰ XSS risk উপেক্ষা কৰা।
+8. In-memory data-কে persistent database বুলি ধৰা।
+9. Loading state আৰু duplicate form submission নিয়ন্ত্ৰণ নকৰা।
+10. API আৰু frontend-ৰ response contract নথকা।
+
+## ১৮.১৩ অনুশীলনী
+
+1. Full Stack application-ৰ তিনিটা মূল অংশ কি?
+2. Frontend আৰু backend-ৰ কামৰ পাৰ্থক্য লিখক।
+3. CORS কিয় প্ৰয়োজন?
+4. Origin-ত কোন তিনিটা অংশ থাকে?
+5. CORS আৰু Authentication একে নে?
+6. Vite-ৰ \`VITE_\` environment variable-ত secret ৰাখিব পাৰিনে?
+7. Centralized API client-ৰ সুবিধা কি?
+8. \`response.ok\` কিয় পৰীক্ষা কৰিব লাগে?
+9. Frontend validation-এ backend validation-ৰ বিকল্প হ'ব পাৰেনে?
+10. localStorage-ত access token ৰখাৰ এটা risk লিখক।
+11. HttpOnly cookie-ৰ সুবিধা কি?
+12. Pagination কিয় ব্যৱহাৰ কৰা হয়?
+13. Integration test-এ কি পৰীক্ষা কৰে?
+14. Production deployment-ত HTTPS কিয় প্ৰয়োজন?
+15. In-memory dictionary production database নহয় কিয়?
+
+### উত্তৰ-সূচী
+
+1. Frontend, backend আৰু database।
+2. Frontend UI আৰু user interaction; backend API, validation, logic আৰু data access।
+3. বেলেগ origin-ৰ browser request নিয়ন্ত্ৰণ কৰিবলৈ।
+4. Scheme, host আৰু port।
+5. নহয়; CORS browser policy, authentication পৰিচয় যাচাই।
+6. নালাগে; client bundle-ত প্ৰকাশ পাব পাৰে।
+7. Request, headers আৰু error handling একে ঠাইত ৰাখে।
+8. HTTP 4xx/5xx response-ত fetch Promise সাধাৰণতে reject নহয়।
+9. নহয়; backend-ত সদায় validate কৰিব লাগে।
+10. XSS-এ JavaScript-ৰ জৰিয়তে token পঢ়িব পাৰে।
+11. JavaScript-এ HttpOnly cookie পঢ়িব নোৱাৰে।
+12. ডাঙৰ data-ৰ response সৰু ভাগত পঠিয়াবলৈ।
+13. Frontend আৰু backend-ৰ মাজৰ সম্পূৰ্ণ request-response flow।
+14. Data transit-ত encryption আৰু server identity verification-ৰ বাবে।
+15. Restart-ত data হেৰায় আৰু worker-সমূহৰ মাজত share নহয়।
+
+## ১৮.১৪ সাৰাংশ
+
+এই অধ্যায়ত React frontend আৰু FastAPI backend সংযোগৰ মৌলিক পদ্ধতি আলোচনা কৰা হ'ল। CORS, environment configuration, centralized API client, form handling, authentication design, pagination, testing আৰু production deployment-ৰ মূল ধাৰণা শিকিলোঁ।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- FastAPI: https://fastapi.tiangolo.com/
+- FastAPI CORS: https://fastapi.tiangolo.com/tutorial/cors/
+- React: https://react.dev/learn
+- Vite Environment Variables: https://vite.dev/guide/env-and-mode
+- MDN Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+- OWASP Session Management: https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
+\`,
     },
-    {
-      id: 'ch-19',
+    id: 'ch-19',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২২: গিট আৰু CI/CD পাইপলাইন',
       subtitle: 'Git Workflow, Conventional Commits, GitHub Actions & VPS Automated Deployment',
