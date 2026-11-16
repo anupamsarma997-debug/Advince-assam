@@ -6462,45 +6462,342 @@ Git-এ code-ৰ ইতিহাস আৰু collaboration নিয়ন্�
     },
     id: 'ch-20',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
-      title: 'অধ্যায় ২৩: Pytest আৰু টেষ্ট-ড্ৰিভন ডেভেলপমেণ্ট (TDD)',
-      subtitle: 'TDD Red-Green-Refactor, Fixtures, Mocking & Property-Based Testing',
-      estimatedReadTime: '8 min',
-      topics: ['TDD Red-Green-Refactor', 'Pytest Fixtures', 'Mocking External APIs', 'Hypothesis Property Testing'],
-      content: `## ২৩.১ TDD সোণালী চক্ৰ
+      title: 'অধ্যায় ২০: Pytest আৰু টেষ্ট-ড্ৰিভন ডেভেলপমেণ্ট (TDD)',
+      subtitle: 'TDD Red-Green-Refactor, Fixtures, Mocking আৰু Property-Based Testing',
+      estimatedReadTime: '15 min',
+      topics: ['TDD Red-Green-Refactor', 'Pytest Fixtures আৰু Parametrization', 'Mocking আৰু monkeypatch', 'Coverage আৰু Testing Levels', 'Hypothesis Property Testing'],
+      content: `## ২০.১ Software Testing আৰু Pytest-ৰ পৰিচয়
 
-1. **Red:** প্ৰথমে টেষ্ট লিখক যিটো ফেইল হয় (কাৰণ কোড নাই)।
-2. **Green:** নূন্যতম কোড লিখক যাতে টেষ্টটো পাছ হয়।
-3. **Refactor:** কোড পৰিষ্কাৰ আৰু অপটিমাইজ কৰক।
+Software testing-ৰ উদ্দেশ্য হৈছে program-এ নিৰ্ধাৰিত আচৰণ সঠিকভাৱে পালন কৰিছেনে পৰীক্ষা কৰা। Test-এ bug বিচাৰি উলিওৱাত সহায় কৰে; কিন্তু test সফল হ'লেই সকলো সম্ভাৱ্য bug নাই বুলি প্ৰমাণ নহয়।
+
+Python-ৰ জনপ্ৰিয় testing framework হৈছে **pytest**। ই সাধাৰণ Python function-ৰ জৰিয়তে test লিখিবলৈ দিয়ে আৰু assertion failure-ৰ বিৱৰণ দেখুৱায়।
+
+স্থাপন:
+
+\`\`\`bash
+python -m pip install pytest
+\`\`\`
+
+Test file-ৰ নাম সাধাৰণতে \`test_*.py\` বা \`*_test.py\` ৰাখিব পাৰি।
 
 \`\`\`python
-import pytest
-from unittest.mock import patch
-
+# calculator.py
 def যোগ(a: int, b: int) -> int:
     return a + b
 
-def test_যোগ_মৌলিক():
+def ভাগ(a: float, b: float) -> float:
+    if b == 0:
+        raise ValueError("শূন্যৰে ভাগ কৰিব নোৱাৰি")
+    return a / b
+\`\`\`
+
+\`\`\`python
+# test_calculator.py
+import pytest
+from calculator import যোগ, ভাগ
+
+def test_যোগ():
     assert যোগ(2, 3) == 5
     assert যোগ(-1, 1) == 0
 
+def test_ভাগ():
+    assert ভাগ(10, 2) == 5
+
+def test_শূন্যৰে_ভাগ():
+    with pytest.raises(ValueError):
+        ভাগ(5, 0)
+\`\`\`
+
+Test চলাবলৈ:
+
+\`\`\`bash
+python -m pytest -v
+\`\`\`
+
+\`assert\`-এ expected আৰু actual ফলাফল তুলনা কৰে। Assertion ব্যৰ্থ হ'লে pytest-এ test fail দেখুৱায়।
+
+---
+
+## ২০.২ TDD-ৰ Red-Green-Refactor চক্ৰ
+
+**Test-Driven Development (TDD)** হৈছে test-ৰ সহায়ত ধাপে ধাপে code তৈয়াৰ কৰাৰ পদ্ধতি।
+
+1. **Red:** প্ৰথমে প্ৰয়োজনীয় আচৰণৰ test লিখক; implementation নথকাৰ বাবে test fail হ'ব।
+2. **Green:** test pass কৰাব পৰা আটাইতকৈ সৰল implementation লিখক।
+3. **Refactor:** test pass হৈ থকা অৱস্থাত code-ৰ গঠন উন্নত কৰক; আচৰণ সলনি নকৰিব।
+
+উদাহৰণ: এটা function-এ দুটা সংখ্যাৰ যোগফল দিব লাগে।
+
+প্ৰথমে test:
+
+\`\`\`python
+# test_math_utils.py
+from math_utils import যোগ
+
+def test_দুটা_সংখ্যাৰ_যোগ():
+    assert যোগ(4, 6) == 10
+\`\`\`
+
+তাৰ পিছত নূন্যতম implementation:
+
+\`\`\`python
+# math_utils.py
+def যোগ(a, b):
+    return a + b
+\`\`\`
+
+প্ৰথমে module বা function নথকাৰ বাবে test fail হ'ব পাৰে। Implementation যোগ কৰাৰ পিছত test পুনৰ চলাওক। এইটো TDD-ৰ Red-Green-Refactor চক্ৰৰ সৰু উদাহৰণ।
+
+---
+
+## ২০.৩ Fixture: Test-ৰ বাবে পুনৰ ব্যৱহাৰযোগ্য Setup
+
+Fixture-এ test-ৰ বাবে প্ৰয়োজনীয় data বা resource সাজু কৰে। \`@pytest.fixture\` decorator ব্যৱহাৰ কৰা হয়।
+
+\`\`\`python
+import pytest
+
 @pytest.fixture
 def নমুনা_ব্যৱহাৰকাৰী():
-    return {"নাম": "ৰিকু", "ইমেইল": "riku@test.com", "বয়স": 25}
+    return {
+        "name": "Riku",
+        "email": "riku@example.com",
+        "age": 25,
+    }
 
-def test_ব্যৱহাৰকাৰী_বৈধ(নমুনা_ব্যৱহাৰকাৰী):
-    assert নমুনা_ব্যৱহাৰকাৰী["বয়স"] >= 18
-    assert "@" in নমুনা_ব্যৱহাৰকাৰী["ইমেইল"]
+def test_ব্যৱহাৰকাৰীৰ_বয়স(নমুনা_ব্যৱহাৰকাৰী):
+    assert নমুনা_ব্যৱহাৰকাৰী["age"] >= 18
 
-# Mocking
-def test_বাহ্যিক_API():
-    with patch('requests.get') as mock_get:
-        mock_get.return_value.json.return_value = {"status": "ok"}
-        mock_get.return_value.status_code = 200
-        # টেষ্ট সম্পন্ন কৰক
-\`\`\``,
+def test_ইমেইল_আছে(নমুনা_ব্যৱহাৰকাৰী):
+    assert "@" in নমুনা_ব্যৱহাৰকাৰী["email"]
+\`\`\`
+
+Fixture-ৰ scope:
+- \`function\`: প্ৰতিটো test-ৰ বাবে নতুনকৈ চলে (default)।
+- \`class\`: এটা test class-ৰ বাবে।
+- \`module\`: এটা Python module-ৰ বাবে।
+- \`session\`: সম্পূৰ্ণ pytest session-ৰ বাবে।
+
+দীৰ্ঘস্থায়ী database বা shared resource-ৰ fixture-ত cleanup-ৰ ব্যৱস্থা ৰাখিব লাগে। Yield fixture-ৰ উদাহৰণ:
+
+\`\`\`python
+import pytest
+
+@pytest.fixture
+def temporary_resource():
+    resource = {"active": True}
+    yield resource
+    resource["active"] = False
+\`\`\`
+
+\`yield\`-ৰ পিছৰ অংশ test-সমূহ শেষ হোৱাৰ পিছত cleanup-ৰ বাবে চলে।
+
+---
+
+## ২০.৪ Parametrization: একে Test-ত বহু Input
+
+একেটা function বিভিন্ন input-ত পৰীক্ষা কৰিবলৈ \`@pytest.mark.parametrize\` ব্যৱহাৰ কৰিব পাৰি।
+
+\`\`\`python
+import pytest
+from calculator import যোগ
+
+@pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        (1, 2, 3),
+        (0, 0, 0),
+        (-2, 2, 0),
+        (10, 5, 15),
+    ],
+)
+def test_যোগৰ_বিভিন্ন_ইনপুট(a, b, expected):
+    assert যোগ(a, b) == expected
+\`\`\`
+
+প্ৰতিটো data row-ৰ বাবে pytest-এ পৃথক test case চলায়। Boundary value আৰু negative input-ও অন্তৰ্ভুক্ত কৰক।
+
+---
+
+## ২০.৫ Mocking: বাহ্যিক Service-ৰ ওপৰত নিৰ্ভৰতা নিয়ন্ত্ৰণ
+
+কেতিয়াবা test-এ বাস্তৱ HTTP API, email service বা payment gateway call কৰা উচিত নহয়। তেনে ক্ষেত্ৰত mock ব্যৱহাৰ কৰি বাহ্যিক dependency-ৰ আচৰণ অনুকৰণ কৰিব পাৰি।
+
+তলৰ উদাহৰণত \`requests\` library ব্যৱহাৰ কৰা হৈছে। প্ৰয়োজন হ'লে \`python -m pip install requests\` কৰক।
+
+\`\`\`python
+# service.py
+import requests
+
+def fetch_status(url: str) -> str:
+    response = requests.get(url, timeout=5)
+    response.raise_for_status()
+    return response.json()["status"]
+\`\`\`
+
+\`\`\`python
+# test_service.py
+from unittest.mock import patch, Mock
+from service import fetch_status
+
+@patch("service.requests.get")
+def test_fetch_status(mock_get):
+    response = Mock()
+    response.json.return_value = {"status": "ok"}
+    response.raise_for_status.return_value = None
+    mock_get.return_value = response
+
+    result = fetch_status("https://example.test/status")
+
+    assert result == "ok"
+    mock_get.assert_called_once_with(
+        "https://example.test/status",
+        timeout=5,
+    )
+\`\`\`
+
+Patch-ৰ target সেই module-ত দিব লাগে য'ত dependency-টো ব্যৱহাৰ কৰা হৈছে। ওপৰৰ ক্ষেত্ৰত সেয়া \`service.requests.get\`। Mock-এ বাস্তৱ server-ৰ আচৰণ সম্পূৰ্ণৰূপে প্ৰমাণ নকৰে; সেয়ে প্ৰয়োজন অনুসৰি পৃথক integration test-ও লিখিব লাগে।
+
+---
+
+## ২০.৬ Built-in Fixtures: tmp_path আৰু monkeypatch
+
+pytest-এ বহু উপযোগী built-in fixture দিয়ে।
+
+### tmp_path
+
+Temporary directory-ত file operation পৰীক্ষা কৰিবলৈ:
+
+\`\`\`python
+def test_file_write(tmp_path):
+    file_path = tmp_path / "note.txt"
+    file_path.write_text("নমস্কাৰ", encoding="utf-8")
+
+    assert file_path.read_text(encoding="utf-8") == "নমস্কাৰ"
+\`\`\`
+
+pytest-এ প্ৰতিটো test-ৰ বাবে পৃথক temporary path দিয়ে।
+
+### monkeypatch
+
+Environment variable বা object-ৰ আচৰণ সাময়িকভাৱে সলনি কৰিবলৈ:
+
+\`\`\`python
+def read_mode():
+    import os
+    return os.getenv("APP_MODE", "development")
+
+def test_mode(monkeypatch):
+    monkeypatch.setenv("APP_MODE", "test")
+    assert read_mode() == "test"
+\`\`\`
+
+Test শেষ হ'লে monkeypatch-এ পৰিৱৰ্তনসমূহ আগৰ অৱস্থালৈ ঘূৰাই দিয়ে।
+
+---
+
+## ২০.৭ Test Coverage আৰু Test-ৰ স্তৰ
+
+**Coverage**-এ code-ৰ কিমান অংশ test-ৰ দ্বাৰা execute হৈছে তাৰ এটা মাপকাঠি দিয়ে। উচ্চ coverage মানেই code সম্পূৰ্ণ bug-free নহয়; assertion-ৰ গুণগত মানো গুৰুত্বপূৰ্ণ।
+
+Coverage plugin স্থাপন:
+
+\`\`\`bash
+python -m pip install pytest-cov
+python -m pytest --cov=app --cov-report=term-missing
+\`\`\`
+
+Test-ৰ সাধাৰণ স্তৰ:
+1. **Unit test:** সৰু function বা class পৃথকভাৱে পৰীক্ষা কৰে।
+2. **Integration test:** একাধিক component একেলগে সঠিকভাৱে কাম কৰিছেনে পৰীক্ষা কৰে।
+3. **End-to-end test:** ব্যৱহাৰকাৰীৰ দৃষ্টিকোণৰ পৰা সম্পূৰ্ণ workflow পৰীক্ষা কৰে।
+
+দ্ৰুত unit test-ৰ লগতে প্ৰয়োজনীয় integration আৰু end-to-end test-ও ৰাখক।
+
+---
+
+## ২০.৮ Property-Based Testing আৰু Hypothesis
+
+সাধাৰণ test-ত developer-এ কিছুমান নিৰ্দিষ্ট input বাছি লয়। Property-based testing-ত framework-এ বহু input সৃষ্টি কৰি সাধাৰণ নিয়ম (property) পৰীক্ষা কৰে।
+
+Hypothesis স্থাপন:
+
+\`\`\`bash
+python -m pip install hypothesis
+\`\`\`
+
+উদাহৰণ:
+
+\`\`\`python
+from hypothesis import given, strategies as st
+
+def reverse_twice(items):
+    return list(reversed(list(reversed(items))))
+
+@given(st.lists(st.integers()))
+def test_reverse_twice_returns_original(items):
+    assert reverse_twice(items) == items
+\`\`\`
+
+ইয়াত property হৈছে: list দুবাৰ reverse কৰিলে মূল list-টো ঘূৰি আহিব লাগে। Hypothesis-এ বিভিন্ন list সৃষ্টি কৰি property পৰীক্ষা কৰে আৰু failure পালে সৰু counterexample বিচাৰি উলিওৱাত সহায় কৰে।
+
+Property-based test-এ সকলো সম্ভাৱ্য input পৰীক্ষা কৰে বুলি ধৰি ল'ব নালাগে; ই নিৰ্ধাৰিত strategy আৰু configuration অনুসৰি বহু input sample কৰে।
+
+---
+
+## ২০.৯ Test লিখাৰ উত্তম পদ্ধতি
+
+- Test-ৰ নামত কোন আচৰণ পৰীক্ষা কৰা হৈছে স্পষ্টকৈ লিখক।
+- এটা test-ত এটা মূল আচৰণ পৰীক্ষা কৰিবলৈ চেষ্টা কৰক।
+- Test-সমূহ পৰস্পৰৰ execution order-ৰ ওপৰত নিৰ্ভৰশীল নকৰিব।
+- বাহ্যিক network বা production database-ৰ ওপৰত unit test নিৰ্ভৰশীল নকৰিব।
+- Success case-ৰ লগতে failure, boundary আৰু invalid input পৰীক্ষা কৰক।
+- Test-ত বাস্তৱ secret বা ব্যক্তিগত তথ্য নাৰাখিব।
+- Mock অতিৰিক্ত ব্যৱহাৰ নকৰিব; প্ৰকৃত integration-ও পৰীক্ষা কৰক।
+- Flaky test-ৰ কাৰণ বিচাৰি ঠিক কৰক; কেৱল পুনৰ চলাই pass কৰোৱাই সমাধান নহয়।
+
+---
+
+## ২০.১০ অনুশীলনী
+
+1. Pytest কি? Test file-ৰ সাধাৰণ naming pattern লিখক।
+2. TDD-ৰ Red-Green-Refactor চক্ৰ ব্যাখ্যা কৰক।
+3. Fixture কিয় ব্যৱহাৰ কৰা হয়?
+4. \`@pytest.mark.parametrize\`-ৰ এটা উপকাৰিতা লিখক।
+5. Mocking কেতিয়া প্ৰয়োজনীয় আৰু ইয়াৰ সীমাবদ্ধতা কি?
+6. \`tmp_path\` আৰু \`monkeypatch\`-ৰ কাম কি?
+7. Code coverage ১০০% হ'লেই bug নথকাৰ নিশ্চয়তা পোৱা যায়নে?
+8. Unit test আৰু integration test-ৰ পাৰ্থক্য লিখক।
+9. Property-based testing-ত Hypothesis-ৰ ভূমিকা কি?
+
+### উত্তৰ-সংকেত
+
+1. Pytest হৈছে Python testing framework; সাধাৰণ pattern \`test_*.py\` বা \`*_test.py\`।
+2. Red-ত failing test, Green-ত নূন্যতম passing implementation, Refactor-ত আচৰণ নসলোৱাকৈ code উন্নত কৰা।
+3. Test-ৰ বাবে পুনৰ ব্যৱহাৰযোগ্য data আৰু setup তৈয়াৰ কৰিবলৈ।
+4. একেটা test function-ত বহু input আৰু expected output পৰীক্ষা কৰিব পাৰি।
+5. বাহ্যিক dependency অনুকৰণ কৰিবলৈ; কিন্তু mock-এ বাস্তৱ service-ৰ সম্পূৰ্ণ আচৰণ নিশ্চিত নকৰে।
+6. \`tmp_path\` temporary directory দিয়ে; \`monkeypatch\` সাময়িক environment/object পৰিৱৰ্তন কৰে।
+7. নহয়। Coverage-এ execution দেখুৱায়, assertion-ৰ গুণগত মান আৰু সকলো edge case নহয়।
+8. Unit test এটা component পৃথকভাৱে; integration test একাধিক component একেলগে পৰীক্ষা কৰে।
+9. Hypothesis-এ strategy অনুসৰি বহু input সৃষ্টি কৰি নিৰ্দিষ্ট property পৰীক্ষা কৰে।
+
+---
+
+## ২০.১১ সাৰাংশ
+
+Pytest-এ Python program-ৰ স্বয়ংক্ৰিয় test লিখা আৰু চলোৱা সহজ কৰে। TDD-ৰ Red-Green-Refactor চক্ৰই test-ক development process-ৰ অংশ কৰে। Fixture, parametrization, mocking, temporary file আৰু monkeypatch-এ test অধিক সংগঠিত কৰে। Coverage-এ test-ৰ পৰিসৰ বুজায়; Hypothesis-এ বিভিন্ন input-ত property পৰীক্ষা কৰাত সহায় কৰে। ভাল testing strategy-ত unit, integration আৰু end-to-end test-ৰ উপযুক্ত সমন্বয় থাকে।
+
+### চৰকাৰী নথি
+
+- pytest: https://docs.pytest.org/
+- pytest fixtures: https://docs.pytest.org/en/stable/how-to/fixtures.html
+- Python unittest.mock: https://docs.python.org/3/library/unittest.mock.html
+- Hypothesis: https://hypothesis.readthedocs.io/
+- pytest-cov: https://pytest-cov.readthedocs.io/
+`,
     },
-    {
-      id: 'ch-21',
+    id: 'ch-21',
       volume: 'খণ্ড ৮: প্ৰফেচনেল ডেভঅপ্স, এজ কম্পিউটিং, এআই আৰু ৰোডমেপ',
       title: 'অধ্যায় ২৪: ডকাৰ আৰু কন্টেইনাৰাইজেশন',
       subtitle: 'Multi-stage Dockerfile, Non-root User Security & Docker Compose Full-Stack',
