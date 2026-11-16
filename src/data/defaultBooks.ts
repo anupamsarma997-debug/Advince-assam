@@ -1840,32 +1840,136 @@ print(list(fibonacci()))
       id: 'ch-7',
       volume: 'খণ্ড ২: পাইথন প্ৰগ্ৰামিংৰ গভীৰতা',
       title: 'অধ্যায় ৭: ফাংচন, স্কোপ (LEGB), ক্ল’জাৰ আৰু ডেকৰেটৰ',
-      subtitle: 'LEGB Scope Rule, Closures আৰু Practical Decorators',
-      estimatedReadTime: '8 min',
-      topics: ['LEGB Rule', 'Closures', 'Decorators', 'Performance Profiler Decorator'],
-      content: `## ৭.১ LEGB নিয়ম (Scope Resolution)
+      subtitle: 'Function Design, Scope Resolution, Closures, Decorators আৰু Testing',
+      estimatedReadTime: '22 min',
+      topics: ['Function Parameters', 'LEGB Rule', 'global আৰু nonlocal', 'Closures', 'Decorators', 'functools.wraps', 'Decorator Testing'],
+      content: \`## ৭.১ ফাংচন কিয় প্ৰয়োজন?
 
-পাইথনে চলক বিচাৰি পাবলৈ এই ক্ৰম অনুসৰণ কৰে:
-**Local -> Enclosing -> Global -> Built-in**
+ফাংচন হৈছে কোনো নিৰ্দিষ্ট কাম সম্পন্ন কৰা পুনৰ ব্যৱহাৰযোগ্য কোডৰ একক। একে কামৰ কোড বাৰে বাৰে লিখাৰ পৰিৱৰ্তে ফাংচন ব্যৱহাৰ কৰিলে কোড সংক্ষিপ্ত, পৰীক্ষাযোগ্য আৰু ৰক্ষণাবেক্ষণযোগ্য হয়।
 
-\`\`\`python
-x = "গ্ল'বেল"  # Global
+এটা ভাল ফাংচনে সাধাৰণতে এটা স্পষ্ট দায়িত্ব পালন কৰে। ইয়াৰ নাম, ইনপুট আৰু ৰিটাৰ্ণ কৰা ফলাফল বুজিবলৈ সহজ হোৱা উচিত।
 
-def বাহ্যিক():
-    x = "এনক্ল'জিং"  # Enclosing
+\\\`\\\`\\\`python
+def বৰ্গ(সংখ্যা):
+    """এটা সংখ্যাৰ বৰ্গ ঘূৰাই দিয়ে।"""
+    return সংখ্যা * সংখ্যা
+
+ফল = বৰ্গ(6)
+print(ফল)  # 36
+\\\`\\\`\\\`
+
+ফাংচন সংজ্ঞায়িত কৰিলেই তাৰ ভিতৰৰ কোড চলি নাযায়; ফাংচনটো call কৰিলেহে চলে। \\\`return\\\`-এ ফলাফল caller-লৈ ঘূৰাই দিয়ে। কেৱল \\\`print()\\\` কৰিলে ফলাফল পৰ্দাত দেখা যায়, কিন্তু সেয়া নিজে নিজে return value নহয়।
+
+## ৭.২ Parameters, Arguments আৰু Default Values
+
+ফাংচন সংজ্ঞাৰ সময়ত দিয়া নামবোৰ parameter আৰু call কৰাৰ সময়ত দিয়া বাস্তৱ মানবোৰ argument।
+
+\\\`\\\`\\\`python
+def আদৰণি(নাম, বাৰ্তা="নমস্কাৰ"):
+    return f"{বাৰ্তা}, {নাম}!"
+
+print(আদৰণি("ৰীণা"))                 # নমস্কাৰ, ৰীণা!
+print(আদৰণি("ৰাহুল", "শুভ পুৱা"))   # শুভ পুৱা, ৰাহুল!
+\\\`\\\`\\\`
+
+Python-ত positional argument, keyword argument, default parameter আৰু variable-length argument ব্যৱহাৰ কৰিব পাৰি।
+
+\\\`\\\`\\\`python
+def মুঠ_হিচাপ(*সংখ্যাসমূহ):
+    return sum(সংখ্যাসমূহ)
+
+def পৰিচয়(**তথ্য):
+    for key, value in তথ্য.items():
+        print(key, "=", value)
+
+print(মুঠ_হিচাপ(10, 20, 30))  # 60
+পৰিচয়(নাম="মীনা", বয়স=22)
+\\\`\\\`\\\`
+
+\\\`*args\\\`-এ positional arguments-সমূহ tuple হিচাপে আৰু \\\`**kwargs\\\`-এ keyword arguments-সমূহ dictionary হিচাপে সংগ্ৰহ কৰে। এই নাম দুটা প্ৰচলিত convention; \\\`*\\\` আৰু \\\`**\\\` চিহ্নই মূল কাম কৰে।
+
+**গুৰুত্বপূৰ্ণ:** mutable default value যেনে list বা dictionary পোনপটীয়াকৈ default হিচাপে নিদিব। কাৰণ একেটা object বহু call-ত পুনৰ ব্যৱহাৰ হ’ব পাৰে।
+
+\\\`\\\`\\\`python
+# ভুল ধৰণ
+def ভুল_যোগ(মান, তালিকা=[]):
+    তালিকা.append(মান)
+    return তালিকা
+
+# সঠিক ধৰণ
+def সঠিক_যোগ(মান, তালিকা=None):
+    if তালিকা is None:
+        তালিকা = []
+    তালিকা.append(মান)
+    return তালিকা
+
+print(সঠিক_যোগ(5))  # [5]
+print(সঠিক_যোগ(8))  # [8]
+\\\`\\\`\\\`
+
+## ৭.৩ Scope আৰু LEGB নিয়ম
+
+Scope মানে কোনো নাম (variable/function) ক’ৰ পৰা ব্যৱহাৰ কৰিব পাৰি। Python-এ নাম বিচাৰোঁতে LEGB ক্ৰম অনুসৰণ কৰে:
+
+1. **Local:** বৰ্তমান ফাংচনৰ ভিতৰত সংজ্ঞায়িত নাম।
+2. **Enclosing:** ভিতৰৰ ফাংচনটোক আৱৰি থকা বাহিৰৰ ফাংচনৰ local scope।
+3. **Global:** module-ৰ স্তৰত সংজ্ঞায়িত নাম।
+4. **Built-in:** Python-ৰ built-in নাম, যেনে \\\`len\\\`, \\\`sum\\\`, \\\`print\\\`।
+
+\\\`\\\`\\\`python
+x = "Global"
+
+def বাহিৰৰ():
+    x = "Enclosing"
+
     def ভিতৰৰ():
-        x = "লোকেল"  # Local
+        x = "Local"
         print(x)
+
     ভিতৰৰ()
 
-বাহ্যিক()  # আউটপুট: লোকেল
-\`\`\`
+বাহিৰৰ()  # Local
+print(x)   # Global
+\\\`\\\`\\\`
 
----
+ভিতৰৰ ফাংচনত local \\\`x\\\` পোৱা যায়, সেয়ে enclosing বা global \\\`x\\\` ব্যৱহাৰ নহয়।
 
-## ৭.২ ক্ল'জাৰ (Closure)
+### global আৰু nonlocal
 
-\`\`\`python
+\\\`global\\\`-এ module-level নামত assignment কৰিবলৈ কয়। \\\`nonlocal\\\`-এ ওচৰৰ enclosing function scope-ত থকা আগৰ binding সলনি কৰিবলৈ কয়। দুয়োটাই কেৱল নামৰ binding-ৰ ক্ষেত্ৰত প্ৰযোজ্য; object mutable হ’লে object-ৰ ভিতৰৰ মান সলনি কৰিবলৈ সদায় এই keyword নালাগে।
+
+\\\`\\\`\\\`python
+গণনা = 0
+
+def এবাৰ_বঢ়োৱা():
+    global গণনা
+    গণনা += 1
+
+def কাউণ্টাৰ_তৈয়াৰ():
+    মান = 0
+
+    def বঢ়োৱা():
+        nonlocal মান
+        মান += 1
+        return মান
+
+    return বঢ়োৱা
+
+এবাৰ_বঢ়োৱা()
+print(গণনা)  # 1
+
+কাউণ্টাৰ = কাউণ্টাৰ_তৈয়াৰ()
+print(কাউণ্টাৰ())  # 1
+print(কাউণ্টাৰ())  # 2
+\\\`\\\`\\\`
+
+**সাৱধান:** function-ৰ ভিতৰত কোনো নামত assignment থাকিলে, উপযুক্ত \\\`global\\\` বা \\\`nonlocal\\\` ঘোষণা নকৰিলে Python-এ সাধাৰণতে সেই নামক local বুলি গণ্য কৰে। তাৰ আগতে সেই local নাম পঢ়িবলৈ চেষ্টা কৰিলে \\\`UnboundLocalError\\\` হ’ব পাৰে।
+
+## ৭.৪ Closure (ক্ল’জাৰ)
+
+যেতিয়া inner function-এ enclosing function-ৰ কোনো variable ব্যৱহাৰ কৰে আৰু outer function শেষ হোৱাৰ পিছতো সেই variable-ৰ binding সংৰক্ষিত থাকে, তেতিয়া সেই inner function-টো closure হ’ব পাৰে।
+
+\\\`\\\`\\\`python
 def গুণক_তৈয়াৰ_কৰা(গুণনীয়ক):
     def গুণক(সংখ্যা):
         return সংখ্যা * গুণনীয়ক
@@ -1874,37 +1978,169 @@ def গুণক_তৈয়াৰ_কৰা(গুণনীয়ক):
 দ্বিগুণ = গুণক_তৈয়াৰ_কৰা(2)
 ত্ৰিগুণ = গুণক_তৈয়াৰ_কৰা(3)
 
-print(দ্বিগুণ(5))  # ১০
-print(ত্ৰিগুণ(5))  # ১৫
-\`\`\`
+print(দ্বিগুণ(5))  # 10
+print(ত্ৰিগুণ(5))  # 15
+\\\`\\\`\\\`
 
----
+ইয়াত \\\`গুণক\\\` function-এ \\\`গুণনীয়ক\\\` নামটো নিজৰ local scope-ত নাপালেও outer call শেষ হোৱাৰ পিছত ব্যৱহাৰ কৰিব পাৰে। Closure-এ state সংৰক্ষণ কৰিব পাৰে, কিন্তু ই নিজে নিজে thread-safe বা persistent storage নহয়।
 
-## ৭.৩ ডেকৰেটৰ (Decorators)
+## ৭.৫ Decorator (ডেকৰেটৰ) কি?
 
-\`\`\`python
-import time
-from functools import wraps
+Decorator হৈছে এনে callable যিয়ে আন এটা function বা class গ্ৰহণ কৰি সাধাৰণতে নতুন callable ঘূৰাই দিয়ে। ইয়াৰ সহায়ত মূল function-ৰ কোড সলনি নকৰাকৈ logging, timing, permission check বা caching-ৰ দৰে অতিৰিক্ত আচৰণ যোগ কৰিব পাৰি।
 
-def সময়_গণনা_ডেকৰেটৰ(func):
-    @wraps(func)
+\\\`@ডেকৰেটৰ\\\` syntax-ৰ অৰ্থ হ’ল function সংজ্ঞাৰ পিছত সেই function-টো decorator-লৈ পঠোৱা। অৰ্থাৎ:
+
+\\\`\\\`\\\`python
+@ডেকৰেটৰ
+def কাম():
+    return "সম্পূৰ্ণ"
+
+# ওপৰৰ syntax-ৰ সমতুল্য:
+# def কাম():
+#     return "সম্পূৰ্ণ"
+# কাম = ডেকৰেটৰ(কাম)
+\\\`\\\`\\\`
+
+### এটা সাধাৰণ decorator
+
+\\\`\\\`\\\`python
+def লগ_ডেকৰেটৰ(func):
     def wrapper(*args, **kwargs):
-        আৰম্ভণি = time.perf_counter()
+        print("ফাংচন আৰম্ভ")
         ফলাফল = func(*args, **kwargs)
-        শেষ = time.perf_counter()
-        print(f"'{func.__name__}' সমাপ্ত হ'বলৈ সময় লাগিল: {শেষ - আৰম্ভণি:.6f}s")
+        print("ফাংচন শেষ")
         return ফলাফল
     return wrapper
 
-@সময়_গণনা_ডেকৰেটৰ
-def গাণিতিক_হিচাপ(n: int):
+@লগ_ডেকৰেটৰ
+def যোগ(a, b):
+    return a + b
+
+print(যোগ(4, 7))
+\\\`\\\`\\\`
+
+ইয়াত wrapper-এ মূল function-লৈ সকলো positional আৰু keyword argument আগবঢ়ায় আৰু তাৰ return value ঘূৰাই দিয়ে। কিন্তু exception হ’লে শেষৰ print-টো চলিবই বুলি নিশ্চয়তা নাই; তাৰ বাবে \\\`try/finally\\\` ব্যৱহাৰ কৰিব পাৰি।
+
+## ৭.৬ functools.wraps কিয় ব্যৱহাৰ কৰিব লাগে?
+
+Decorator-এ wrapper function ঘূৰাই দিলে function-ৰ metadata যেনে \\\`__name__\\\`, docstring আৰু introspection-ৰ তথ্য wrapper-ৰ হৈ যাব পাৰে। \\\`functools.wraps\\\`-এ মূল function-ৰ metadata wrapper-লৈ কপি কৰাত সহায় কৰে।
+
+\\\`\\\`\\\`python
+from functools import wraps
+
+def লগ_ডেকৰেটৰ(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"চলিছে: {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@লগ_ডেকৰেটৰ
+def বৰ্গ(সংখ্যা):
+    """সংখ্যাৰ বৰ্গ গণনা কৰে।"""
+    return সংখ্যা ** 2
+
+print(বৰ্গ(5))          # 25
+print(বৰ্গ.__name__)    # বৰ্গ
+print(বৰ্গ.__doc__)     # সংখ্যাৰ বৰ্গ গণনা কৰে।
+\\\`\\\`\\\`
+
+## ৭.৭ সময় জোখা Decorator আৰু সঠিক ব্যাখ্যা
+
+\\\`time.perf_counter()\\\` elapsed time জোখাৰ বাবে উপযোগী high-resolution counter। তলৰ decorator-এ function call-ৰ সময় জোখে। এই সময়ত function-ৰ ভিতৰৰ কাম, আৰু wrapper-ৰ সামান্য overhead দুয়োটাই অন্তৰ্ভুক্ত হ’ব পাৰে।
+
+\\\`\\\`\\\`python
+import time
+from functools import wraps
+
+def সময়_জোখা(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        আৰম্ভণি = time.perf_counter()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            শেষ = time.perf_counter()
+            print(
+                f"{func.__name__}: "
+                f"{শেষ - আৰম্ভণি:.6f} ছেকেণ্ড"
+            )
+    return wrapper
+
+@সময়_জোখা
+def বৰ্গৰ_মুঠ(n):
     return sum(i * i for i in range(n))
 
-গাণিতিক_হিচাপ(1_000_000)
-\`\`\``,
+ফল = বৰ্গৰ_মুঠ(100_000)
+print("ফলাফল:", ফল)
+\\\`\\\`\\\`
+
+এই decorator-এ function সফল হওক বা exception দিয়ক, দুয়ো ক্ষেত্ৰতে সময়ৰ তথ্য print কৰে। কিন্তু এটা run-ৰ ফলাফলৰ পৰা function সদায় কিমান দ্ৰুত সেই সিদ্ধান্ত ল’ব নোৱাৰি। Machine load, Python version, input size আৰু অন্যান্য কাৰকে সময় সলনি কৰিব পাৰে। সঠিক benchmark-ৰ বাবে একাধিক run আৰু উপযুক্ত benchmarking tool ব্যৱহাৰ কৰা উচিত।
+
+## ৭.৮ Decorator-ৰ সীমাবদ্ধতা আৰু সাধাৰণ ভুল
+
+- Wrapper-এ \\\`return func(...)\\\` নকৰিলে মূল function-ৰ ফলাফল হেৰাই যাব পাৰে।
+- \\\`*args\\\` আৰু \\\`**kwargs\\\` নাথাকিলে wrapper-এ সকলো function signature সমৰ্থন নকৰিব পাৰে।
+- \\\`functools.wraps\\\` বাদ দিলে introspection-ত বিভ্ৰান্তি হ’ব পাৰে।
+- Decorator-ৰ ভিতৰত exception ধৰি নীৰৱে বাদ দিলে bug লুকাই থাকিব পাৰে।
+- Decorator-এ function call-ৰ আচৰণ সলনি কৰিব পাৰে; সেয়ে side effect আৰু return type স্পষ্টকৈ লিখিব লাগে।
+- Decorator-ৰ ক্ৰম গুৰুত্বপূৰ্ণ। একাধিক decorator তলৰ পৰা ওপৰলৈ apply হয়।
+
+## ৭.৯ নিজে পৰীক্ষা কৰক
+
+তলৰ প্ৰশ্নসমূহৰ উত্তৰ নিজে লিখি তাৰ পিছত উত্তৰ-সূচীৰ সৈতে মিলাওক।
+
+1. Parameter আৰু argument-ৰ মাজত পাৰ্থক্য কি?
+2. \\\`return\\\` আৰু \\\`print()\\\`-ৰ কাম কেনেকৈ পৃথক?
+3. LEGB-ৰ সম্পূৰ্ণ ৰূপ লিখক।
+4. \\\`global\\\` আৰু \\\`nonlocal\\\`-ৰ ব্যৱহাৰ কেতিয়া হয়?
+5. Mutable default argument কিয় বিপজ্জনক হ’ব পাৰে?
+6. Closure-ত enclosing variable কেনেকৈ ব্যৱহাৰ হয়?
+7. Decorator-ৰ \\\`@\\\` syntax-ৰ সমতুল্য assignment লিখক।
+8. \\\`functools.wraps\\\`-ৰ লাভ কি?
+9. Timing decorator-ত \\\`finally\\\` কিয় উপযোগী?
+10. \\\`*args\\\` আৰু \\\`**kwargs\\\`-এ কি সংগ্ৰহ কৰে?
+11. তলৰ function-টোৰ ফলাফল কি?
+    \\\`\\\`\\\`python
+    def বাহিৰৰ():
+        মান = 10
+        def ভিতৰৰ():
+            return মান + 5
+        return ভিতৰৰ
+    f = বাহিৰৰ()
+    print(f())
+    \\\`\\\`\\\`
+12. এনে এটা decorator লিখক যিয়ে function call-ৰ আগতে "আৰম্ভ" আৰু শেষত "শেষ" print কৰে, আৰু মূল return value অক্ষুণ্ণ ৰাখে।
+
+### উত্তৰ-সূচী
+
+1. Parameter function definition-ত থকা নাম; argument function call-ত দিয়া মান।
+2. \\\`return\\\`-এ caller-লৈ value ঘূৰাই দিয়ে; \\\`print()\\\`-এ output দেখুৱায়।
+3. Local, Enclosing, Global, Built-in।
+4. \\\`global\\\` module-level binding আৰু \\\`nonlocal\\\` enclosing function binding সলনি কৰিবলৈ।
+5. একেটা mutable object একাধিক call-ত পুনৰ ব্যৱহাৰ হ’ব পাৰে।
+6. Inner function-এ enclosing scope-ৰ binding ধৰি ৰাখে।
+7. \\\`ফাংচন = ডেকৰেটৰ(ফাংচন)\\\`।
+8. মূল function-ৰ metadata সংৰক্ষণ/প্ৰতিফলিত কৰাত সহায় কৰে।
+9. Exception হ’লেও timing code চলাবলৈ।
+10. \\\`*args\\\` positional arguments tuple-ত; \\\`**kwargs\\\` keyword arguments dictionary-ত।
+11. \\\`15\\\`।
+12. Wrapper-ত \\\`try/finally\\\` ব্যৱহাৰ কৰি মূল function call-ৰ return value ঘূৰাই দিব লাগে।
+
+## ৭.১০ সাৰাংশ
+
+এই অধ্যায়ত function parameter, return value, default argument, \\\`*args\\\`, \\\`**kwargs\\\`, LEGB scope, \\\`global\\\`, \\\`nonlocal\\\`, closure আৰু decorator শিকিলোঁ। এই ধাৰণাবোৰে ডাঙৰ Python program-ত পুনৰ ব্যৱহাৰযোগ্য, পৰীক্ষাযোগ্য আৰু সহজে ৰক্ষণাবেক্ষণ কৰিব পৰা কোড লিখাত সহায় কৰে।
+
+### অধিক অধ্যয়নৰ বাবে (Official Documentation)
+
+- Python Tutorial — Defining Functions: https://docs.python.org/3/tutorial/controlflow.html#defining-functions
+- Python Execution Model — Naming and Binding: https://docs.python.org/3/reference/executionmodel.html
+- Python Glossary — Closure: https://docs.python.org/3/glossary.html#term-closure
+- Python functools — wraps: https://docs.python.org/3/library/functools.html#functools.wraps
+- Python time — perf_counter: https://docs.python.org/3/library/time.html#time.perf_counter
+\`,
     },
-    {
-      id: 'ch-8',
+    id: 'ch-8',
       volume: 'খণ্ড ৩: ডেটা ষ্ট্ৰাকচাৰ আৰু এলগৰিদম (DSA Mastery)',
       title: 'অধ্যায় ৮: লিনিয়াৰ ডেটা ষ্ট্ৰাকচাৰ',
       subtitle: 'Dynamic Array, Stack (LIFO), Queue (FIFO) আৰু Linked List',
